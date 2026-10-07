@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+/* parpadeo lento del texto de error */
+@keyframes parpadeo-error {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.parpadeo-error {
+  animation: parpadeo-error 2.4s ease-in-out infinite;
+}
