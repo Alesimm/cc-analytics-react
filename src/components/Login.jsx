@@ -85,7 +85,7 @@ const Login = () => {
       </div>
 
       {/* lado derecho formulario con vidrio borroso (backdrop-blur) */}
-      <div className="relative z-10 w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 bg-black/40 backdrop-blur-2xl border-l border-white/5 shadow-[-20px_0_50px_rgba(0,0,0,0.3)] animate-fade-in-up delay-400">
+      <div className="relative z-10 w-full lg:w-[42%] lg:ml-auto flex items-center justify-center p-6 sm:p-8 bg-[linear-gradient(90deg,rgba(10,10,10,0.18)_0%,rgba(10,10,10,0.4)_35%,rgba(10,10,10,0.7)_100%)] backdrop-blur-sm border-l border-white/5 shadow-[-20px_0_40px_rgba(0,0,0,0.28)] animate-fade-in-up delay-400">
         
         {/* logo arriba a la derecha */}
         <div className="absolute top-8 right-8 flex items-center gap-4 select-none animate-fade-in-up delay-800">
@@ -105,7 +105,7 @@ const Login = () => {
         </div>
 
         {/* caja del formulario */}
-        <div className="w-full max-w-xl mt-12 lg:mt-0">
+        <div className="w-full max-w-md mt-10 lg:mt-0 lg:mr-8">
           
           <div className="mb-12">
             <h3 className="text-2xl font-black text-white uppercase tracking-[0.1em] mb-2">
