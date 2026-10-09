@@ -10,6 +10,20 @@
   animation: parpadeo-error 2.4s ease-in-out infinite;
 }
 
+/* animacion sutil de entrada para la pagina completa */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
 /* animacion de entrada mas lenta y notoria */
 @keyframes fade-in-up {
   from {
