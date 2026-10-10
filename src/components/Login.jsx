@@ -55,7 +55,7 @@ const Login = () => {
 
   return (
     // pantalla principal
-    <div className="min-h-screen overflow-hidden flex flex-col lg:flex-row bg-[#050505] bg-[url('/full_A_cancha_tactica.png')] bg-cover bg-center bg-no-repeat relative">
+    <div className="min-h-screen overflow-hidden flex flex-col lg:flex-row bg-[#050505] bg-[url('/photos/bg-tactica.webp')] bg-cover bg-center bg-no-repeat relative">
       {/* filtro oscuro para el fondo */}
       <div className="absolute inset-0 bg-black/75 z-0"></div>
 
@@ -64,7 +64,7 @@ const Login = () => {
         {/* logo cc analytics*/}
         <div className="max-w-2xl lg:-mt-24">
           <img
-            src="/logo_A_escudo_laureles_blanco.png"
+            src="/photos/logo-escudo-blanco.webp"
             alt="Cacique Logo"
             className="w-32 h-auto mb-8 drop-shadow-2xl"
           />
@@ -107,7 +107,7 @@ const Login = () => {
             </p>
           </div>
           <img
-            src="/logo-colocolo.png"
+            src="/photos/logo-colocolo.webp"
             alt="Escudo Colo-Colo"
             className="w-12 h-auto opacity-100"
           />
