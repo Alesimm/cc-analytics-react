@@ -12,7 +12,7 @@ const Layout = () => {
   const usuario = { rol: "Entrenador" };
 
   return (
-    <div className="min-h-screen bg-[#050505] bg-[url('/pantalla_2_dashboard.png')] bg-cover bg-center bg-no-repeat bg-fixed relative flex text-white font-sans selection:bg-white selection:text-black animate-fade-in">
+    <div className="min-h-screen bg-[#050505] bg-[url('/photos/bg-dashboard.webp')] bg-cover bg-center bg-no-repeat bg-fixed relative flex text-white font-sans selection:bg-white selection:text-black animate-fade-in">
       {/* capa oscura sobre el fondo para que se lea bien la informacion */}
       <div className="absolute inset-0 bg-black/90 z-0"></div>
 
@@ -94,7 +94,7 @@ const Layout = () => {
           </p>
         </div>
         <img
-          src="/logo-colocolo.png"
+          src="/photos/logo-colocolo.webp"
           alt="Escudo Colo-Colo"
           className="w-12 h-auto"
         />
