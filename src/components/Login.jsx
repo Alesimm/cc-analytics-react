@@ -212,7 +212,7 @@ const Login = () => {
               >
                 {/* barra animada de progreso */}
                 {cargando && (
-                  <span className="absolute bottom-0 left-0 h-[2px] bg-white animate-login-progress"></span>
+                  <span className="absolute bottom-0 left-0 h-0.5 bg-white animate-login-progress"></span>
                 )}
 
                 {cargando ? (
