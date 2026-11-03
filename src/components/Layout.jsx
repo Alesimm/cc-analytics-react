@@ -1,22 +1,43 @@
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 
 const Layout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const mainRef = useRef(null);
 
   // funcion para cerrar sesion y volver al login
   const handleLogout = () => {
     navigate("/login");
   };
 
+  // reinicia el scroll arriba al cambiar de seccion en la barra lateral
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+  }, [location.pathname]);
+
   // dato provisional del usuario, mas adelante se maneja con roles reales
   const usuario = { rol: "Entrenador" };
 
   return (
-    <div className="h-screen overflow-hidden bg-[#050505] bg-[url('/photos/bg-dashboard.webp')] bg-cover bg-center bg-no-repeat bg-fixed relative flex text-white font-sans selection:bg-white selection:text-black">
-      {/* capa oscura sobre el fondo para que el texto se lea sin problemas */}
-      <div className="absolute inset-0 bg-black/90 z-0 pointer-events-none"></div>
+    <div className="h-screen overflow-hidden bg-[#050608] relative flex text-white font-sans selection:bg-white selection:text-black">
+      {/* fondo tecnico de alto contraste con degradado y cuadricula tactica sutil */}
+      <div className="fixed inset-0 bg-gradient-to-b from-[#090b10] via-[#050608] to-[#020304] pointer-events-none -z-20"></div>
+      <div
+        className="fixed inset-0 pointer-events-none -z-10 opacity-70"
+        style={{
+          backgroundImage: `
+            radial-gradient(1200px circle at 50% -10%, rgba(255, 255, 255, 0.04), transparent 70%),
+            linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px)
+          `,
+          backgroundSize: "100% 100%, 48px 48px, 48px 48px",
+        }}
+      ></div>
 
-      {/* barra lateral fija ajustada al tamaño de la pantalla (h-screen) */}
+      {/* barra lateral fija ajustada al tamano de la pantalla */}
       <aside className="relative z-10 w-56 h-screen border-r border-white/10 flex flex-col justify-between bg-black/40 backdrop-blur-md shrink-0">
         <div>
           {/* seccion con la sesion activa del usuario */}
@@ -49,7 +70,7 @@ const Layout = () => {
             <NavLink
               to="/dashboard"
               className={({ isActive }) =>
-                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-all duration-300 ${
+                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-colors duration-150 ${
                   isActive
                     ? "border-white bg-white/10 text-white"
                     : "border-transparent text-neutral-500 hover:border-white/40 hover:bg-white/5 hover:text-white"
@@ -61,7 +82,7 @@ const Layout = () => {
             <NavLink
               to="/plantel"
               className={({ isActive }) =>
-                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-all duration-300 ${
+                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-colors duration-150 ${
                   isActive
                     ? "border-white bg-white/10 text-white"
                     : "border-transparent text-neutral-500 hover:border-white/40 hover:bg-white/5 hover:text-white"
@@ -69,6 +90,18 @@ const Layout = () => {
               }
             >
               Plantel
+            </NavLink>
+            <NavLink
+              to="/rendimiento"
+              className={({ isActive }) =>
+                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-colors duration-150 ${
+                  isActive
+                    ? "border-white bg-white/10 text-white"
+                    : "border-transparent text-neutral-500 hover:border-white/40 hover:bg-white/5 hover:text-white"
+                }`
+              }
+            >
+              Rendimiento
             </NavLink>
             {/* los demas enlaces a las otras pantallas se agregaran despues */}
           </nav>
@@ -97,9 +130,14 @@ const Layout = () => {
         </div>
       </aside>
 
-      {/* contenedor principal con scroll vertical independiente que no mueve la barra lateral */}
-      <main className="relative z-10 flex-1 min-w-0 h-screen overflow-y-auto p-6 sm:p-8 lg:p-12">
-        <Outlet />
+      {/* contenedor principal con scroll vertical suave y restablecimiento de posicion */}
+      <main
+        ref={mainRef}
+        className="relative z-10 flex-1 min-w-0 h-screen overflow-y-auto scroll-smooth p-6 sm:p-8 lg:p-12"
+      >
+        <div key={location.pathname}>
+          <Outlet />
+        </div>
       </main>
     </div>
   );

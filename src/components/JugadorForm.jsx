@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 
-// Estilo dinamico de input segun estado de validacion (sin atributos HTML prohibidos)
+// estilo dinamico de input segun estado de validacion (sin atributos HTML prohibidos)
 const claseInput = (error) =>
   `w-full bg-[#0a0a0a]/90 border p-3 text-white text-xs antialiased focus:outline-none transition-all duration-300 ${
     error
@@ -21,7 +21,7 @@ const ROLES_VALIDOS = ["Titular", "Suplente", "Reserva"];
 const ESTADOS_VALIDOS = ["Disponible", "En recuperación", "Suspendido"];
 
 const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => {
-  // Estado local para los campos del formulario
+  // estado local para los campos del formulario
   const [formData, setFormData] = useState({
     nombre: jugador?.nombre || "",
     dorsal: jugador?.dorsal !== undefined ? String(jugador.dorsal) : "",
@@ -33,10 +33,10 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
     estado: jugador?.estado || "Disponible",
   });
 
-  // Estado local para mensajes de error de validacion
+  // estado local para mensajes de error de validacion
   const [errors, setErrors] = useState({});
 
-  // Bloquear scroll de fondo y escuchar tecla Escape
+  // bloquear scroll de fondo y escuchar tecla Escape
   useEffect(() => {
     const overflowOriginal = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -56,7 +56,7 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
 
   const handleChange = (campo, valor) => {
     setFormData((prev) => ({ ...prev, [campo]: valor }));
-    // Limpiar error del campo al escribir
+    // limpiar error del campo al escribir
     if (errors[campo]) {
       setErrors((prev) => ({ ...prev, [campo]: "" }));
     }
@@ -87,7 +87,7 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
       nuevosErrores.dorsal = "El número de dorsal debe estar entre 1 y 99.";
       esValido = false;
     } else {
-      // Verificar que el dorsal no este ocupado por otro jugador
+      // verificar que el dorsal no este ocupado por otro jugador
       const repetido = plantelActual.some(
         (j) => j.dorsal === dorsalNum && j.id !== jugador?.id
       );
@@ -135,14 +135,14 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in"
       onClick={(e) => {
-        // Cerrar si se hace clic en el fondo oscuro
+        // cerrar si se hace clic en el fondo oscuro
         if (e.target === e.currentTarget) {
           onCancelar();
         }
       }}
     >
       <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-lg p-6 sm:p-8 space-y-6 shadow-2xl relative my-auto">
-        {/* Encabezado modal */}
+        {/* encabezado modal */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div>
             <span className="text-[9px] uppercase font-bold tracking-[0.25em] text-neutral-500">
@@ -161,9 +161,9 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
           </button>
         </div>
 
-        {/* Formulario controlado sin atributos HTML de validacion automatica */}
+        {/* formulario controlado sin atributos HTML de validacion automatica */}
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
-          {/* Campo Nombre */}
+          {/* campo Nombre */}
           <div className="space-y-1.5">
             <label
               htmlFor="jugador-nombre"
@@ -187,7 +187,7 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
             )}
           </div>
 
-          {/* Fila Dorsal y Edad */}
+          {/* fila Dorsal y Edad */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label
@@ -236,7 +236,7 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
             </div>
           </div>
 
-          {/* Fila Posicion y Estado */}
+          {/* fila Posicion y Estado */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label
@@ -287,7 +287,7 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
             </div>
           </div>
 
-          {/* Fila Rol y Pie Habil */}
+          {/* fila Rol y Pie Habil */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label
@@ -336,7 +336,7 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
             </div>
           </div>
 
-          {/* Botones de accion */}
+          {/* botones de accion */}
           <div className="pt-4 border-t border-white/10 flex items-center justify-end gap-3">
             <button
               type="button"
@@ -357,7 +357,7 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
     </div>
   );
 
-  // Renderizar usando Portal directamente en document.body para evitar que los scroll o transform de la pagina lo desfasen
+  // renderizar usando Portal directamente en document.body para evitar que los scroll o transform de la pagina lo desfasen
   return typeof document !== "undefined"
     ? createPortal(modalJSX, document.body)
     : modalJSX;
