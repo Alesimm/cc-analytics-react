@@ -11,34 +11,26 @@ const Layout = () => {
     navigate("/login");
   };
 
-  // reinicia el scroll arriba al cambiar de seccion en la barra lateral
+  // reinicia la posicion de scroll arriba al navegar a una nueva seccion
   useEffect(() => {
     if (mainRef.current) {
       mainRef.current.scrollTop = 0;
     }
   }, [location.pathname]);
 
-  // dato provisional del usuario, mas adelante se maneja con roles reales
+  // dato provisional del usuario autenticado
   const usuario = { rol: "Entrenador" };
 
   return (
-    <div className="h-screen overflow-hidden bg-[#050608] relative flex text-white font-sans selection:bg-white selection:text-black">
-      {/* fondo tecnico de alto contraste con degradado y cuadricula tactica sutil */}
-      <div className="fixed inset-0 bg-gradient-to-b from-[#090b10] via-[#050608] to-[#020304] pointer-events-none -z-20"></div>
-      <div
-        className="fixed inset-0 pointer-events-none -z-10 opacity-70"
-        style={{
-          backgroundImage: `
-            radial-gradient(1200px circle at 50% -10%, rgba(255, 255, 255, 0.04), transparent 70%),
-            linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px)
-          `,
-          backgroundSize: "100% 100%, 48px 48px, 48px 48px",
-        }}
-      ></div>
+    <div className="h-screen overflow-hidden bg-[#050505] relative flex text-white font-sans selection:bg-white selection:text-black">
+      {/* fondo uniforme y sobrio con degradado sutil de profundidad */}
+      <div className="fixed inset-0 bg-gradient-to-b from-[#070707] via-[#050505] to-[#030303] pointer-events-none -z-10"></div>
 
-      {/* barra lateral fija ajustada al tamano de la pantalla */}
-      <aside className="relative z-10 w-56 h-screen border-r border-white/10 flex flex-col justify-between bg-black/40 backdrop-blur-md shrink-0">
+      {/* iluminacion ambiental muy suave en la cabecera */}
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_40%_at_50%_0%,rgba(255,255,255,0.02),transparent_70%)] pointer-events-none -z-10"></div>
+
+      {/* barra lateral fija integrada de forma sutil y armoniosa */}
+      <aside className="relative z-10 w-56 h-screen border-r border-white/8 flex flex-col justify-between bg-[#070707]/90 backdrop-blur-md shrink-0">
         <div>
           {/* seccion con la sesion activa del usuario */}
           <div className="h-20 border-b border-white/5 flex items-center gap-3 px-4">
@@ -70,7 +62,7 @@ const Layout = () => {
             <NavLink
               to="/dashboard"
               className={({ isActive }) =>
-                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-colors duration-150 ${
+                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-colors duration-200 ${
                   isActive
                     ? "border-white bg-white/10 text-white"
                     : "border-transparent text-neutral-500 hover:border-white/40 hover:bg-white/5 hover:text-white"
@@ -82,7 +74,7 @@ const Layout = () => {
             <NavLink
               to="/plantel"
               className={({ isActive }) =>
-                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-colors duration-150 ${
+                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-colors duration-200 ${
                   isActive
                     ? "border-white bg-white/10 text-white"
                     : "border-transparent text-neutral-500 hover:border-white/40 hover:bg-white/5 hover:text-white"
@@ -94,7 +86,7 @@ const Layout = () => {
             <NavLink
               to="/rendimiento"
               className={({ isActive }) =>
-                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-colors duration-150 ${
+                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-colors duration-200 ${
                   isActive
                     ? "border-white bg-white/10 text-white"
                     : "border-transparent text-neutral-500 hover:border-white/40 hover:bg-white/5 hover:text-white"
@@ -107,7 +99,7 @@ const Layout = () => {
           </nav>
         </div>
 
-        {/* boton para salir del sistema siempre visible y accesible al pie de la barra lateral */}
+        {/* boton para salir del sistema siempre visible al pie */}
         <div className="p-3 border-t border-white/5">
           <button
             onClick={handleLogout}
@@ -130,12 +122,12 @@ const Layout = () => {
         </div>
       </aside>
 
-      {/* contenedor principal con scroll vertical suave y restablecimiento de posicion */}
+      {/* contenedor principal con scroll vertical suave y transicion sutil entre vistas */}
       <main
         ref={mainRef}
         className="relative z-10 flex-1 min-w-0 h-screen overflow-y-auto scroll-smooth p-6 sm:p-8 lg:p-12"
       >
-        <div key={location.pathname}>
+        <div key={location.pathname} className="animate-page-enter">
           <Outlet />
         </div>
       </main>

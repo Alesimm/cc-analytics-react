@@ -107,7 +107,7 @@ const Plantel = () => {
   ).length;
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-8">
       {/* cabecera principal */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
