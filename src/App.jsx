@@ -3,6 +3,7 @@ import Login from './components/Login';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
 import Plantel from './components/Plantel';
+import Rendimiento from './components/Rendimiento';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/plantel" element={<Plantel />} />
+          <Route path="/rendimiento" element={<Rendimiento />} />
         </Route>
 
         {/* cualquier ruta inexistente vuelve al login */}

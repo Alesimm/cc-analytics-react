@@ -17,18 +17,18 @@ const POSICIONES_FILTRO = [
 ];
 
 const Plantel = () => {
-  // Lista de jugadores con persistencia en localStorage
+  // lista de jugadores con persistencia en localStorage
   const [plantel, setPlantel] = useState(obtenerPlantel);
 
-  // Estados de busqueda y filtros
+  // estados de busqueda y filtros
   const [busqueda, setBusqueda] = useState("");
   const [posicionFiltro, setPosicionFiltro] = useState("Todos");
 
-  // Estado del modal de creacion / edicion
+  // estado del modal de creacion / edicion
   const [modalAbierto, setModalAbierto] = useState(false);
   const [jugadorEnEdicion, setJugadorEnEdicion] = useState(null);
 
-  // Mensaje inline de feedback (sin alert ni popups)
+  // mensaje inline de feedback (sin alert ni popups)
   const [mensajeExito, setMensajeExito] = useState("");
 
   const mostrarMensaje = (texto) => {
@@ -38,19 +38,19 @@ const Plantel = () => {
     }, 3500);
   };
 
-  // Apertura de modal para creacion
+  // apertura de modal para creacion
   const handleAbrirCrear = () => {
     setJugadorEnEdicion(null);
     setModalAbierto(true);
   };
 
-  // Apertura de modal para edicion
+  // apertura de modal para edicion
   const handleAbrirEditar = (jugador) => {
     setJugadorEnEdicion(jugador);
     setModalAbierto(true);
   };
 
-  // Guardar (crear o actualizar)
+  // guardar (crear o actualizar)
   const handleGuardarJugador = (jugadorData) => {
     const actualizado = guardarJugadorStorage(jugadorData);
     setPlantel(actualizado);
@@ -63,7 +63,7 @@ const Plantel = () => {
     );
   };
 
-  // Eliminar (confirmado inline sin confirm())
+  // eliminar (confirmado inline sin confirm())
   const handleEliminarJugador = (id) => {
     const jugadorEliminado = plantel.find((j) => j.id === id);
     const actualizado = eliminarJugadorStorage(id);
@@ -75,14 +75,14 @@ const Plantel = () => {
     );
   };
 
-  // Restablecer valores de prueba
+  // restablecer valores de prueba
   const handleRestablecer = () => {
     const inicial = restablecerPlantelStorage();
     setPlantel(inicial);
     mostrarMensaje("Plantel restablecido con los datos iniciales de prueba.");
   };
 
-  // Filtrado de jugadores
+  // filtrado de jugadores
   const jugadoresFiltrados = useMemo(() => {
     return plantel.filter((j) => {
       const coincidePosicion =
@@ -99,7 +99,7 @@ const Plantel = () => {
     });
   }, [plantel, busqueda, posicionFiltro]);
 
-  // Metricas resumidas
+  // metricas resumidas
   const totalJugadores = plantel.length;
   const disponibles = plantel.filter((j) => j.estado === "Disponible").length;
   const enRecuperacion = plantel.filter(
@@ -107,8 +107,8 @@ const Plantel = () => {
   ).length;
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
-      {/* Cabecera principal */}
+    <div className="space-y-8">
+      {/* cabecera principal */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -129,7 +129,7 @@ const Plantel = () => {
           </p>
         </div>
 
-        {/* Accion principal: añadir jugador */}
+        {/* accion principal: anadir jugador */}
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -150,7 +150,7 @@ const Plantel = () => {
         </div>
       </header>
 
-      {/* Banner de feedback inline */}
+      {/* banner de feedback inline */}
       {mensajeExito && (
         <div className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 flex items-center justify-between text-xs text-emerald-400 font-semibold animate-fade-in">
           <div className="flex items-center gap-2">
@@ -167,7 +167,7 @@ const Plantel = () => {
         </div>
       )}
 
-      {/* Tarjetas de estado cuantitativo del plantel */}
+      {/* tarjetas de estado cuantitativo del plantel */}
       <section aria-labelledby="metricas-plantel" className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <h2 id="metricas-plantel" className="sr-only">
           Resumen cuantitativo del plantel
@@ -209,9 +209,9 @@ const Plantel = () => {
         </div>
       </section>
 
-      {/* Barra de control: Buscador y Filtro por posicion */}
+      {/* barra de control: Buscador y Filtro por posicion */}
       <div className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-        {/* Buscador de texto */}
+        {/* buscador de texto */}
         <div className="relative flex-1">
           <input
             type="text"
@@ -231,7 +231,7 @@ const Plantel = () => {
           )}
         </div>
 
-        {/* Botones de filtro por posicion */}
+        {/* botones de filtro por posicion */}
         <div className="flex items-center gap-1 bg-white/5 p-1 border border-white/10 overflow-x-auto">
           {POSICIONES_FILTRO.map((pos) => (
             <button
@@ -250,7 +250,7 @@ const Plantel = () => {
         </div>
       </div>
 
-      {/* Grid del catalogo de jugadores */}
+      {/* grid del catalogo de jugadores */}
       {jugadoresFiltrados.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {jugadoresFiltrados.map((jugador) => (
@@ -283,7 +283,7 @@ const Plantel = () => {
         </div>
       )}
 
-      {/* Modal con el formulario controlado */}
+      {/* modal con el formulario controlado */}
       {modalAbierto && (
         <JugadorForm
           jugador={jugadorEnEdicion}
@@ -296,7 +296,7 @@ const Plantel = () => {
         />
       )}
 
-      {/* Pie de pagina academico */}
+      {/* pie de pagina academico */}
       <footer className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[10px] uppercase tracking-widest text-neutral-600 gap-2">
         <p>
           CC Analytics — Plataforma Académica Duoc UC // Desarrollo Fullstack II

@@ -161,7 +161,7 @@ const Dashboard = () => {
     categoriaNoticias === "chileno" ? noticiasFutbolChileno : noticiasClub;
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-8">
       {/* cabecera principal con titulo y datos discretos de temporada sin sobrecargar la vista */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-// Colores e insignias segun la posicion tactica
+// colores e insignias segun la posicion tactica
 const estiloPosicion = (posicion) => {
   switch (posicion) {
     case "Arquero":
@@ -16,7 +16,7 @@ const estiloPosicion = (posicion) => {
   }
 };
 
-// Indicador de disponibilidad medica y deportiva
+// indicador de disponibilidad medica y deportiva
 const estiloEstado = (estado) => {
   switch (estado) {
     case "Disponible":
@@ -31,13 +31,13 @@ const estiloEstado = (estado) => {
 };
 
 const JugadorCard = ({ jugador, onEditar, onEliminar }) => {
-  // Estado local para confirmacion inline de eliminacion (sin confirm() ni alert())
+  // estado local para confirmacion inline de eliminacion (sin confirm() ni alert())
   const [confirmando, setConfirmando] = useState(false);
 
   return (
     <article className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-5 hover:border-white/30 transition-all duration-300 flex flex-col justify-between group">
       <div>
-        {/* Cabecera de la ficha: dorsal y badges */}
+        {/* cabecera de la ficha: dorsal y badges */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
             <span className="font-mono font-black text-2xl sm:text-3xl text-white tracking-tight border border-white/10 bg-white/5 w-12 h-12 flex items-center justify-center">
@@ -66,7 +66,7 @@ const JugadorCard = ({ jugador, onEditar, onEliminar }) => {
           </span>
         </div>
 
-        {/* Datos tecnicos del futbolista */}
+        {/* datos tecnicos del futbolista */}
         <div className="grid grid-cols-2 gap-2 py-3 border-y border-white/5 text-[11px]">
           <div>
             <span className="text-neutral-500 uppercase tracking-widest text-[9px] block">
@@ -103,7 +103,7 @@ const JugadorCard = ({ jugador, onEditar, onEliminar }) => {
         </div>
       </div>
 
-      {/* Zona de acciones y confirmacion inline */}
+      {/* zona de acciones y confirmacion inline */}
       <div className="mt-4 pt-3 border-t border-white/5">
         {confirmando ? (
           <div className="bg-red-500/10 border border-red-500/30 p-2.5 space-y-2 animate-fade-in">

@@ -1,35 +1,59 @@
 @import "tailwindcss";
 
-/* parpadeo lento del texto de error */
+/* comportamiento de desplazamiento nativo suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* barra de desplazamiento minimalista con estetica oscura */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) #080808;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080808;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* parpadeo sutil para estados de error */
 @keyframes parpadeo-error {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
+  50% { opacity: 0.6; }
 }
 
 .parpadeo-error {
-  animation: parpadeo-error 2.4s ease-in-out infinite;
+  animation: parpadeo-error 2s ease-in-out infinite;
 }
 
-/* animacion sutil de entrada para la pagina completa */
+/* animacion suave de aparicion */
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .animate-fade-in {
-  animation: fade-in 0.4s ease-out forwards;
+  animation: fade-in 0.4s ease-out both;
 }
 
-/* animacion de entrada mas lenta y notoria */
-@keyframes fade-in-up {
+/* animacion de entrada deliberada y cinematografica para el login */
+@keyframes login-enter {
   from {
     opacity: 0;
-    /* subimos a 20px para que el movimiento de subida se note mas */
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -37,12 +61,52 @@
   }
 }
 
-.animate-fade-in-up {
-  /* cambiamos a 2.5s y usamos ease-out para un ritmo mas relajado */
-  animation: fade-in-up 0.5s ease-out forwards;
-  opacity: 0;
+.animate-login-enter {
+  animation: login-enter 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* retrasos mas largos para separar mejor la cascada */
-.delay-400 { animation-delay: 400ms; }
-.delay-800 { animation-delay: 800ms; }
+/* barra de progreso lineal calibrada para la carga del login */
+@keyframes login-progress {
+  0% {
+    width: 0%;
+  }
+  30% {
+    width: 40%;
+  }
+  65% {
+    width: 75%;
+  }
+  90% {
+    width: 92%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-login-progress {
+  animation: login-progress 1.85s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* transicion sutil, fluida y deliberada entre vistas */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter,
+.animate-fade-in-up {
+  animation: page-enter 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* retrasos progresivos para elementos que entran en cascada */
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-400 { animation-delay: 350ms; }
+.delay-800 { animation-delay: 500ms; }

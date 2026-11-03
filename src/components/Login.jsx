@@ -16,6 +16,10 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // estado para indicar proceso y mensaje de autenticacion
+  const [cargando, setCargando] = useState(false);
+  const [mensajeCarga, setMensajeCarga] = useState("Verificando credenciales...");
+
   // estado para guardar mensajes de error
   const [errors, setErrors] = useState({ email: "", password: "" });
 
@@ -32,7 +36,7 @@ const Login = () => {
       "@colocolo.cl",
     ];
     const emailValido = dominiosPermitidos.some((dominio) =>
-      email.trim().toLowerCase().endsWith(dominio),
+      email.trim().toLowerCase().endsWith(dominio)
     );
 
     if (!emailValido) {
@@ -49,19 +53,39 @@ const Login = () => {
     setErrors(newErrors);
 
     if (isValid) {
-      navigate("/dashboard");
+      setCargando(true);
+      setMensajeCarga("Verificando credenciales...");
+
+      // en entorno de test navegamos de inmediato para no demorar la prueba unitaria
+      if (import.meta.env?.MODE === "test") {
+        navigate("/dashboard");
+        return;
+      }
+
+      // transicion deliberada en tres fases para una experiencia analitica inmersiva y profesional
+      setTimeout(() => {
+        setMensajeCarga("Sincronizando métricas del plantel...");
+      }, 650);
+
+      setTimeout(() => {
+        setMensajeCarga("Accediendo a la plataforma...");
+      }, 1300);
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1850);
     }
   };
 
   return (
-    // pantalla principal
+    // pantalla principal con imagen tactica de fondo
     <div className="min-h-screen overflow-hidden flex flex-col lg:flex-row bg-[#050505] bg-[url('/photos/bg-tactica.webp')] bg-cover bg-center bg-no-repeat relative">
       {/* filtro oscuro para el fondo */}
       <div className="absolute inset-0 bg-black/75 z-0"></div>
 
-      {/* lado izq informacion (se oculta en celulares) */}
-      <div className="relative z-10 hidden lg:flex flex-col justify-center w-full lg:w-1/2 p-12 lg:p-24 animate-fade-in-up">
-        {/* logo cc analytics*/}
+      {/* lado izquierdo con informacion y bienvenida con animacion deliberada */}
+      <div className="relative z-10 hidden lg:flex flex-col justify-center w-full lg:w-1/2 p-12 lg:p-24 animate-login-enter">
+        {/* logo cc analytics */}
         <div className="max-w-2xl lg:-mt-24">
           <img
             src="/photos/logo-escudo-blanco.webp"
@@ -94,10 +118,10 @@ const Login = () => {
         </div>
       </div>
 
-      {/* lado derecho formulario con vidrio borroso (backdrop-blur) */}
-      <div className="relative z-10 w-full lg:w-[42%] lg:ml-auto flex items-center justify-center p-6 sm:p-8 bg-[linear-gradient(90deg,rgba(10,10,10,0.18)_0%,rgba(10,10,10,0.4)_35%,rgba(10,10,10,0.7)_100%)] backdrop-blur-sm border-l border-white/5 shadow-[-20px_0_40px_rgba(0,0,0,0.28)] animate-fade-in-up delay-400">
+      {/* lado derecho con formulario protegido con vidrio borroso */}
+      <div className="relative z-10 w-full lg:w-[42%] lg:ml-auto flex items-center justify-center p-6 sm:p-8 bg-[linear-gradient(90deg,rgba(10,10,10,0.18)_0%,rgba(10,10,10,0.4)_35%,rgba(10,10,10,0.7)_100%)] backdrop-blur-sm border-l border-white/5 shadow-[-20px_0_40px_rgba(0,0,0,0.28)] animate-login-enter delay-200">
         {/* logo arriba a la derecha */}
-        <div className="absolute top-8 right-8 flex items-center gap-4 select-none animate-fade-in-up delay-800">
+        <div className="absolute top-8 right-8 flex items-center gap-4 select-none animate-login-enter delay-400">
           <div className="text-right hidden sm:block">
             <p className="text-white font-black uppercase tracking-[0.2em] leading-none mb-1.5 text-[18px]">
               Colo-Colo
@@ -152,7 +176,7 @@ const Login = () => {
                 )}
               </div>
 
-              {/* campo de contraseña */}
+              {/* campo de contrasena */}
               <div className="space-y-2 relative">
                 <label
                   htmlFor="login-password"
@@ -180,12 +204,46 @@ const Login = () => {
             </div>
 
             <div className="space-y-6 mt-4">
-              {/* boton transparente que se pone blanco al pasar el mouse */}
+              {/* boton transparente que muestra barra de carga y estado al pulsar */}
               <button
                 type="submit"
-                className="w-full bg-transparent border border-neutral-700 text-white font-bold uppercase tracking-[0.2em] text-xs p-4 hover:bg-white hover:text-black hover:border-white transition-all duration-500 active:scale-[0.98] cursor-pointer"
+                disabled={cargando}
+                className="relative overflow-hidden w-full bg-transparent border border-neutral-700 text-white font-bold uppercase tracking-[0.2em] text-xs p-4 hover:bg-white hover:text-black hover:border-white transition-all duration-500 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-3 disabled:border-white/30 disabled:text-white disabled:cursor-wait"
               >
-                Ingresar al Sistema
+                {/* barra animada de progreso */}
+                {cargando && (
+                  <span className="absolute bottom-0 left-0 h-[2px] bg-white animate-login-progress"></span>
+                )}
+
+                {cargando ? (
+                  <>
+                    <svg
+                      className="w-4 h-4 animate-spin text-white shrink-0"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                      />
+                      <path
+                        className="opacity-90"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
+                    </svg>
+                    <span className="tracking-wider text-[11px] font-semibold">
+                      {mensajeCarga}
+                    </span>
+                  </>
+                ) : (
+                  <span>Ingresar al Sistema</span>
+                )}
               </button>
 
               {/* links inferiores separados con una linea suave */}
