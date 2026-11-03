@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
+import Plantel from './components/Plantel';
 
 const App = () => {
   return (
@@ -16,7 +17,11 @@ const App = () => {
         {/* pantallas internas, todas con el menu lateral */}
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/plantel" element={<Plantel />} />
         </Route>
+
+        {/* cualquier ruta inexistente vuelve al login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

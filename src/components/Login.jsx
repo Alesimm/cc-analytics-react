@@ -32,12 +32,12 @@ const Login = () => {
       "@colocolo.cl",
     ];
     const emailValido = dominiosPermitidos.some((dominio) =>
-      email.toLowerCase().endsWith(dominio),
+      email.trim().toLowerCase().endsWith(dominio),
     );
 
     if (!emailValido) {
       newErrors.email =
-        "El correo debe terminar en @colocolo.cl, @gmail.com o @duoc.cl";
+        "El correo debe terminar en @colocolo.cl, @gmail.com, @duoc.cl o @profesor.duoc.cl";
       isValid = false;
     }
 
@@ -99,7 +99,7 @@ const Login = () => {
         {/* logo arriba a la derecha */}
         <div className="absolute top-8 right-8 flex items-center gap-4 select-none animate-fade-in-up delay-800">
           <div className="text-right hidden sm:block">
-            <p className="text-white font-black uppercase tracking-[0.2em] text-sm leading-none mb-1.5 text-[18px]">
+            <p className="text-white font-black uppercase tracking-[0.2em] leading-none mb-1.5 text-[18px]">
               Colo-Colo
             </p>
             <p className="text-neutral-500 font-bold uppercase tracking-[0.3em] text-[11px] leading-none">
@@ -128,10 +128,14 @@ const Login = () => {
             <div className="space-y-6">
               {/* campo de correo */}
               <div className="space-y-2 relative">
-                <label className="block text-neutral-400 text-[10px] font-bold uppercase tracking-widest">
+                <label
+                  htmlFor="login-email"
+                  className="block text-neutral-400 text-[10px] font-bold uppercase tracking-widest"
+                >
                   Correo Institucional
                 </label>
                 <input
+                  id="login-email"
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -150,10 +154,14 @@ const Login = () => {
 
               {/* campo de contraseña */}
               <div className="space-y-2 relative">
-                <label className="block text-neutral-400 text-[10px] font-bold uppercase tracking-widest">
+                <label
+                  htmlFor="login-password"
+                  className="block text-neutral-400 text-[10px] font-bold uppercase tracking-widest"
+                >
                   Código de Acceso
                 </label>
                 <input
+                  id="login-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -175,7 +183,7 @@ const Login = () => {
               {/* boton transparente que se pone blanco al pasar el mouse */}
               <button
                 type="submit"
-                className="w-full bg-transparent border border-neutral-700 text-white font-bold uppercase tracking-[0.2em] text-xs p-4 hover:bg-white hover:text-black hover:border-white transition-all duration-500 active:scale-[0.98]"
+                className="w-full bg-transparent border border-neutral-700 text-white font-bold uppercase tracking-[0.2em] text-xs p-4 hover:bg-white hover:text-black hover:border-white transition-all duration-500 active:scale-[0.98] cursor-pointer"
               >
                 Ingresar al Sistema
               </button>
