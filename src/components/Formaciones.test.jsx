@@ -7,13 +7,13 @@ describe("Módulo de Pizarra Táctica y Formaciones (Pantalla 5)", () => {
     localStorage.clear();
   });
 
-  // prueba 1: renderizado inicial de la cancha, los 11 titulares y el banco
-  it("renderiza correctamente la pizarra tactica con los 11 titulares y los suplentes iniciales", () => {
+  // prueba 1: renderizado inicial de la cancha, los 11 titulares y la bandeja inferior de suplentes
+  it("renderiza correctamente la pizarra tactica con los 11 titulares y la bandeja horizontal de suplentes", () => {
     render(<Formaciones />);
 
     // titulo principal del modulo
     expect(
-      screen.getByRole("heading", { name: /pizarra táctica/i })
+      screen.getByRole("heading", { level: 1, name: /pizarra táctica/i })
     ).toBeInTheDocument();
 
     // seccion de la cancha tactica
@@ -26,122 +26,116 @@ describe("Módulo de Pizarra Táctica y Formaciones (Pantalla 5)", () => {
     expect(screen.getByText(/a\. vidal/i)).toBeInTheDocument();
     expect(screen.getByText(/j\. correa/i)).toBeInTheDocument();
 
-    // verificar presencia de los 4 suplentes en el banco
+    // verificar presencia de la bandeja de suplentes debajo de la cancha
+    expect(screen.getByText(/suplentes/i)).toBeInTheDocument();
     expect(screen.getByText(/f\. de paul/i)).toBeInTheDocument();
     expect(screen.getByText(/e\. amor/i)).toBeInTheDocument();
     expect(screen.getByText(/v\. pizarro/i)).toBeInTheDocument();
     expect(screen.getByText(/g\. paiva/i)).toBeInTheDocument();
   });
 
-  // prueba 2: cambio interactivo entre esquemas tacticos disponibles
+  // prueba 2: cambio interactivo entre esquemas tacticos con animaciones de transicion
   it("permite alternar entre formaciones tacticas y actualiza el esquema activo", () => {
     render(<Formaciones />);
 
     // verificar que inicia con 4-3-3
-    expect(screen.getByText(/formación activa: 4-3-3 ofensivo/i)).toBeInTheDocument();
+    expect(screen.getByText(/activo:/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/4-3-3 ofensivo/i).length).toBeGreaterThan(0);
 
     // seleccionar esquema 4-2-3-1
     const boton4231 = screen.getByRole("button", { name: /4-2-3-1/i });
     fireEvent.click(boton4231);
 
     // verificar que la formacion activa se actualizo
-    expect(screen.getByText(/formación activa: 4-2-3-1 control/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/4-2-3-1 control/i).length).toBeGreaterThan(0);
 
     // seleccionar esquema 3-5-2
     const boton352 = screen.getByRole("button", { name: /3-5-2/i });
     fireEvent.click(boton352);
 
-    expect(screen.getByText(/formación activa: 3-5-2 bloque alto/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/3-5-2 bloque alto/i).length).toBeGreaterThan(0);
   });
 
-  // prueba 3: seleccion de un titular y sustitucion directa con un suplente del banco
-  it("permite seleccionar un titular en cancha y sustituirlo con un suplente", () => {
+  // prueba 3: seleccion y sustitucion con error visible directamente en la bandeja de suplentes
+  it("permite sustituir jugadores compatibles y muestra error directo en suplentes si se intenta cambio incompatible", () => {
     render(<Formaciones />);
 
-    // inicialmente los botones de sustituir estan deshabilitados porque no hay titular seleccionado
+    // paso a: seleccionar al arquero brayan cortes
+    const fichaCortes = screen.getByText(/b\. cortés/i);
+    fireEvent.click(fichaCortes);
+
+    // intentar sustituir al arquero con el delantero guillermo paiva
     const botonesSustituir = screen.getAllByRole("button", { name: /sustituir/i });
-    expect(botonesSustituir[0]).toBeDisabled();
+    const botonPaiva = botonesSustituir[3];
+    fireEvent.click(botonPaiva);
 
-    // seleccionar al titular javier correa haciendo clic en su ficha
-    const fichaCorrea = screen.getByText(/j\. correa/i);
-    fireEvent.click(fichaCorrea);
-
-    // la ficha activa debe mostrar a javier correa
-    expect(screen.getByText(/dorsal #9 • delantero/i)).toBeInTheDocument();
-
-    // ahora los botones de sustituir deben estar habilitados
-    expect(botonesSustituir[0]).not.toBeDisabled();
-
-    // sustituir a correa con guillermo paiva (ultimo suplente)
-    const botonSustituirPaiva = botonesSustituir[3];
-    fireEvent.click(botonSustituirPaiva);
-
-    // verificar mensaje de confirmacion de la sustitucion
+    // el error debe ser visible inmediatamente en la zona de suplentes
     expect(
-      screen.getByText(/sustitución realizada: ingresó g\. paiva \(#29\) por j\. correa/i)
+      screen.getByText(/no puedes colocar a un delantero en la posición de arquero/i)
     ).toBeInTheDocument();
 
-    // paiva ahora debe aparecer como titular en cancha y en la ficha activa
-    expect(screen.getAllByText(/g\. paiva/i).length).toBeGreaterThan(0);
+    // paso b: sustituir al arquero cortes con el arquero suplente fernando de paul
+    const botonDePaul = botonesSustituir[0];
+    fireEvent.click(botonDePaul);
+
+    // sustitucion exitosa
+    expect(
+      screen.getByText(/sustitución realizada: ingresó f\. de paul \(#30\) por b\. cortés/i)
+    ).toBeInTheDocument();
   });
 
-  // prueba 4: validacion y persistencia del formulario de directriz tactica
-  it("valida la directriz tactica y guarda la configuracion en localstorage", () => {
+  // prueba 4: guardado de la configuracion tactica de la pizarra
+  it("permite guardar la configuracion tactica y muestra feedback exitoso", () => {
     render(<Formaciones />);
 
     const botonGuardar = screen.getByRole("button", {
-      name: /guardar configuración táctica/i,
-    });
-    const inputDirectriz = screen.getByLabelText(/instrucción estratégica/i);
-
-    // intento 1: enviar formulario vacio
-    fireEvent.click(botonGuardar);
-    expect(
-      screen.getByText(/debes ingresar una indicación táctica para el partido/i)
-    ).toBeInTheDocument();
-
-    // intento 2: enviar texto con menos de 5 caracteres
-    fireEvent.change(inputDirectriz, { target: { value: "gol" } });
-    fireEvent.click(botonGuardar);
-    expect(
-      screen.getByText(/la indicación táctica debe tener al menos 5 caracteres/i)
-    ).toBeInTheDocument();
-
-    // intento 3: enviar directriz valida
-    fireEvent.change(inputDirectriz, {
-      target: { value: "Presión alta al volante central y salida limpia con laterales." },
+      name: /guardar configuración/i,
     });
     fireEvent.click(botonGuardar);
 
-    // verificar feedback exitoso
     expect(
-      screen.getByText(/configuración táctica y directriz guardadas en la pizarra/i)
+      screen.getByText(/configuración táctica y parámetros del partido guardados correctamente/i)
     ).toBeInTheDocument();
-
-    // verificar que no queden errores en pantalla
-    expect(
-      screen.queryByText(/la indicación táctica debe tener al menos 5 caracteres/i)
-    ).not.toBeInTheDocument();
   });
 
-  // prueba 5: actualizacion interactiva de parametros tacticos (bloque, presion, posesion)
-  it("permite modificar los parametros tacticos del partido", () => {
+  // prueba 5: modificacion interactiva de parametros tacticos con barras de porcentaje
+  it("permite ajustar la altura de bloque y anchura mediante sliders de porcentaje", () => {
     render(<Formaciones />);
 
-    // cambiar linea defensiva a media
-    const botonMedia = screen.getAllByRole("button", { name: /^media$/i })[0];
-    fireEvent.click(botonMedia);
+    const sliderBloque = screen.getByLabelText(/altura del bloque defensivo/i);
+    const sliderAnchura = screen.getByLabelText(/anchura del equipo/i);
 
-    // cambiar intensidad de presion a conservadora
-    const botonConservadora = screen.getByRole("button", { name: /conservadora/i });
-    fireEvent.click(botonConservadora);
+    // cambiar altura de bloque a 30% (baja)
+    fireEvent.change(sliderBloque, { target: { value: 30 } });
+    expect(screen.getByText(/30%/i)).toBeInTheDocument();
+    expect(screen.getByText(/baja \(repliegue bajo en área\)/i)).toBeInTheDocument();
 
-    // cambiar estilo de posesion a vertical
-    const botonVertical = screen.getByRole("button", { name: /vertical/i });
-    fireEvent.click(botonVertical);
+    // cambiar anchura a 90% (alta)
+    fireEvent.change(sliderAnchura, { target: { value: 90 } });
+    expect(screen.getByText(/90%/i)).toBeInTheDocument();
+    expect(screen.getByText(/amplio \(apertura máxima por bandas\)/i)).toBeInTheDocument();
+  });
 
-    // verificar seleccion activa por estilo de boton (blanco)
-    expect(botonConservadora).toHaveClass("bg-white text-black");
-    expect(botonVertical).toHaveClass("bg-white text-black");
+  // prueba 6: creacion y gestion de un nuevo esquema tactico personalizado (CRUD)
+  it("permite crear un nuevo esquema tactico personalizado y seleccionarlo", () => {
+    render(<Formaciones />);
+
+    // abrir modal de nuevo esquema
+    const botonNuevo = screen.getByRole("button", { name: /\+ nuevo esquema/i });
+    fireEvent.click(botonNuevo);
+
+    // ingresar nombre
+    const inputNombre = screen.getByLabelText(/nombre del esquema/i);
+    fireEvent.change(inputNombre, { target: { value: "4-1-4-1 Asfixiante" } });
+
+    // guardar esquema
+    const botonGuardarEsquema = screen.getByRole("button", { name: /guardar esquema/i });
+    fireEvent.click(botonGuardarEsquema);
+
+    // verificar que el nuevo esquema fue creado y se selecciono como activo
+    expect(screen.getAllByText(/4-1-4-1 asfixiante/i).length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/nuevo esquema táctico "4-1-4-1 asfixiante" creado exitosamente/i)
+    ).toBeInTheDocument();
   });
 });
