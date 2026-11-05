@@ -30,7 +30,7 @@ const Layout = () => {
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_40%_at_50%_0%,rgba(255,255,255,0.02),transparent_70%)] pointer-events-none -z-10"></div>
 
       {/* barra lateral fija integrada de forma sutil y armoniosa */}
-      <aside className="relative z-10 w-56 h-screen border-r border-white/8 flex flex-col justify-between bg-[#070707]/90 backdrop-blur-md shrink-0">
+      <aside className="relative z-10 w-56 h-screen border-r border-white/8 flex flex-col justify-between bg-[#070707]/90 shrink-0">
         <div>
           {/* seccion con la sesion activa del usuario */}
           <div className="h-20 border-b border-white/5 flex items-center gap-3 px-4">
@@ -149,7 +149,7 @@ const Layout = () => {
       {/* contenedor principal con scroll vertical suave y transicion sutil entre vistas */}
       <main
         ref={mainRef}
-        className="relative z-10 flex-1 min-w-0 h-screen overflow-y-auto scroll-smooth p-6 sm:p-8 lg:p-12"
+        className="relative z-10 flex-1 min-w-0 h-screen overflow-y-auto p-6 sm:p-8 lg:p-12"
       >
         <div key={location.pathname} className="animate-page-enter">
           <Outlet />

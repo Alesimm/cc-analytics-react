@@ -107,12 +107,15 @@ const Plantel = () => {
   ).length;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* auras de luz ambiental azul electrico / cian para la gestion de plantel */}
+      <div className="absolute -top-10 right-20 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.053),transparent_70%)] pointer-events-none -z-10"></div>
+      <div className="absolute top-64 left-10 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.038),transparent_70%)] pointer-events-none -z-10"></div>
       {/* cabecera principal */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+            <span className="inline-block w-2.5 h-2.5 bg-sky-400 rounded-full shadow-[0_0_12px_rgba(56,189,248,0.9)] animate-pulse"></span>
             <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400">
               CC Analytics // Gestión Deportiva
             </span>
@@ -172,7 +175,8 @@ const Plantel = () => {
         <h2 id="metricas-plantel" className="sr-only">
           Resumen cuantitativo del plantel
         </h2>
-        <div className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-4">
+        <div className="border border-white/10 bg-[#0a0a0a]/80 p-4 relative overflow-hidden group hover:border-white/30 transition-all">
+
           <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block mb-1">
             Total en Plantel
           </span>
@@ -184,7 +188,8 @@ const Plantel = () => {
           </span>
         </div>
 
-        <div className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-4">
+        <div className="border border-white/10 bg-[#0a0a0a]/80 p-4 relative overflow-hidden group hover:border-white/30 transition-all">
+
           <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block mb-1">
             Aptos para Competir
           </span>
@@ -196,7 +201,8 @@ const Plantel = () => {
           </span>
         </div>
 
-        <div className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-4">
+        <div className="border border-white/10 bg-[#0a0a0a]/80 p-4 relative overflow-hidden group hover:border-white/30 transition-all">
+
           <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block mb-1">
             Área Médica
           </span>
@@ -210,7 +216,7 @@ const Plantel = () => {
       </section>
 
       {/* barra de control: Buscador y Filtro por posicion */}
-      <div className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      <div className="border border-white/10 bg-[#0a0a0a]/80 p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* buscador de texto */}
         <div className="relative flex-1">
           <input

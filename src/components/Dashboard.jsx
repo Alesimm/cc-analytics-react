@@ -161,12 +161,15 @@ const Dashboard = () => {
     categoriaNoticias === "chileno" ? noticiasFutbolChileno : noticiasClub;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* auras de luz ambiental esmeralda para el panel de inteligencia deportiva */}
+      <div className="absolute -top-10 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.053),transparent_70%)] pointer-events-none -z-10"></div>
+      <div className="absolute top-48 left-10 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(20,184,166,0.038),transparent_70%)] pointer-events-none -z-10"></div>
       {/* cabecera principal con titulo y datos discretos de temporada sin sobrecargar la vista */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+            <span className="inline-block w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.9)] animate-pulse"></span>
             <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400">
               CC Analytics // Inteligencia Deportiva
             </span>
@@ -205,7 +208,7 @@ const Dashboard = () => {
           {metricasEquipo.map((item) => (
             <div
               key={item.id}
-              className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-5 hover:border-white/30 transition-all duration-300 flex flex-col justify-between group"
+              className="border border-white/10 bg-[#0a0a0a]/80 p-5 hover:border-white/30 transition-all duration-300 flex flex-col justify-between group"
             >
               <div className="flex items-center justify-between gap-2 mb-3">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 leading-tight">
@@ -248,7 +251,8 @@ const Dashboard = () => {
             </span>
           </div>
 
-          <div className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-6 sm:p-8 space-y-6">
+          <div className="border border-white/10 bg-[#0a0a0a]/80 p-6 sm:p-8 space-y-6 relative overflow-hidden shadow-2xl">
+
             {/* encabezado con el torneo y la fecha del encuentro */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] uppercase tracking-widest text-neutral-400 gap-1 border-b border-white/5 pb-4">
               <span className="font-bold text-white">
@@ -413,7 +417,7 @@ const Dashboard = () => {
             {listaNoticias.map((noticia) => (
               <article
                 key={noticia.id}
-                className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-4 hover:border-white/30 transition-all duration-300 space-y-2 group"
+                className="border border-white/10 bg-[#0a0a0a]/80 p-4 hover:border-white/30 transition-all duration-300 space-y-2 group"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span

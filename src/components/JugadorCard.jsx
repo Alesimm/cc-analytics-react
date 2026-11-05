@@ -35,7 +35,7 @@ const JugadorCard = ({ jugador, onEditar, onEliminar }) => {
   const [confirmando, setConfirmando] = useState(false);
 
   return (
-    <article className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-5 hover:border-white/30 transition-all duration-300 flex flex-col justify-between group">
+    <article className="border border-white/10 bg-[#0a0a0a]/80 p-5 hover:border-white/30 transition-all duration-300 flex flex-col justify-between group">
       <div>
         {/* cabecera de la ficha: dorsal y badges */}
         <div className="flex items-start justify-between gap-3 mb-4">

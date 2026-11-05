@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import {
   ESCUDO_COLO_COLO,
@@ -167,13 +168,35 @@ const Calendario = () => {
     setTimeout(() => setMensajeFeedback(""), 3500);
   };
 
+  // bloquear scroll y tecla escape para modal de programar partido
+  useEffect(() => {
+    if (!modalNuevoPartido) return;
+    const overflowOriginal = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setModalNuevoPartido(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = overflowOriginal;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [modalNuevoPartido]);
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* auras de luz ambiental esmeralda y cian para el fixture deportivo */}
+      <div className="absolute -top-10 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.053),transparent_70%)] pointer-events-none -z-10"></div>
+      <div className="absolute top-72 left-8 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.038),transparent_70%)] pointer-events-none -z-10"></div>
       {/* cabecera principal */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+            <span className="inline-block w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.9)] animate-pulse"></span>
             <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400">
               CC Analytics // Fixture y Competiciones
             </span>
@@ -223,10 +246,11 @@ const Calendario = () => {
       {siguientePartido && (pestanaActiva === "proximos" || pestanaActiva === "todos") && (
         <section
           aria-labelledby="titulo-proximo-desafio"
-          className="border border-white/10 bg-[#0a0a0a]/90 backdrop-blur-sm p-6 sm:p-8 lg:p-10 relative overflow-hidden shadow-2xl transition-all duration-300"
+          className="border border-white/10 bg-[#0a0a0a]/90 p-6 sm:p-8 lg:p-10 relative overflow-hidden shadow-2xl transition-all duration-300"
         >
-          {/* acento de iluminacion ambiental sutil */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/[0.03] rounded-full blur-3xl pointer-events-none"></div>
+
+
+
 
           <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-8 flex-wrap gap-2">
             <div className="flex items-center gap-2.5">
@@ -783,10 +807,15 @@ const Calendario = () => {
         )}
       </section>
 
-      {/* modal para programar nuevo partido */}
-      {modalNuevoPartido && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="border border-white/20 bg-[#090909] p-6 w-full max-w-lg space-y-4 shadow-2xl">
+      {/* modal para programar nuevo partido montado en portal sobre todo el viewport */}
+      {modalNuevoPartido && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setModalNuevoPartido(false);
+          }}
+        >
+          <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-lg p-6 sm:p-8 space-y-4 shadow-2xl relative my-auto animate-modal-pop">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-sm font-black uppercase tracking-widest text-white">
                 Programar Nuevo Encuentro
@@ -983,7 +1012,8 @@ const Calendario = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

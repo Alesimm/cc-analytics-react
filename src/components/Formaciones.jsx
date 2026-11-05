@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   obtenerEsquemas,
   guardarNuevoEsquema,
@@ -444,13 +445,36 @@ const Formaciones = () => {
     setTimeout(() => setMensajeFeedback(""), 3000);
   };
 
+  // bloquear scroll y tecla escape para modales de esquemas
+  useEffect(() => {
+    if (!modalNuevoEsquema && !modalEditarEsquema) return;
+    const overflowOriginal = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setModalNuevoEsquema(false);
+        setModalEditarEsquema(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = overflowOriginal;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [modalNuevoEsquema, modalEditarEsquema]);
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* auras de luz ambiental indigo / violeta para la pizarra tactica */}
+      <div className="absolute -top-10 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.053),transparent_70%)] pointer-events-none -z-10"></div>
+      <div className="absolute top-64 left-10 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.038),transparent_70%)] pointer-events-none -z-10"></div>
       {/* cabecera principal estandarizada */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+            <span className="inline-block w-2.5 h-2.5 bg-indigo-400 rounded-full shadow-[0_0_12px_rgba(129,140,248,0.9)] animate-pulse"></span>
             <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400">
               CC Analytics // Táctica y Estrategia
             </span>
@@ -618,9 +642,10 @@ const Formaciones = () => {
         {/* columna izquierda (7 columnas): cancha tactica y bandeja horizontal de suplentes */}
         <section
           aria-labelledby="titulo-cancha"
-          className="lg:col-span-7 border border-white/10 bg-[#0d0e11] backdrop-blur-sm p-4 sm:p-6 space-y-4"
+          className="lg:col-span-7 border border-white/10 bg-[#0d0e11] p-4 sm:p-6 space-y-4 relative overflow-hidden shadow-2xl"
         >
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+
+          <div className="flex items-center justify-between border-b border-white/10 pb-3 relative z-10">
             <h3
               id="titulo-cancha"
               className="text-xs font-black uppercase tracking-[0.2em] text-white flex items-center gap-2"
@@ -633,48 +658,47 @@ const Formaciones = () => {
             </span>
           </div>
 
-          {/* campo de juego con estilo gris oscuro sobrio, alta resolucion y lineas nitidas */}
+          {/* campo de juego estilo pizarra tactica negra con lineas blancas de alto contraste */}
           <div
-            className="relative w-full aspect-[4/5] max-h-[660px] rounded border border-white/15 overflow-hidden select-none shadow-2xl"
-            style={{
-              background: `
-                repeating-linear-gradient(
-                  0deg,
-                  #111215 0px,
-                  #111215 48px,
-                  #14161a 48px,
-                  #14161a 96px
-                )
-              `,
-            }}
+            className="relative w-full aspect-[4/5] max-h-[660px] rounded-xl border border-white/20 bg-[#050505] overflow-hidden select-none shadow-[0_0_35px_rgba(0,0,0,0.9)]"
             aria-label="Cancha táctica con posiciones de jugadores"
           >
-            {/* lineas de cal en blanco traslucido y alta definicion */}
+            {/* lineas de cal en blanco nitido de alta definicion segun referencia visual */}
             <svg
-              className="absolute inset-0 w-full h-full pointer-events-none opacity-35 stroke-white"
+              className="absolute inset-0 w-full h-full pointer-events-none opacity-90 stroke-white"
               fill="none"
-              strokeWidth="1.5"
+              strokeWidth="1.8"
               viewBox="0 0 300 400"
               preserveAspectRatio="none"
             >
-              {/* perimetro */}
-              <rect x="8" y="8" width="284" height="384" />
+              {/* perimetro exterior con curvatura */}
+              <rect x="10" y="10" width="280" height="380" rx="3" />
               {/* linea divisoria central */}
-              <line x1="8" y1="200" x2="292" y2="200" />
+              <line x1="10" y1="200" x2="290" y2="200" />
               {/* circulo y punto central */}
-              <circle cx="150" cy="200" r="44" />
-              <circle cx="150" cy="200" r="2.5" fill="white" />
+              <circle cx="150" cy="200" r="42" />
+              <circle cx="150" cy="200" r="3" fill="white" />
               {/* area grande superior */}
-              <rect x="70" y="8" width="160" height="68" />
-              <rect x="105" y="8" width="90" height="26" />
+              <rect x="68" y="10" width="164" height="66" />
+              {/* area chica superior */}
+              <rect x="104" y="10" width="92" height="24" />
+              {/* arco de penal superior */}
               <path d="M 120 76 A 30 30 0 0 0 180 76" />
+              {/* punto de penal superior */}
+              <circle cx="150" cy="50" r="2.5" fill="white" />
               {/* area grande inferior */}
-              <rect x="70" y="324" width="160" height="68" />
-              <rect x="105" y="366" width="90" height="26" />
+              <rect x="68" y="324" width="164" height="66" />
+              {/* area chica inferior */}
+              <rect x="104" y="366" width="92" height="24" />
+              {/* arco de penal inferior */}
               <path d="M 120 324 A 30 30 0 0 1 180 324" />
-              {/* puntos de penal */}
-              <circle cx="150" cy="52" r="2" fill="white" />
-              <circle cx="150" cy="348" r="2" fill="white" />
+              {/* punto de penal inferior */}
+              <circle cx="150" cy="350" r="2.5" fill="white" />
+              {/* arcos de esquina en las 4 esquinas */}
+              <path d="M 10 24 A 14 14 0 0 0 24 10" />
+              <path d="M 276 10 A 14 14 0 0 0 290 24" />
+              <path d="M 10 376 A 14 14 0 0 1 24 390" />
+              <path d="M 276 390 A 14 14 0 0 1 290 376" />
             </svg>
 
             {/* fichas de los futbolistas con traslacion fluida a 60 fps mediante transformaciones aceleradas */}
@@ -694,7 +718,6 @@ const Formaciones = () => {
                     top: `${jugador.yCalc}%`,
                     transform: "translate(-50%, -50%)",
                     transition: "left 0.4s cubic-bezier(0.16, 1, 0.3, 1), top 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-                    willChange: "left, top",
                   }}
                   className={`absolute z-10 flex flex-col items-center group cursor-pointer ${
                     esDestinoHover
@@ -710,7 +733,7 @@ const Formaciones = () => {
                 >
                   {/* circulo con dorsal y aro de demarcacion */}
                   <div
-                    className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 flex flex-col items-center justify-center font-black transition-all duration-300 shadow-xl ${
+                    className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 flex flex-col items-center justify-center font-black transition-[transform,background-color,border-color,box-shadow] duration-200 shadow-xl ${
                       estaSeleccionado
                         ? "border-amber-400 bg-amber-400 text-black scale-[1.15] shadow-[0_0_22px_rgba(251,191,36,0.9)]"
                         : esDestinoHover && compatibleConArrastrado
@@ -826,7 +849,7 @@ const Formaciones = () => {
           {/* ficha del futbolista seleccionado en cancha */}
           <section
             aria-labelledby="titulo-ficha-seleccionado"
-            className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-5 space-y-3"
+            className="border border-white/10 bg-[#0a0a0a]/80 p-5 space-y-3"
           >
             <div className="flex items-center justify-between border-b border-white/10 pb-2">
               <h3
@@ -887,7 +910,7 @@ const Formaciones = () => {
           {/* parametros tacticos con barras de porcentaje interactivas */}
           <section
             aria-labelledby="titulo-parametros"
-            className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-5 space-y-5"
+            className="border border-white/10 bg-[#0a0a0a]/80 p-5 space-y-5"
           >
             <div className="flex items-center justify-between border-b border-white/10 pb-2">
               <h3
@@ -1010,7 +1033,7 @@ const Formaciones = () => {
           {/* balance y resumen de la pizarra */}
           <section
             aria-labelledby="titulo-balance"
-            className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-5 space-y-3"
+            className="border border-white/10 bg-[#0a0a0a]/80 p-5 space-y-3"
           >
             <div className="flex items-center justify-between border-b border-white/10 pb-2">
               <h3
@@ -1053,10 +1076,15 @@ const Formaciones = () => {
         </div>
       </div>
 
-      {/* modal minimalista para crear nuevo esquema tactico */}
-      {modalNuevoEsquema && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="border border-white/20 bg-[#090909] p-6 w-full max-w-md space-y-4 shadow-2xl">
+      {/* modal minimalista para crear nuevo esquema tactico montado en portal sobre todo el viewport */}
+      {modalNuevoEsquema && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setModalNuevoEsquema(false);
+          }}
+        >
+          <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-md p-6 space-y-4 shadow-2xl relative my-auto animate-modal-pop">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-sm font-black uppercase tracking-widest text-white">
                 Crear Nuevo Esquema Táctico
@@ -1148,13 +1176,19 @@ const Formaciones = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* modal para editar nombre y descripcion del esquema activo */}
-      {modalEditarEsquema && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="border border-white/20 bg-[#090909] p-6 w-full max-w-md space-y-4 shadow-2xl">
+      {/* modal para editar nombre y descripcion del esquema activo montado en portal sobre todo el viewport */}
+      {modalEditarEsquema && typeof document !== "undefined" && createPortal(
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setModalEditarEsquema(false);
+          }}
+        >
+          <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-md p-6 space-y-4 shadow-2xl relative my-auto animate-modal-pop">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-sm font-black uppercase tracking-widest text-white">
                 Editar Esquema Táctico
@@ -1218,7 +1252,8 @@ const Formaciones = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
