@@ -255,12 +255,15 @@ const Rendimiento = () => {
   ).length;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* auras de luz ambiental dorada / ambar para el analisis de rendimiento individual */}
+      <div className="absolute -top-10 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.053),transparent_70%)] pointer-events-none -z-10"></div>
+      <div className="absolute top-72 left-8 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(234,179,8,0.038),transparent_70%)] pointer-events-none -z-10"></div>
       {/* cabecera principal con la misma estructura visual exacta del dashboard y del plantel */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+            <span className="inline-block w-2.5 h-2.5 bg-amber-400 rounded-full shadow-[0_0_12px_rgba(251,191,36,0.9)] animate-pulse"></span>
             <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400">
               CC Analytics // Analítica Avanzada
             </span>
@@ -415,9 +418,10 @@ const Rendimiento = () => {
       {/* ficha de identidad: solo logo de jugador y numero, sin numero gigante de fondo */}
       <section
         aria-labelledby="perfil-jugador"
-        className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-5 sm:p-6"
+        className="border border-white/10 bg-[#0a0a0a]/80 p-5 sm:p-6 relative overflow-hidden shadow-2xl"
       >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
           <div className="flex items-center gap-4">
             {/* contenedor profesional de foto / logo: solo silueta vectorial y dorsal */}
             <div className="w-20 h-20 sm:w-24 sm:h-24 border border-white/20 bg-gradient-to-br from-neutral-800 to-neutral-950 flex flex-col items-center justify-center shrink-0 shadow-inner">
@@ -531,7 +535,8 @@ const Rendimiento = () => {
             </span>
           </div>
 
-          <div className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-5 space-y-4">
+          <div className="border border-white/10 bg-[#0a0a0a]/80 p-5 space-y-4 relative overflow-hidden shadow-2xl">
+
             {/* grafico radar svg nativo */}
             <div className="w-full max-w-72 aspect-square mx-auto flex items-center justify-center py-2">
               <svg
@@ -671,7 +676,8 @@ const Rendimiento = () => {
             </span>
           </div>
 
-          <div className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-5 space-y-4">
+          <div className="border border-white/10 bg-[#0a0a0a]/80 p-5 space-y-4 relative overflow-hidden shadow-2xl">
+
             <div className="flex items-center justify-between border-b border-white/10 pb-2">
               <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400">
                 Puntaje Promedio Reciente
@@ -806,7 +812,7 @@ const Rendimiento = () => {
           </span>
         </div>
 
-        <div className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-5 space-y-4">
+        <div className="border border-white/10 bg-[#0a0a0a]/80 p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
             <div>
               <span className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold block">

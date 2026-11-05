@@ -1,10 +1,5 @@
 @import "tailwindcss";
 
-/* comportamiento de desplazamiento nativo suave */
-html {
-  scroll-behavior: smooth;
-}
-
 /* barra de desplazamiento minimalista con estetica oscura */
 * {
   scrollbar-width: thin;
@@ -47,6 +42,23 @@ html {
 
 .animate-fade-in {
   animation: fade-in 0.4s ease-out both;
+}
+
+/* animacion ultra-rapida y acelerada por hardware para despliegue de formularios modales a 60 fps */
+@keyframes modal-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.97) translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-pop {
+  animation: modal-pop 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
 }
 
 /* animacion de entrada deliberada y cinematografica para el login */

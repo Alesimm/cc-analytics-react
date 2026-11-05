@@ -133,7 +133,7 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
 
   const modalJSX = (
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
       onClick={(e) => {
         // cerrar si se hace clic en el fondo oscuro
         if (e.target === e.currentTarget) {
@@ -141,7 +141,7 @@ const JugadorForm = ({ jugador, onGuardar, onCancelar, plantelActual = [] }) => 
         }
       }}
     >
-      <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-lg p-6 sm:p-8 space-y-6 shadow-2xl relative my-auto">
+      <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-lg p-6 sm:p-8 space-y-6 shadow-2xl relative my-auto animate-modal-pop">
         {/* encabezado modal */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div>

@@ -119,7 +119,10 @@ const Login = () => {
       </div>
 
       {/* lado derecho con formulario protegido con vidrio borroso */}
-      <div className="relative z-10 w-full lg:w-[42%] lg:ml-auto flex items-center justify-center p-6 sm:p-8 bg-[linear-gradient(90deg,rgba(10,10,10,0.18)_0%,rgba(10,10,10,0.4)_35%,rgba(10,10,10,0.7)_100%)] backdrop-blur-sm border-l border-white/5 shadow-[-20px_0_40px_rgba(0,0,0,0.28)] animate-login-enter delay-200">
+      <div className="relative z-10 w-full lg:w-[42%] lg:ml-auto flex items-center justify-center p-6 sm:p-8 bg-[linear-gradient(90deg,rgba(10,10,10,0.18)_0%,rgba(10,10,10,0.4)_35%,rgba(10,10,10,0.7)_100%)] border-l border-white/5 shadow-[-20px_0_40px_rgba(0,0,0,0.28)] animate-login-enter delay-200 overflow-hidden">
+        {/* auras de luz ambiental para el acceso al sistema */}
+        <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.053),transparent_70%)] pointer-events-none"></div>
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.038),transparent_70%)] pointer-events-none"></div>
         {/* logo arriba a la derecha */}
         <div className="absolute top-8 right-8 flex items-center gap-4 select-none animate-login-enter delay-400">
           <div className="text-right hidden sm:block">
