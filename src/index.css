@@ -63,6 +63,23 @@ h1, h2, h3, h4 {
   animation: fade-in 0.4s ease-out both;
 }
 
+/* transicion sutil y elegante al cargar un futbolista y sus estadisticas en rendimiento */
+@keyframes entrada-suave-jugador {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-entrada-suave-jugador {
+  animation: entrada-suave-jugador 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
 /* animacion ultra-rapida y acelerada por hardware para despliegue de formularios modales a 60 fps */
 @keyframes modal-pop {
   0% {

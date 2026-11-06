@@ -257,21 +257,21 @@ const Dashboard = () => {
             </div>
 
             {/* marcador central con los equipos y el resultado final */}
-            <div className="grid grid-cols-3 items-center text-center py-4">
+            <div className="grid grid-cols-3 items-center text-center py-3 sm:py-4 gap-2">
               {/* equipo local: colo-colo con su escudo oficial webp sin fondo blanco */}
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-16 h-16 border border-white/10 bg-white/5 flex items-center justify-center p-2">
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 border border-white/10 bg-white/5 flex items-center justify-center p-1.5 sm:p-2">
                   <img
                     src={ultimoPartido.local.escudo}
                     alt={ultimoPartido.local.nombre}
-                    className="w-12 h-auto max-h-12 object-contain drop-shadow"
+                    className="w-8 h-8 sm:w-12 sm:h-12 object-contain drop-shadow"
                   />
                 </div>
                 <div>
-                  <h4 className="text-sm sm:text-base font-black uppercase tracking-wider text-white">
+                  <h4 className="text-xs sm:text-base font-black uppercase tracking-wider text-white truncate max-w-[90px] sm:max-w-none">
                     {ultimoPartido.local.nombre}
                   </h4>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-neutral-500">
                     Local
                   </span>
                 </div>
@@ -279,33 +279,33 @@ const Dashboard = () => {
 
               {/* resultado y estado del partido */}
               <div className="flex flex-col items-center">
-                <div className="flex items-center justify-center gap-3 sm:gap-4 font-black text-4xl sm:text-5xl text-white tracking-widest">
+                <div className="flex items-center justify-center gap-2 sm:gap-4 font-black text-3xl sm:text-5xl text-white tracking-widest">
                   <span>{ultimoPartido.local.goles}</span>
-                  <span className="text-neutral-600 text-2xl font-light">-</span>
+                  <span className="text-neutral-600 text-xl sm:text-2xl font-light">-</span>
                   <span>{ultimoPartido.visita.goles}</span>
                 </div>
-                <span className="mt-2 text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5">
+                <span className="mt-1.5 sm:mt-2 text-[9px] sm:text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 sm:px-2.5 py-0.5">
                   Victoria
                 </span>
-                <span className="mt-2 text-[10px] uppercase tracking-wider text-neutral-500 text-center">
+                <span className="mt-1.5 sm:mt-2 text-[9px] sm:text-[10px] uppercase tracking-wider text-neutral-500 text-center line-clamp-1">
                   {ultimoPartido.estadio}
                 </span>
               </div>
 
               {/* equipo visitante: cobreloa con su escudo oficial webp sin fondo blanco */}
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-16 h-16 border border-white/10 bg-white/5 flex items-center justify-center p-2">
+              <div className="flex flex-col items-center gap-2 sm:gap-3">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 border border-white/10 bg-white/5 flex items-center justify-center p-1.5 sm:p-2">
                   <img
                     src={ultimoPartido.visita.escudo}
                     alt={ultimoPartido.visita.nombre}
-                    className="w-12 h-auto max-h-12 object-contain drop-shadow"
+                    className="w-8 h-8 sm:w-12 sm:h-12 object-contain drop-shadow"
                   />
                 </div>
                 <div>
-                  <h4 className="text-sm sm:text-base font-black uppercase tracking-wider text-white">
+                  <h4 className="text-xs sm:text-base font-black uppercase tracking-wider text-white truncate max-w-[90px] sm:max-w-none">
                     {ultimoPartido.visita.nombre}
                   </h4>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-neutral-500">
                     Visita
                   </span>
                 </div>

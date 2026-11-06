@@ -167,14 +167,14 @@ const RegistroMedicoForm = ({
 
   const modalJSX = (
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onCancelar();
         }
       }}
     >
-      <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-lg p-6 sm:p-8 space-y-6 shadow-2xl relative my-auto">
+      <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-lg p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl relative my-auto max-h-[92vh] overflow-y-auto">
         {/* Encabezado del modal */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div>
