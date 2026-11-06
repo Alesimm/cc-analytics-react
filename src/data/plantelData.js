@@ -1,5 +1,5 @@
-// datos y operaciones de persistencia simulada para el plantel de colo-colo
-// cumple con el requisito de la evaluacion: archivo js como fuente de datos crud
+// Datos y operaciones de persistencia en almacenamiento local para el plantel profesional de Colo-Colo
+// Módulo de administración de plantilla, dorsales y fichas técnicas
 
 export const PLANTEL_INICIAL = [
   {
@@ -425,7 +425,7 @@ export const DIRECTRICES_INICIALES = [
   },
 ];
 
-// generador de directrices por defecto para futbolistas sin registro manual
+// directrices tácticas predeterminadas para futbolistas sin registro manual
 const generarDirectricesPorDefecto = (jugador) => {
   const defaults = {
     Arquero: [
@@ -630,7 +630,7 @@ const PARTIDOS_POR_JUGADOR = {
   ],
 };
 
-// generador realista con variabilidad para suplentes, reservas o titulares
+// cálculo de historial de partidos para suplentes, reservas o titulares
 const generarPartidosRecientes = (jugador) => {
   const cotejos = [
     { fecha: "19 Abr", rival: "Cobreloa", resultado: "2 - 0", tipo: "Victoria", condicion: "Local" },

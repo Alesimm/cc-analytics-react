@@ -1,5 +1,5 @@
-// Datos y operaciones de persistencia simulada para el Centro Medico y Lesiones de Colo-Colo
-// Cumple con el requisito de la evaluacion: fuente de datos CRUD en JavaScript
+// Datos y operaciones de persistencia en almacenamiento local para el Centro Médico y Control de Lesiones de Colo-Colo
+// Módulo de gestión clínica deportiva y seguimiento de altas médicas
 
 export const REGISTROS_MEDICOS_INICIALES = [
   {

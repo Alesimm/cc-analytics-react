@@ -168,7 +168,7 @@ const Dashboard = () => {
           <div className="flex items-center gap-2.5 mb-2 flex-wrap">
             <span className="inline-block w-1.5 h-1.5 bg-white"></span>
             <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-400">
-              CC Analytics // Inteligencia Deportiva
+              CC Analytics // Analítica Deportiva
             </span>
             <span className="text-[10px] uppercase font-bold tracking-[0.14em] text-neutral-300 border border-white/15 px-2 py-0.5 bg-white/[0.03]">
               Temporada 2026
