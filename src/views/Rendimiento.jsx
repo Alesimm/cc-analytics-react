@@ -177,7 +177,7 @@ const Rendimiento = () => {
     }
   };
 
-  // confirmar eliminacion sin confirm()
+  // confirmar eliminacion
   const handleConfirmarEliminar = (id) => {
     eliminarDirectrizStorage(id);
     setTodasDirectrices(obtenerDirectricesStorage());

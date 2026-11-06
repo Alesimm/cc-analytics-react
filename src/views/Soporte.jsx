@@ -24,7 +24,7 @@ const CATEGORIAS_DISPONIBLES = [
 
 const PRIORIDADES_DISPONIBLES = ["Baja", "Media", "Alta", "Urgente"];
 
-// regex para validacion propia de correo electronico sin type="email"
+// regex para validacion propia de correo electronico
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const Soporte = () => {
@@ -36,7 +36,7 @@ const Soporte = () => {
   // ticket seleccionado para ver respuesta tecnica detallada
   const [ticketDetalleId, setTicketDetalleId] = useState(null);
 
-  // confirmacion inline de eliminacion sin confirm()
+  // confirmacion inline de eliminacion
   const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
 
   // estado para el ticket recien generado y mensaje de feedback
@@ -78,7 +78,7 @@ const Soporte = () => {
       esValido = false;
     }
 
-    // 2. correo: sin type="email", validacion regex propia
+    // 2. correo: validacion regex propia
     const emailLimpio = formData.email.trim();
     if (!emailLimpio) {
       nuevosErrores.email = "El correo de contacto es obligatorio.";
@@ -393,7 +393,7 @@ const Soporte = () => {
             </div>
           )}
 
-          {/* formulario sin atributos html prohibidos (required, type=email, minLength) */}
+          {/* formulario controlado con validacion propia */}
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {/* solicitante y correo */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -663,7 +663,7 @@ const Soporte = () => {
             </div>
           </div>
 
-          {/* confirmacion inline de eliminacion sin confirm() */}
+          {/* confirmacion inline de eliminacion */}
           {confirmarEliminarId && (
             <div className="border border-rose-500/50 bg-rose-950/30 p-3.5 flex items-center justify-between text-xs animate-fade-in">
               <span className="text-rose-200">

@@ -52,7 +52,7 @@ describe("Módulo de Soporte Técnico y Contacto (Pantalla 8)", () => {
     ).toBeInTheDocument();
   });
 
-  // prueba 3: validacion de formato de correo electronico sin type="email"
+  // prueba 3: validacion de formato de correo electronico
   it("valida el formato de correo electrónico mediante lógica JS propia", () => {
     render(<Soporte />);
 
@@ -147,7 +147,7 @@ describe("Módulo de Soporte Técnico y Contacto (Pantalla 8)", () => {
     ).toBeInTheDocument();
   });
 
-  // prueba 7: eliminacion con confirmacion inline sin usar confirm()
+  // prueba 7: eliminacion con confirmacion inline
   it("permite eliminar un ticket con confirmación inline sin invocar confirm()", () => {
     render(<Soporte />);
 

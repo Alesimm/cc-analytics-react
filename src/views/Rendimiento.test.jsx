@@ -81,7 +81,7 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
     });
     fireEvent.click(botonGuardar);
 
-    // verificar mensaje de error condicional en pantalla sin alert()
+    // verificar mensaje de error condicional en pantalla
     expect(
       screen.getByText(/la directriz o recomendación táctica no puede estar vacía/i)
     ).toBeInTheDocument();

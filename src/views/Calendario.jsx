@@ -24,7 +24,7 @@ const Calendario = () => {
   // partido seleccionado para ver ficha tecnica detallada
   const [partidoDetalleId, setPartidoDetalleId] = useState(null);
 
-  // estado de confirmacion inline para eliminacion sin confirm()
+  // estado de confirmacion inline para eliminacion
   const [confirmarEliminarId, setConfirmarEliminarId] = useState(null);
 
   // modal para programar nuevo partido
@@ -476,7 +476,7 @@ const Calendario = () => {
         </div>
       </section>
 
-      {/* confirmacion inline de eliminacion sin confirm() */}
+      {/* confirmacion inline de eliminacion */}
       {confirmarEliminarId && (
         <div className="border border-rose-500/50 bg-rose-950/30 p-4 flex items-center justify-between text-xs animate-fade-in">
           <span className="text-rose-200">
