@@ -7,6 +7,7 @@ import Rendimiento from './views/Rendimiento';
 import Formaciones from './views/Formaciones';
 import Calendario from './views/Calendario';
 import CentroMedico from './views/CentroMedico';
+import Soporte from './views/Soporte';
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
           <Route path="/formaciones" element={<Formaciones />} />
           <Route path="/calendario" element={<Calendario />} />
           <Route path="/medico" element={<CentroMedico />} />
+          <Route path="/soporte" element={<Soporte />} />
         </Route>
 
         {/* cualquier ruta inexistente vuelve al login */}

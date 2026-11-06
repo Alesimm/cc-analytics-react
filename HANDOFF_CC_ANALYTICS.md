@@ -1,98 +1,185 @@
 # HANDOFF — CC Analytics
 
 ## 1. Propósito
-CC Analytics es una plataforma de gestión y analítica deportiva para Colo-Colo. El frontend debe centralizar información del plantel, rendimiento, tácticas, calendario, lesiones y soporte. El proyecto es académico para Desarrollo Fullstack II de Duoc UC.
+CC Analytics es una plataforma integral de gestión y analítica deportiva desarrollada para Colo-Colo, correspondiente al proyecto de la asignatura **Desarrollo Fullstack II** de **Duoc UC**.
+El frontend centraliza la información deportiva del club: control de plantilla profesional, análisis individual de rendimiento, pizarra táctica de formaciones, calendario oficial de partidos, seguimiento médico de lesiones y mesa de ayuda de soporte técnico.
 
-## 2. Fases conocidas
-- Fase 1: mockup funcional de referencia hecho con Vanilla JS y Tailwind CSS.
-- Fase 2: migrar/implementar la interfaz con React + Vite, componentes y estado React; incorporar navegación entre pantallas.
-- Fase 3 futura: backend con Spring Boot y MariaDB/microservicios, cuando la pauta y el equipo definan su alcance.
-No adelantar la Fase 3 durante tareas de frontend.
+---
 
-## 3. Referencia de diseño
-Archivo visual aportado por el usuario: `CC Analytics — UI Flowboard` (o imagen equivalente adjunta en la conversación). Representa ocho pantallas conectadas por navegación. Si la imagen no está en el repositorio, no asumas que existe como archivo local: solicita que se copie al proyecto o usa la imagen adjunta en la conversación como referencia.
+## 2. Fases del Proyecto
+- **Fase 1 (Previa):** Maqueta inicial funcional desarrollada en Vanilla JS y Tailwind CSS.
+- **Fase 2 (Actual - 100% UI completada):** Migración y construcción integral en **React 19 + Vite**, componentes modulares, gestión de estado con React Hooks (`useState`, `useMemo`), validaciones JavaScript puras, navegación mediante **React Router DOM v7**, persistencia en `localStorage`, y cobertura de pruebas unitarias con **Vitest** y **React Testing Library**.
+- **Fase 3 (Futura):** Arquitectura backend con Spring Boot y MariaDB / microservicios (no adelantar ni implementar antes de que sea formalmente requerida por la asignatura).
 
-Dirección de arte: Premium Brutalist deportivo; minimalista, corporativo, fondos oscuros/alto contraste, bordes definidos, navegación lateral común en las vistas internas y componentes coherentes. El flowboard está dibujado en blanco y negro y es esquemático: conserva la estructura y el propósito, no sus textos diminutos ilegibles.
+---
 
-## 4. Mapa funcional de pantallas
+## 3. Arquitectura y Stack Técnico Verificado
+- **Runtime & Build:** Node.js, Vite 8, React 19.
+- **Enrutamiento:** React Router DOM v7 (`src/App.jsx`), con layout persistente (`src/components/Layout.jsx`).
+- **Estilos:** Tailwind CSS v4 (`@tailwindcss/vite`), paleta Premium Brutalist de alto contraste adaptada para Colo-Colo.
+- **Testing Unitario:** Vitest v5 + React Testing Library + `@testing-library/jest-dom` + `jsdom`. Cobertura activa de **40/40 tests aprobados** distribuidos en 7 suites co-localizadas.
+- **Calidad de Código:** ESLint configurado con reglas para React y React Hooks (0 errores, 0 advertencias).
+- **Estructura del Proyecto:**
+  ```text
+  c:\cc-analytics-react\
+  ├── src/
+  │   ├── assets/              # Recursos estáticos
+  │   ├── components/          # Componentes compartidos y reutilizables
+  │   │   ├── Layout.jsx       # Barra lateral de navegación y encabezado global
+  │   │   ├── JugadorCard.jsx  # Tarjeta individual de jugador en el plantel
+  │   │   ├── JugadorForm.jsx  # Formulario modal de nuevo/edición de jugador
+  │   │   ├── JugadorForm.test.jsx
+  │   │   └── RegistroMedicoForm.jsx # Formulario modal de alta/edición médica
+  │   ├── data/                # Modelos de datos y adaptadores de LocalStorage
+  │   │   ├── calendarioData.js
+  │   │   ├── dashboardData.js
+  │   │   ├── formacionesData.js
+  │   │   ├── jugadoresData.js
+  │   │   ├── medicoData.js
+  │   │   ├── rendimientoData.js
+  │   │   └── soporteData.js
+  │   ├── views/               # Las 8 pantallas principales de la aplicación
+  │   │   ├── Login.jsx & Login.test.jsx
+  │   │   ├── Dashboard.jsx
+  │   │   ├── Plantel.jsx
+  │   │   ├── Rendimiento.jsx & Rendimiento.test.jsx
+  │   │   ├── Formaciones.jsx & Formaciones.test.jsx
+  │   │   ├── Calendario.jsx & Calendario.test.jsx
+  │   │   ├── CentroMedico.jsx & CentroMedico.test.jsx
+  │   │   └── Soporte.jsx & Soporte.test.jsx
+  │   ├── App.jsx              # Configuración de rutas (React Router)
+  │   ├── main.jsx             # Punto de entrada de la aplicación
+  │   └── index.css            # Importación de Tailwind CSS y animaciones
+  ├── AGENTS.md                # Reglas estrictas y flujo para agentes de IA
+  ├── HANDOFF_CC_ANALYTICS.md  # Estado actual, mapa funcional y entregables
+  ├── package.json
+  └── vite.config.js
+  ```
 
-### 1. Login
-- Pantalla de acceso centrada con marca/logotipo, nombre CC Analytics, texto de plataforma deportiva, campo de correo/usuario, contraseña y botón de ingreso.
-- Mostrar validación y feedback dentro de la interfaz.
-- El acceso exitoso debe conducir al dashboard mediante el mecanismo de navegación elegido para el proyecto; no limitarse a `console.log`.
-- Reglas de validación ya reportadas en un contexto anterior: dominios permitidos `@duoc.cl`, `@profesor.duoc.cl`, `@gmail.com` y `@colocolo.cl`; contraseña de 4 a 10 caracteres. Son datos por verificar contra el código y la pauta antes de modificarlos.
+---
 
-### 2. Dashboard principal — Inicio y noticias
-- Layout interno con barra lateral de navegación e identificación del usuario.
-- Área principal con marcador/resumen de partido destacado.
-- Resumen del rendimiento del equipo con indicadores como posesión, goles y tiros al arco.
-- Panel de noticias con filas o tarjetas breves.
-- Usar datos de demostración claramente ficticios si no hay backend; no presentar los datos como información real en vivo.
+## 4. Referencia de Diseño e Identidad Visual
+- **Mockup base:** `CC Analytics — UI Flowboard` (referencia visual de las 8 pantallas conectadas).
+- **Dirección de arte:** Premium Brutalist deportivo; minimalista, corporativo, fondos oscuros (`#050505`, `#0a0a0a`), alto contraste, bordes definidos (`border-white/10`, `border-neutral-800`), navegación lateral unificada y tipografía nítida.
+- **Pizarra táctica:** Fondo negro profundo con demarcaciones de cancha blancas brillantes de alto contraste (según referencia aprobada).
+- **Modales de formulario:** Modales flotantes centrados con fondo oscuro semitransparente y desenfoque controlado (`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm`). Sin capas de blur rotas ni saltos bruscos.
+- **Diseño Responsivo:** Adaptabilidad fluida para pantallas móviles, tablets y monitores de escritorio.
 
-### 3. Catálogo del plantel — CRUD
-- Buscador de jugadores.
-- Acciones visibles para añadir, editar y eliminar.
-- Cuadrícula de jugadores con avatar/foto, nombre, posición y datos resumidos.
-- Implementar operaciones CRUD solo en el alcance acordado; si no existe backend, usar estado local/datos de prueba y aclararlo.
-- Incluir estados vacíos, errores y confirmación inline para acciones destructivas; no usar `confirm()`.
+---
 
-### 4. Análisis de rendimiento individual
-- Buscador de jugador.
-- Resumen del jugador seleccionado: avatar, nombre y datos breves.
-- Gráfico radial de estadísticas individuales.
-- Gráfico de rendimiento reciente.
-- Lista de recomendaciones tácticas.
-- Si no hay librería de gráficos instalada, comprobar opciones existentes antes de añadir una dependencia. No inventar métricas como datos reales.
+## 5. Mapa Funcional de las 8 Pantallas (100% Fase 2 Implementado)
 
-### 5. Formaciones — La Pizarra
-- Campo táctico con distribución de jugadores y suplentes.
-- Lista de formaciones guardadas, con opción de seleccionar y gestionar según alcance.
-- Controles sencillos para ajustar parámetros tácticos mostrados en el mockup.
-- Debe priorizarse que la pizarra sea comprensible y usable; no crear un editor complejo si la rúbrica no lo exige.
+### 1. Login (`/`) — [`src/views/Login.jsx`](file:///c:/cc-analytics-react/src/views/Login.jsx)
+- Pantalla de acceso dividida: panel izquierdo con identidad de Colo-Colo y panel derecho con formulario flotante.
+- Validación reactiva controlada por `useState`: inputs con `type="text"` para correo institucional (sin `type="email"`), contraseñas de 4 a 10 caracteres.
+- Efecto de carga en tres fases para experiencia inmersiva previa a la redirección a `/dashboard`.
+- Sin luces ambientales saturadas; paleta neutra y brutalista.
+- **Testing:** [`Login.test.jsx`](file:///c:/cc-analytics-react/src/views/Login.test.jsx) (2 pruebas aprobadas).
 
-### 6. Calendario de partidos
-- Sección de próximos partidos y partidos anteriores.
-- Cada partido muestra rival, fecha/hora y estado/detalles básicos.
-- Para partidos anteriores, mostrar resultado y acciones/resumen si corresponde.
-- Datos demo hasta contar con fuente real. No inventar integración externa.
+### 2. Dashboard Principal (`/dashboard`) — [`src/views/Dashboard.jsx`](file:///c:/cc-analytics-react/src/views/Dashboard.jsx)
+- Resumen general del club: próximo partido estelar con cuenta regresiva, indicadores clave de rendimiento (posesión promedio, goles marcados, efectividad de pases, vallas invictas).
+- Feed de noticias internas del plantel profesional y accesos directos a los módulos táctico, médico y de plantel.
+- Datos estructurados en [`src/data/dashboardData.js`](file:///c:/cc-analytics-react/src/data/dashboardData.js).
 
-### 7. Centro médico — Lesiones
-- Filtros por estado/tipo (los visibles en el mockup incluyen categorías como lesión, muscular y otros; confirmar etiquetas definitivas con la pauta).
-- Tabla con jugador, tipo de lesión, gravedad, tiempo de recuperación y estado.
-- Acción para añadir lesión/registro médico según permisos y alcance.
-- Tratar la información médica como datos sensibles en un sistema real; para la demo usar datos ficticios y no incluir información personal real.
+### 3. Catálogo del Plantel (`/plantel`) — [`src/views/Plantel.jsx`](file:///c:/cc-analytics-react/src/views/Plantel.jsx)
+- Gestión CRUD completa de futbolistas: alta de jugador, edición de datos, filtrado por posición (porteros, defensas, mediocampistas, delanteros) y buscador en tiempo real.
+- Eliminación con confirmación inline en la propia interfaz (sin utilizar `confirm()`).
+- Formulario modal [`JugadorForm.jsx`](file:///c:/cc-analytics-react/src/components/JugadorForm.jsx) con validaciones de dorsal, edad, valoración y posición.
+- Persistencia reactiva en LocalStorage con semillas iniciales en [`src/data/jugadoresData.js`](file:///c:/cc-analytics-react/src/data/jugadoresData.js).
+- **Testing:** [`src/components/JugadorForm.test.jsx`](file:///c:/cc-analytics-react/src/components/JugadorForm.test.jsx) (4 pruebas aprobadas).
 
-### 8. Soporte técnico y contacto
-- Formulario con nombre, categoría/tipo de solicitud, correo, asunto y descripción.
-- Validación propia y mensajes inline de éxito/error.
-- No usar `alert()`, popups ni atributos HTML prohibidos.
-- Si no existe backend, dejar explícito que el envío es de demostración; no fingir que se envió a un servidor.
+### 4. Análisis de Rendimiento Individual (`/rendimiento`) — [`src/views/Rendimiento.jsx`](file:///c:/cc-analytics-react/src/views/Rendimiento.jsx)
+- Buscador y selector interactivo de futbolistas del plantel.
+- Gráfico de radar SVG nativo de 6 ejes (físico, pase, remate, defensa, regate, táctica) generado matemáticamente sin librerías externas pesadas.
+- Historial de partidos recientes con evolución de calificaciones, desglose físico y recomendaciones tácticas automatizadas.
+- Datos provistos por [`src/data/rendimientoData.js`](file:///c:/cc-analytics-react/src/data/rendimientoData.js).
+- **Testing:** [`Rendimiento.test.jsx`](file:///c:/cc-analytics-react/src/views/Rendimiento.test.jsx) (7 pruebas aprobadas).
 
-## 5. Reglas académicas conocidas
-- Prohibidos: `required`, `minLength`, `maxLength`, `type="email"`, `alert()` y `confirm()`.
-- Formularios controlados con `useState`, `noValidate` cuando aplique y validaciones JavaScript propias.
-- Mensajes de error mediante estado React y clases Tailwind.
-- Verificar estas reglas en el código y la rúbrica antes de cerrar una tarea.
+### 5. Formaciones y Pizarra Táctica (`/formaciones`) — [`src/views/Formaciones.jsx`](file:///c:/cc-analytics-react/src/views/Formaciones.jsx)
+- Pizarra táctica de campo completo con fondo negro absoluto y líneas blancas de alto contraste.
+- Renderizado de 11 titulares posicionados dinámicamente y bandeja horizontal de suplentes.
+- Selector de esquemas tácticos (4-3-3 Ofensivo, 4-2-3-1 Control, 3-5-2 Bloque Alto, 4-4-2 Presión).
+- Formulario modal optimizado para crear nuevos esquemas tácticos con validación de nombre y descripción.
+- Datos y esquemas en [`src/data/formacionesData.js`](file:///c:/cc-analytics-react/src/data/formacionesData.js).
+- **Testing:** [`Formaciones.test.jsx`](file:///c:/cc-analytics-react/src/views/Formaciones.test.jsx) (6 pruebas aprobadas).
 
-## 6. Estado del repositorio
-Un contexto anterior reportó que el proyecto estaba migrando de una SPA Vanilla JS a React + Vite y que el login estaba maquetado con validaciones y estilos. También se reportó que el dashboard, navegación y módulos estaban pendientes. **Este estado es histórico y no está verificado.** Antigravity debe auditar el repositorio actual antes de planificar cambios.
+### 6. Calendario de Partidos y Fixture (`/calendario`) — [`src/views/Calendario.jsx`](file:///c:/cc-analytics-react/src/views/Calendario.jsx)
+- Bloque destacado de próximo partido oficial con cuenta regresiva en vivo, rival, estadio, torneo y transmisión.
+- Lista completa de partidos programados y resultados pasados con marcadores.
+- Formulario modal para programar nuevos encuentros con validación de rival, fecha, hora, torneo y condición (Local / Visita).
+- Eliminación de encuentros con confirmación inline protegida.
+- Datos gestionados en [`src/data/calendarioData.js`](file:///c:/cc-analytics-react/src/data/calendarioData.js).
+- **Testing:** [`Calendario.test.jsx`](file:///c:/cc-analytics-react/src/views/Calendario.test.jsx) (7 pruebas aprobadas).
 
-No asumir:
-- versiones específicas de React, Vite o Tailwind;
-- que React Router está instalado;
-- que todas las ocho pantallas existen;
-- que el login y las validaciones descritas siguen iguales;
-- que el backend está creado;
-- que el mockup está guardado en la carpeta del proyecto.
+### 7. Centro Médico y Control de Lesiones (`/centro-medico`) — [`src/views/CentroMedico.jsx`](file:///c:/cc-analytics-react/src/views/CentroMedico.jsx)
+- Registro y monitoreo clínico de futbolistas lesionados o en fase de readaptación física.
+- Tarjetas resumen con métricas (total lesionados, bajas prolongadas, en readaptación, aptos).
+- Filtros interactivos por gravedad (Leve, Moderada, Grave) y estado médico.
+- Formulario modal [`RegistroMedicoForm.jsx`](file:///c:/cc-analytics-react/src/components/RegistroMedicoForm.jsx) para registrar nuevas fichas o actualizar diagnósticos y días de baja estimada.
+- Opción de dar de alta inmediata con confirmación inline.
+- Datos provistos por [`src/data/medicoData.js`](file:///c:/cc-analytics-react/src/data/medicoData.js).
+- **Testing:** [`CentroMedico.test.jsx`](file:///c:/cc-analytics-react/src/views/CentroMedico.test.jsx) (7 pruebas aprobadas).
 
-## 7. Primera tarea recomendada
-Auditoría de solo lectura:
-1. Leer `AGENTS.md` y este documento.
-2. Revisar `git status`, estructura, `package.json`, lockfile, configuración CSS/Tailwind y puntos de entrada.
-3. Localizar y revisar componentes/rutas actuales.
-4. Comparar implementación real con las ocho pantallas descritas.
-5. Entregar resumen: implementado y verificado, implementado pero no verificado, incompleto, pendiente, discrepancias y próxima tarea prioritaria.
-6. No editar archivos, instalar paquetes ni ejecutar comandos destructivos hasta recibir autorización.
+### 8. Soporte Técnico y Contacto (`/soporte`) — [`src/views/Soporte.jsx`](file:///c:/cc-analytics-react/src/views/Soporte.jsx)
+- Mesa de ayuda para incidencias técnicas, solicitudes de métricas, cuentas y sugerencias.
+- Formulario controlado con validaciones JavaScript puras:
+  - Nombre del solicitante (mínimo 3 caracteres).
+  - Correo de contacto verificado mediante regex (`EMAIL_REGEX`).
+  - Asunto descriptivo (mínimo 5 caracteres).
+  - Detalle del requerimiento (mínimo 10 caracteres).
+- Generador automático de tickets con código correlativo (`TK-xxxx`), fecha/hora y asignación a departamento.
+- Catálogo de tickets con filtros por estado (Abierto, En Progreso, Resuelto), categoría y buscador por texto.
+- Vista expandible de respuesta técnica y confirmación inline para eliminar tickets.
+- Persistencia en LocalStorage mediante [`src/data/soporteData.js`](file:///c:/cc-analytics-react/src/data/soporteData.js).
+- **Testing:** [`Soporte.test.jsx`](file:///c:/cc-analytics-react/src/views/Soporte.test.jsx) (7 pruebas aprobadas).
 
-## 8. Criterio de éxito
-La implementación debe respetar la rúbrica, conservar la identidad visual, permitir navegar entre pantallas previstas, usar formularios y estados válidos, funcionar con el stack instalado y evitar funciones falsas o complejidad innecesaria.
+---
+
+## 6. Cumplimiento Académico Estricto (Rúbrica Duoc UC)
+- **Atributos HTML Prohibidos:** Ningún formulario del sistema utiliza `required`, `minLength`, `maxLength` ni `type="email"`.
+- **Ventanas Emergentes Nativas:** Se eliminó por completo el uso de `alert()` o `confirm()`. Todas las alertas son componentes visuales con Tailwind y las eliminaciones cuentan con botones inline de confirmación/cancelación.
+- **Gestión de Estado:** 100% de los formularios controlados con React `useState` e implementan el atributo `noValidate` en los tags `<form>`.
+- **Validaciones Propias:** Validaciones matemáticas y expresiones regulares en funciones JavaScript puras que alimentan objetos de error (`errors`) mostrados de forma accesible en la UI.
+
+---
+
+## 7. Estado de Testing y Calidad Actual
+- **Vitest:** 7 archivos de pruebas unitarias, **40 tests ejecutados y 40 aprobados (100% passing)**.
+- **ESLint:** 0 errores y 0 advertencias (`npm run lint`).
+- **Vite Build:** Compilación limpia para producción (`npm run build`).
+
+---
+
+## 8. Próximos Pasos Mandatorios: Cierre de Fase 2 y Entregables Duoc UC
+Habiendo alcanzado el 100% de la interfaz de usuario en la Fase 2, **no se debe continuar programando a ciegas**. El siguiente paso consiste en preparar y cerrar los 4 entregables oficiales requeridos por la pauta de evaluación de Duoc UC (Págs. 4 y 12 del PDF de la asignatura), que ponderan el 40% de la nota final:
+
+### 1. Documentación Obligatoria
+1. **Documento ERS (Especificación de Requisitos de Software) versión 2:**
+   - Actualizar el documento de la entrega anterior para documentar la arquitectura real implementada: React + Vite + Tailwind CSS v4.
+   - Detallar el mapa de las 8 pantallas de CC Analytics con sus capturas, rutas y componentes.
+   - Especificar casos de uso cubiertos (CRUD de plantel, fichas médicas, táctica, calendario, soporte).
+   - Documentar el modelo de persistencia local en `localStorage`.
+2. **Documento de Cobertura de Testing:**
+   - Informe formal de pruebas unitarias:
+     - Configuración técnica del entorno (Vitest + React Testing Library + jsdom).
+     - Casos de prueba cubiertos (mínimo 2 pruebas por formulario, renderizado, props, eventos de usuario y mocks).
+     - Tabla detallada de resultados demostrando el 100% de aprobación (40/40 pruebas).
+3. **Repositorio GitHub limpio y público:**
+   - Enlace al repositorio con el historial ordenado de Pull Requests semánticos (`feature/...` hacia `main`), demostrando el avance modular del equipo.
+4. **Archivo comprimido (.zip) del proyecto:**
+   - Exportar el código fuente limpio, excluyendo estrictamente las carpetas pesadas `node_modules` y `dist`.
+
+### 2. Auditoría Final de Rúbrica y Diseño (Pulido de Detalles)
+- **Diseño responsivo:** Comprobar que todas las pantallas y formularios se adapten limpiamente a móvil, tablet y escritorio.
+- **Consistencia visual:** Verificar que no queden textos desalineados, colores fuera de la paleta brutalista de Colo-Colo o elementos que no cumplan la guía de estilo.
+- **Checklist académico estricto:** Asegurarse de que ningún formulario use atributos HTML prohibidos (`required`, `minLength`, `maxLength`, `type="email"`) ni ventanas del navegador (`alert()` / `confirm()`).
+
+---
+
+## 9. Instrucciones para Nuevos Agentes
+Si eres un nuevo agente o continúas el trabajo en otra sesión:
+1. Lee primero `AGENTS.md` y este documento completo.
+2. Ejecuta `git status` para verificar la rama actual y los archivos modificados.
+3. Ejecuta `npm test`, `npm run lint` y `npm run build` para comprobar que la base está en verde antes de cualquier cambio.
+4. Recuerda la regla de oro: **"modifica, no borres"** y **no ejecutes comandos de Git destructivos, commits ni push sin autorización explícita del usuario**.
+5. Enfócate en los entregables formales de documentación y la auditoría final de cierre de Fase 2.

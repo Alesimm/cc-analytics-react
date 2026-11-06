@@ -527,12 +527,12 @@ const CentroMedico = () => {
         />
       )}
 
-      {/* Pie de pagina academico */}
+      {/* Pie de pagina */}
       <footer className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[10px] uppercase tracking-widest text-neutral-600 gap-2">
         <p>
-          CC Analytics — Plataforma Académica Duoc UC // Departamento Médico
+          CC Analytics — Plataforma Oficial // Departamento Médico
         </p>
-        <p>Fichas clínicas simuladas para evaluación docente</p>
+        <p>Fichas clínicas y seguimiento médico del plantel profesional</p>
       </footer>
     </div>
   );

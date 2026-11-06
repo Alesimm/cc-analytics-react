@@ -131,6 +131,18 @@ const Layout = () => {
             >
               Centro Médico
             </NavLink>
+            <NavLink
+              to="/soporte"
+              className={({ isActive }) =>
+                `block px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-widest border-l-2 transition-colors duration-200 ${
+                  isActive
+                    ? "border-white bg-white/10 text-white"
+                    : "border-transparent text-neutral-500 hover:border-white/40 hover:bg-white/5 hover:text-white"
+                }`
+              }
+            >
+              Soporte Técnico
+            </NavLink>
             {/* los demas enlaces a las otras pantallas se agregaran despues */}
           </nav>
         </div>
