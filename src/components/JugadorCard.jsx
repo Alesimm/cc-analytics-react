@@ -20,7 +20,7 @@ const estiloEstado = (estado) => {
 };
 
 const JugadorCard = ({ jugador, onEditar, onEliminar }) => {
-  // estado local para confirmacion inline de eliminacion (sin confirm() ni alert())
+  // estado local para confirmacion inline de eliminacion (confirmación en la propia tarjeta)
   const [confirmando, setConfirmando] = useState(false);
 
   return (

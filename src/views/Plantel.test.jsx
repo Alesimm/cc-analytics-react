@@ -78,7 +78,7 @@ describe("Módulo de Plantel de Jugadores (Pantalla 3 - Integración CRUD)", () 
     const botonesEliminar = screen.getAllByRole("button", { name: /eliminar/i });
     fireEvent.click(botonesEliminar[0]);
 
-    // debe mostrarse la confirmacion inline sin usar confirm()
+    // debe mostrarse la confirmacion inline
     expect(
       screen.getByText(/¿confirmar baja de/i)
     ).toBeInTheDocument();

@@ -63,7 +63,7 @@ const Plantel = () => {
     );
   };
 
-  // eliminar (confirmado inline sin confirm())
+  // eliminar (confirmado inline)
   const handleEliminarJugador = (id) => {
     const jugadorEliminado = plantel.find((j) => j.id === id);
     const actualizado = eliminarJugadorStorage(id);

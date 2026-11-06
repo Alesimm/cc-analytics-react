@@ -570,7 +570,7 @@ const Formaciones = () => {
           </div>
         </div>
 
-        {/* confirmacion inline de eliminacion sin confirm() */}
+        {/* confirmacion inline de eliminacion */}
         {confirmarEliminarId === esquemaActual.id && (
           <div className="border border-rose-500/50 bg-rose-950/30 p-3 flex items-center justify-between text-xs animate-fade-in">
             <span className="text-rose-200">

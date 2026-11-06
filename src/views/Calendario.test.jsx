@@ -168,7 +168,7 @@ describe("Módulo de Calendario de Partidos y Fixture (Pantalla 6)", () => {
     const botonEliminar = screen.getByRole("button", { name: /eliminar/i });
     fireEvent.click(botonEliminar);
 
-    // verificar confirmacion inline sin confirm()
+    // verificar confirmacion inline
     expect(
       screen.getByText(/¿confirmas la eliminación de este partido del fixture oficial\?/i)
     ).toBeInTheDocument();

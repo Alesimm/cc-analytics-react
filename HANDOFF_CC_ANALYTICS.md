@@ -25,18 +25,15 @@ El frontend centraliza la información deportiva del club: control de plantilla 
   ├── src/
   │   ├── assets/              # Recursos estáticos
   │   ├── components/          # Componentes compartidos y reutilizables
-  │   │   ├── Layout.jsx       # Barra lateral de navegación y encabezado global
+  │   │   ├── Layout.jsx       # Barra superior de navegación y encabezado global
   │   │   ├── JugadorCard.jsx  # Tarjeta individual de jugador en el plantel
   │   │   ├── JugadorForm.jsx  # Formulario modal de nuevo/edición de jugador
   │   │   ├── JugadorForm.test.jsx
   │   │   └── RegistroMedicoForm.jsx # Formulario modal de alta/edición médica
   │   ├── data/                # Modelos de datos y adaptadores de LocalStorage
   │   │   ├── calendarioData.js
-  │   │   ├── dashboardData.js
   │   │   ├── formacionesData.js
-  │   │   ├── jugadoresData.js
-  │   │   ├── medicoData.js
-  │   │   ├── rendimientoData.js
+  │   │   ├── plantelData.js\r\n  │   │   ├── medicoData.js
   │   │   └── soporteData.js
   │   ├── views/               # Las 8 pantallas principales de la aplicación
   │   │   ├── Login.jsx & Login.test.jsx
@@ -79,20 +76,20 @@ El frontend centraliza la información deportiva del club: control de plantilla 
 ### 2. Dashboard Principal (`/dashboard`) — [`src/views/Dashboard.jsx`](file:///c:/cc-analytics-react/src/views/Dashboard.jsx)
 - Resumen general del club: próximo partido estelar con cuenta regresiva, indicadores clave de rendimiento (posesión promedio, goles marcados, efectividad de pases, vallas invictas).
 - Feed de noticias internas del plantel profesional y accesos directos a los módulos táctico, médico y de plantel.
-- Datos estructurados en [`src/data/dashboardData.js`](file:///c:/cc-analytics-react/src/data/dashboardData.js).
+- Datos estructurados en [`src/data/calendarioData.js`](file:///c:/cc-analytics-react/src/data/calendarioData.js).
 
 ### 3. Catálogo del Plantel (`/plantel`) — [`src/views/Plantel.jsx`](file:///c:/cc-analytics-react/src/views/Plantel.jsx)
 - Gestión CRUD completa de futbolistas: alta de jugador, edición de datos, filtrado por posición (porteros, defensas, mediocampistas, delanteros) y buscador en tiempo real.
 - Eliminación con confirmación inline en la propia interfaz (sin utilizar `confirm()`).
 - Formulario modal [`JugadorForm.jsx`](file:///c:/cc-analytics-react/src/components/JugadorForm.jsx) con validaciones de dorsal, edad, valoración y posición.
-- Persistencia reactiva en LocalStorage con semillas iniciales en [`src/data/jugadoresData.js`](file:///c:/cc-analytics-react/src/data/jugadoresData.js).
+- Persistencia reactiva en LocalStorage con semillas iniciales en [`src/data/plantelData.js`](file:///c:/cc-analytics-react/src/data/plantelData.js).
 - **Testing:** [`src/components/JugadorForm.test.jsx`](file:///c:/cc-analytics-react/src/components/JugadorForm.test.jsx) (4 pruebas aprobadas).
 
 ### 4. Análisis de Rendimiento Individual (`/rendimiento`) — [`src/views/Rendimiento.jsx`](file:///c:/cc-analytics-react/src/views/Rendimiento.jsx)
 - Buscador y selector interactivo de futbolistas del plantel.
 - Gráfico de radar SVG nativo de 6 ejes (físico, pase, remate, defensa, regate, táctica) generado matemáticamente sin librerías externas pesadas.
 - Historial de partidos recientes con evolución de calificaciones, desglose físico y recomendaciones tácticas automatizadas.
-- Datos provistos por [`src/data/rendimientoData.js`](file:///c:/cc-analytics-react/src/data/rendimientoData.js).
+- Datos provistos por [`src/data/plantelData.js`](file:///c:/cc-analytics-react/src/data/plantelData.js).
 - **Testing:** [`Rendimiento.test.jsx`](file:///c:/cc-analytics-react/src/views/Rendimiento.test.jsx) (7 pruebas aprobadas).
 
 ### 5. Formaciones y Pizarra Táctica (`/formaciones`) — [`src/views/Formaciones.jsx`](file:///c:/cc-analytics-react/src/views/Formaciones.jsx)
