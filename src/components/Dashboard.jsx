@@ -179,9 +179,9 @@ const Dashboard = () => {
               Temporada 2026
             </span>
           </div>
-          <h2 className="text-3xl lg:text-4xl font-black uppercase tracking-widest text-white leading-none">
+          <h1 className="text-3xl lg:text-4xl font-black uppercase tracking-widest text-white leading-none">
             Panel Principal
-          </h2>
+          </h1>
           <p className="text-neutral-500 text-xs font-bold uppercase tracking-[0.2em] mt-2">
             Resumen General del Rendimiento del Plantel
           </p>
