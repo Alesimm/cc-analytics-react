@@ -121,7 +121,7 @@ const Plantel = () => {
             </span>
             <span className="text-neutral-700 text-xs hidden sm:inline">•</span>
             <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400 border border-white/10 px-2 py-0.5 bg-white/2">
-              Plantel Profesional 2026
+              Temporada 2026
             </span>
           </div>
           <h1 className="text-3xl lg:text-4xl font-black uppercase tracking-widest text-white leading-none">
