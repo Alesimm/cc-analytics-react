@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import RegistroMedicoForm from "./RegistroMedicoForm";
+import RegistroMedicoForm from "../components/RegistroMedicoForm";
 import CentroMedico from "./CentroMedico";
 
 const plantelPrueba = [

@@ -5,8 +5,8 @@ import {
   eliminarJugadorStorage,
   restablecerPlantelStorage,
 } from "../data/plantelData";
-import JugadorCard from "./JugadorCard";
-import JugadorForm from "./JugadorForm";
+import JugadorCard from "../components/JugadorCard";
+import JugadorForm from "../components/JugadorForm";
 
 const POSICIONES_FILTRO = [
   "Todos",

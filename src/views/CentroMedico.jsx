@@ -7,7 +7,7 @@ import {
   restablecerRegistrosMedicosStorage,
 } from "../data/medicoData";
 import { obtenerPlantel } from "../data/plantelData";
-import RegistroMedicoForm from "./RegistroMedicoForm";
+import RegistroMedicoForm from "../components/RegistroMedicoForm";
 
 const TIPOS_FILTRO = [
   "Todos",

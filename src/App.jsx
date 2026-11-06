@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './components/Login';
+import Login from './views/Login';
 import Layout from './components/Layout';
-import Dashboard from './components/Dashboard';
-import Plantel from './components/Plantel';
-import Rendimiento from './components/Rendimiento';
-import Formaciones from './components/Formaciones';
-import Calendario from './components/Calendario';
-import CentroMedico from './components/CentroMedico';
+import Dashboard from './views/Dashboard';
+import Plantel from './views/Plantel';
+import Rendimiento from './views/Rendimiento';
+import Formaciones from './views/Formaciones';
+import Calendario from './views/Calendario';
+import CentroMedico from './views/CentroMedico';
 
 const App = () => {
   return (
