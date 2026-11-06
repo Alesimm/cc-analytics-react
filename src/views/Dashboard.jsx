@@ -69,7 +69,7 @@ const noticiasFutbolChileno = [
   {
     id: "fc-1",
     categoria: "Torneo",
-    categoriaColor: "border-sky-500/50 text-sky-400",
+    categoriaColor: "border-white/15 text-neutral-300 bg-white/[0.03]",
     fecha: "Hoy",
     titulo: "U. de Chile iguala 1-1 ante Cobresal y la punta del torneo sigue muy apretada",
     resumen:
@@ -79,7 +79,7 @@ const noticiasFutbolChileno = [
   {
     id: "fc-2",
     categoria: "Mercado",
-    categoriaColor: "border-emerald-500/50 text-emerald-400",
+    categoriaColor: "border-emerald-500/30 text-emerald-400 bg-emerald-500/10",
     fecha: "18 Abr 2026",
     titulo: "Cierra el mercado de pases con refuerzos de última hora en varios equipos",
     resumen:
@@ -89,7 +89,7 @@ const noticiasFutbolChileno = [
   {
     id: "fc-3",
     categoria: "Programación",
-    categoriaColor: "border-purple-500/50 text-purple-400",
+    categoriaColor: "border-white/15 text-neutral-300 bg-white/[0.03]",
     fecha: "17 Abr 2026",
     titulo: "Confirmados los días y horarios oficiales para la fecha 9 del campeonato",
     resumen:
@@ -99,7 +99,7 @@ const noticiasFutbolChileno = [
   {
     id: "fc-4",
     categoria: "Copas",
-    categoriaColor: "border-amber-500/50 text-amber-400",
+    categoriaColor: "border-white/15 text-neutral-300 bg-white/[0.03]",
     fecha: "16 Abr 2026",
     titulo: "Listos los cruces directos para la siguiente ronda de Copa Chile",
     resumen:
@@ -113,7 +113,7 @@ const noticiasClub = [
   {
     id: "club-1",
     categoria: "Táctica",
-    categoriaColor: "border-blue-500/50 text-blue-400",
+    categoriaColor: "border-white/15 text-neutral-300 bg-white/[0.03]",
     fecha: "18 Abr 2026",
     titulo: "El cuerpo técnico afina los últimos movimientos tácticos para el fin de semana",
     resumen:
@@ -123,7 +123,7 @@ const noticiasClub = [
   {
     id: "club-2",
     categoria: "Médico",
-    categoriaColor: "border-amber-500/50 text-amber-400",
+    categoriaColor: "border-amber-500/30 text-amber-400 bg-amber-500/10",
     fecha: "17 Abr 2026",
     titulo: "Buena recuperación: jugadores con molestias entrenan con mayor normalidad",
     resumen:
@@ -133,7 +133,7 @@ const noticiasClub = [
   {
     id: "club-3",
     categoria: "Rendimiento",
-    categoriaColor: "border-emerald-500/50 text-emerald-400",
+    categoriaColor: "border-emerald-500/30 text-emerald-400 bg-emerald-500/10",
     fecha: "15 Abr 2026",
     titulo: "El plantel mantiene una intensidad física alta en los entrenamientos",
     resumen:
@@ -143,7 +143,7 @@ const noticiasClub = [
   {
     id: "club-4",
     categoria: "Sistema",
-    categoriaColor: "border-purple-500/50 text-purple-400",
+    categoriaColor: "border-white/15 text-neutral-300 bg-white/[0.03]",
     fecha: "14 Abr 2026",
     titulo: "Nuevas mejoras en los reportes individuales dentro de CC Analytics",
     resumen:
@@ -162,28 +162,23 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8 relative">
-      {/* auras de luz ambiental esmeralda para el panel de inteligencia deportiva */}
-      <div className="absolute -top-10 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.053),transparent_70%)] pointer-events-none -z-10"></div>
-      <div className="absolute top-48 left-10 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(20,184,166,0.038),transparent_70%)] pointer-events-none -z-10"></div>
-      {/* cabecera principal con titulo y datos discretos de temporada sin sobrecargar la vista */}
+      {/* cabecera principal minimalista sin ruido visual */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="inline-block w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.9)] animate-pulse"></span>
-            <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400">
+          <div className="flex items-center gap-2.5 mb-2 flex-wrap">
+            <span className="inline-block w-1.5 h-1.5 bg-white"></span>
+            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-400">
               CC Analytics // Inteligencia Deportiva
             </span>
-            <span className="text-neutral-700 text-xs hidden sm:inline">•</span>
-            {/* badge discreto de temporada oficial para evitar sobrecarga visual */}
-            <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400 border border-white/10 px-2 py-0.5 bg-white/2">
+            <span className="text-[10px] uppercase font-bold tracking-[0.14em] text-neutral-300 border border-white/15 px-2 py-0.5 bg-white/[0.03]">
               Temporada 2026
             </span>
           </div>
-          <h1 className="text-3xl lg:text-4xl font-black uppercase tracking-widest text-white leading-none">
+          <h1 className="text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-white leading-none">
             Panel Principal
           </h1>
-          <p className="text-neutral-500 text-xs font-bold uppercase tracking-[0.2em] mt-2">
-            Resumen General del Rendimiento del Plantel
+          <p className="text-neutral-400 text-xs font-medium mt-2">
+            Resumen general del rendimiento del plantel
           </p>
         </div>
       </header>
@@ -349,23 +344,34 @@ const Dashboard = () => {
               <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
                 Comparativa Estadística del Partido
               </p>
-              <div className="space-y-2">
-                {ultimoPartido.estadisticas.map((stat, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between text-xs py-1 border-b border-white/5 last:border-0"
-                  >
-                    <span className="font-mono font-bold text-white w-20 text-left">
-                      {stat.local}
-                    </span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 text-center flex-1">
-                      {stat.etiqueta}
-                    </span>
-                    <span className="font-mono font-bold text-neutral-400 w-20 text-right">
-                      {stat.visita}
-                    </span>
-                  </div>
-                ))}
+              <div className="space-y-3">
+                {ultimoPartido.estadisticas.map((stat, i) => {
+                  const valLocal = parseFloat(stat.local) || 50;
+                  const valVisita = parseFloat(stat.visita) || 50;
+                  const total = valLocal + valVisita || 100;
+                  const pctLocal = Math.round((valLocal / total) * 100);
+                  return (
+                    <div key={i} className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-mono font-bold text-white w-24 text-left">
+                          {stat.local}
+                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 text-center flex-1">
+                          {stat.etiqueta}
+                        </span>
+                        <span className="font-mono font-bold text-neutral-400 w-24 text-right">
+                          {stat.visita}
+                        </span>
+                      </div>
+                      <div className="h-1 w-full bg-white/10 flex overflow-hidden">
+                        <div
+                          className="h-full bg-white"
+                          style={{ width: `${pctLocal}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

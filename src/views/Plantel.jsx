@@ -108,27 +108,23 @@ const Plantel = () => {
 
   return (
     <div className="space-y-8 relative">
-      {/* auras de luz ambiental azul electrico / cian para la gestion de plantel */}
-      <div className="absolute -top-10 right-20 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.053),transparent_70%)] pointer-events-none -z-10"></div>
-      <div className="absolute top-64 left-10 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.038),transparent_70%)] pointer-events-none -z-10"></div>
-      {/* cabecera principal */}
+      {/* cabecera principal minimalista */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="inline-block w-2.5 h-2.5 bg-sky-400 rounded-full shadow-[0_0_12px_rgba(56,189,248,0.9)] animate-pulse"></span>
-            <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400">
+          <div className="flex items-center gap-2.5 mb-2 flex-wrap">
+            <span className="inline-block w-1.5 h-1.5 bg-white"></span>
+            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-400">
               CC Analytics // Gestión Deportiva
             </span>
-            <span className="text-neutral-700 text-xs hidden sm:inline">•</span>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400 border border-white/10 px-2 py-0.5 bg-white/2">
+            <span className="text-[10px] uppercase font-bold tracking-[0.14em] text-neutral-300 border border-white/15 px-2 py-0.5 bg-white/[0.03]">
               Temporada 2026
             </span>
           </div>
-          <h1 className="text-3xl lg:text-4xl font-black uppercase tracking-widest text-white leading-none">
+          <h1 className="text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-white leading-none">
             Catálogo del Plantel
           </h1>
-          <p className="text-neutral-500 text-xs font-bold uppercase tracking-[0.2em] mt-2">
-            Control de Jugadores, Fichas Técnicas y Estado del Equipo
+          <p className="text-neutral-400 text-xs font-medium mt-2">
+            Control de jugadores, fichas técnicas y estado del equipo
           </p>
         </div>
 

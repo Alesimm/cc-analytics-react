@@ -7,7 +7,15 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
     localStorage.clear();
   });
 
-  // prueba 1: renderizado del perfil inicial segun el mockup y radar chart
+  // helper para seleccionar a un futbolista desde el estado inicial skeleton
+  const seleccionarFutbolistaDemo = (nombre = /arturo vidal/i) => {
+    const botonCatalogo = screen.getByRole("button", { name: /catálogo/i });
+    fireEvent.click(botonCatalogo);
+    const opcion = screen.getByRole("button", { name: nombre });
+    fireEvent.click(opcion);
+  };
+
+  // prueba 1: renderizado del estado skeleton inicial y posterior activacion del perfil con radar chart
   it("renderiza correctamente la vista de Analisis Individual y los 6 ejes del radar", () => {
     render(<Rendimiento />);
 
@@ -16,7 +24,15 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
       screen.getByRole("heading", { name: /análisis individual/i })
     ).toBeInTheDocument();
 
-    // grafico radial svg nativo de 6 ejes
+    // estado inicial: skeleton esperando asignacion
+    expect(
+      screen.getByText(/ningún futbolista seleccionado/i)
+    ).toBeInTheDocument();
+
+    // seleccionar un futbolista del catalogo
+    seleccionarFutbolistaDemo(/arturo vidal/i);
+
+    // grafico radial svg nativo de 6 ejes ahora activo
     expect(
       screen.getByLabelText(/gráfico radial de estadísticas individuales/i)
     ).toBeInTheDocument();
@@ -35,15 +51,8 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
   it("permite seleccionar otro futbolista mediante el buscador/catalogo y actualiza los partidos recientes dinamicamente", () => {
     render(<Rendimiento />);
 
-    // abrir el catalogo desplegable
-    const botonCatalogo = screen.getByRole("button", { name: /catálogo/i });
-    fireEvent.click(botonCatalogo);
-
     // seleccionar brayan cortes en el catalogo
-    const opcionCortes = screen.getByRole("button", {
-      name: /brayan cortés/i,
-    });
-    fireEvent.click(opcionCortes);
+    seleccionarFutbolistaDemo(/brayan cortés/i);
 
     // verificar que el perfil principal se actualice con brayan cortes
     expect(
@@ -58,6 +67,8 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
   // prueba 3 (formulario - regla del profesor): validacion de errores al intentar registrar directriz vacia
   it("muestra mensajes de error cuando se envia una directriz o recomendacion vacia", () => {
     render(<Rendimiento />);
+
+    seleccionarFutbolistaDemo(/arturo vidal/i);
 
     // abrir el formulario de nueva directriz
     const botonNueva = screen.getByRole("button", {
@@ -79,6 +90,8 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
   // prueba 4 (formulario - regla del profesor): creacion exitosa de una directriz tactica
   it("permite registrar una nueva directriz para el futbolista y muestra feedback inline", () => {
     render(<Rendimiento />);
+
+    seleccionarFutbolistaDemo(/arturo vidal/i);
 
     const botonNueva = screen.getByRole("button", {
       name: /\+ nueva directriz táctica/i,
@@ -112,6 +125,8 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
   it("permite editar una directriz existente y actualizar su contenido", () => {
     render(<Rendimiento />);
 
+    seleccionarFutbolistaDemo(/arturo vidal/i);
+
     // buscar los botones de editar existentes en las directrices precargadas
     const botonesEditar = screen.getAllByRole("button", { name: /editar/i });
     expect(botonesEditar.length).toBeGreaterThan(0);
@@ -143,6 +158,8 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
   it("permite eliminar una directriz con confirmacion inline sin usar confirm()", () => {
     render(<Rendimiento />);
 
+    seleccionarFutbolistaDemo(/arturo vidal/i);
+
     const botonesEliminar = screen.getAllByRole("button", { name: /eliminar/i });
     expect(botonesEliminar.length).toBeGreaterThan(0);
 
@@ -164,13 +181,8 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
   it("muestra el estado de sin participacion para futbolistas que no jugaron un cotejo", () => {
     render(<Rendimiento />);
 
-    const botonCatalogo = screen.getByRole("button", { name: /catálogo/i });
-    fireEvent.click(botonCatalogo);
-
-    const opcionDePaul = screen.getByRole("button", {
-      name: /fernando de paul/i,
-    });
-    fireEvent.click(opcionDePaul);
+    // seleccionar fernando de paul directamente desde el catalogo
+    seleccionarFutbolistaDemo(/fernando de paul/i);
 
     // verificar presencia de etiqueta 'sin participacion' para los partidos en banca
     expect(

@@ -1,19 +1,8 @@
 import { useState } from "react";
 
-// colores e insignias segun la posicion tactica
-const estiloPosicion = (posicion) => {
-  switch (posicion) {
-    case "Arquero":
-      return "border-sky-500/40 text-sky-400 bg-sky-500/10";
-    case "Defensa":
-      return "border-emerald-500/40 text-emerald-400 bg-emerald-500/10";
-    case "Mediocampista":
-      return "border-blue-500/40 text-blue-400 bg-blue-500/10";
-    case "Delantero":
-      return "border-amber-500/40 text-amber-400 bg-amber-500/10";
-    default:
-      return "border-neutral-500/40 text-neutral-400 bg-neutral-500/10";
-  }
+// insignia sobria y monocromatica para la posicion tactica (sin ruido de color innecesario)
+const estiloPosicion = () => {
+  return "border-white/15 text-neutral-300 bg-white/[0.03]";
 };
 
 // indicador de disponibilidad medica y deportiva
@@ -40,7 +29,7 @@ const JugadorCard = ({ jugador, onEditar, onEliminar }) => {
         {/* cabecera de la ficha: dorsal y badges */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <span className="font-mono font-black text-2xl sm:text-3xl text-white tracking-tight border border-white/10 bg-white/5 w-12 h-12 flex items-center justify-center">
+            <span className="font-mono font-extrabold text-lg sm:text-xl text-white tracking-tight border border-white/15 bg-white/[0.04] px-2.5 py-1.5 min-w-[50px] text-center flex items-center justify-center">
               #{jugador.dorsal}
             </span>
             <div>
