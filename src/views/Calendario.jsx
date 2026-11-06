@@ -189,27 +189,23 @@ const Calendario = () => {
 
   return (
     <div className="space-y-8 relative">
-      {/* auras de luz ambiental esmeralda y cian para el fixture deportivo */}
-      <div className="absolute -top-10 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.053),transparent_70%)] pointer-events-none -z-10"></div>
-      <div className="absolute top-72 left-8 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.038),transparent_70%)] pointer-events-none -z-10"></div>
-      {/* cabecera principal */}
+      {/* cabecera principal minimalista */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="inline-block w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.9)] animate-pulse"></span>
-            <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400">
+          <div className="flex items-center gap-2.5 mb-2 flex-wrap">
+            <span className="inline-block w-1.5 h-1.5 bg-white"></span>
+            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-400">
               CC Analytics // Fixture y Competiciones
             </span>
-            <span className="text-neutral-700 text-xs hidden sm:inline">•</span>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400 border border-white/10 px-2 py-0.5 bg-white/[0.02]">
+            <span className="text-[10px] uppercase font-bold tracking-[0.14em] text-neutral-300 border border-white/15 px-2 py-0.5 bg-white/[0.03]">
               Temporada 2026
             </span>
           </div>
-          <h1 className="text-3xl lg:text-4xl font-black uppercase tracking-widest text-white leading-none">
+          <h1 className="text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-white leading-none">
             Calendario de Partidos
           </h1>
-          <p className="text-neutral-500 text-xs font-bold uppercase tracking-[0.2em] mt-2">
-            Programación Oficial, Resultados y Resumen de Encuentros
+          <p className="text-neutral-400 text-xs font-medium mt-2">
+            Programación oficial, resultados y resumen de encuentros
           </p>
         </div>
 
@@ -218,7 +214,7 @@ const Calendario = () => {
           <button
             type="button"
             onClick={() => setModalNuevoPartido(true)}
-            className="text-[10px] uppercase font-black tracking-wider text-black bg-white hover:bg-neutral-200 px-4 py-2.5 transition-colors cursor-pointer"
+            className="text-[10px] uppercase font-extrabold tracking-wider text-black bg-white hover:bg-neutral-200 px-4 py-2.5 transition-colors cursor-pointer"
           >
             + Programar Partido
           </button>

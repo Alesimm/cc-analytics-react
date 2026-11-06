@@ -198,51 +198,44 @@ const Soporte = () => {
   const colorPrioridad = (prioridad) => {
     switch (prioridad) {
       case "Urgente":
-        return "border-rose-500/50 text-rose-400 bg-rose-500/10";
+        return "border-rose-500/40 text-rose-400 bg-rose-500/10";
       case "Alta":
-        return "border-amber-500/50 text-amber-400 bg-amber-500/10";
-      case "Media":
-        return "border-sky-500/50 text-sky-400 bg-sky-500/10";
+        return "border-amber-500/40 text-amber-400 bg-amber-500/10";
       default:
-        return "border-neutral-700 text-neutral-400 bg-neutral-800/40";
+        return "border-white/15 text-neutral-300 bg-white/[0.03]";
     }
   };
 
   const colorEstado = (estado) => {
     switch (estado) {
       case "Resuelto":
-        return "border-emerald-500/50 text-emerald-400 bg-emerald-500/10";
+        return "border-emerald-500/40 text-emerald-400 bg-emerald-500/10";
       case "En Revisión":
-        return "border-amber-500/50 text-amber-400 bg-amber-500/10";
+        return "border-amber-500/40 text-amber-400 bg-amber-500/10";
       default:
-        return "border-sky-500/50 text-sky-400 bg-sky-500/10";
+        return "border-white/15 text-neutral-300 bg-white/[0.03]";
     }
   };
 
   return (
     <div className="space-y-8 relative">
-      {/* auras de luz ambiental fucsia y violeta optimizadas mediante radial-gradient */}
-      <div className="absolute -top-10 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(217,70,239,0.025),transparent_70%)] pointer-events-none -z-10"></div>
-      <div className="absolute top-72 left-8 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.018),transparent_70%)] pointer-events-none -z-10"></div>
-
-      {/* cabecera principal */}
+      {/* cabecera principal minimalista */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="inline-block w-2.5 h-2.5 bg-fuchsia-400 rounded-full shadow-[0_0_12px_rgba(217,70,239,0.9)] animate-pulse"></span>
-            <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400">
+          <div className="flex items-center gap-2.5 mb-2 flex-wrap">
+            <span className="inline-block w-1.5 h-1.5 bg-white"></span>
+            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-400">
               CC Analytics // Mesa de Ayuda
             </span>
-            <span className="text-neutral-700 text-xs hidden sm:inline">•</span>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400 border border-white/10 px-2 py-0.5 bg-white/2">
+            <span className="text-[10px] uppercase font-bold tracking-[0.14em] text-neutral-300 border border-white/15 px-2 py-0.5 bg-white/[0.03]">
               Temporada 2026
             </span>
           </div>
-          <h1 className="text-3xl lg:text-4xl font-black uppercase tracking-widest text-white leading-none">
+          <h1 className="text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-white leading-none">
             Soporte Técnico
           </h1>
-          <p className="text-neutral-500 text-xs font-bold uppercase tracking-[0.2em] mt-2">
-            Mesa de Ayuda, Registro de Incidencias y Asistencia a Usuarios
+          <p className="text-neutral-400 text-xs font-medium mt-2">
+            Mesa de ayuda, registro de incidencias y asistencia a usuarios
           </p>
         </div>
 

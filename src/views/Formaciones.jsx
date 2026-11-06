@@ -34,45 +34,14 @@ const obtenerEtiquetaRitmo = (porcentaje) => {
   return "Vertical y Directo";
 };
 
-// estilos de acento visual segun la demarcacion del futbolista
-const obtenerColorLinea = (posicion) => {
-  switch (posicion) {
-    case "Arquero":
-      return {
-        borde: "border-amber-400",
-        texto: "text-amber-400",
-        bg: "bg-amber-400/10",
-        badge: "bg-amber-500/20 text-amber-300 border-amber-500/40",
-      };
-    case "Defensa":
-      return {
-        borde: "border-sky-400",
-        texto: "text-sky-400",
-        bg: "bg-sky-400/10",
-        badge: "bg-sky-500/20 text-sky-300 border-sky-500/40",
-      };
-    case "Mediocampo":
-      return {
-        borde: "border-emerald-400",
-        texto: "text-emerald-400",
-        bg: "bg-emerald-400/10",
-        badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-      };
-    case "Delantero":
-      return {
-        borde: "border-rose-400",
-        texto: "text-rose-400",
-        bg: "bg-rose-400/10",
-        badge: "bg-rose-500/20 text-rose-300 border-rose-500/40",
-      };
-    default:
-      return {
-        borde: "border-white",
-        texto: "text-white",
-        bg: "bg-white/10",
-        badge: "bg-white/20 text-white border-white/40",
-      };
-  }
+// estilos sobrios y monocromaticos para las demarcaciones (sin colores de mas)
+const obtenerColorLinea = () => {
+  return {
+    borde: "border-white/60",
+    texto: "text-white",
+    bg: "bg-white/5",
+    badge: "bg-white/[0.04] text-neutral-300 border-white/15",
+  };
 };
 
 const Formaciones = () => {
@@ -301,11 +270,40 @@ const Formaciones = () => {
     }
   };
 
-  // manejadores de drag & drop
+  // manejadores de drag & drop con camiseta visual que sigue el cursor
   const handleDragStartSuplente = (e, suplente) => {
     setSuplenteArrastrado(suplente);
     e.dataTransfer.setData("text/plain", suplente.id);
     e.dataTransfer.effectAllowed = "move";
+
+    // crear elemento fantasma visual de la camiseta para el arrastre
+    if (typeof document !== "undefined") {
+      const ghost = document.createElement("div");
+      ghost.style.position = "absolute";
+      ghost.style.top = "-9999px";
+      ghost.style.left = "-9999px";
+      ghost.style.width = "48px";
+      ghost.style.height = "48px";
+      ghost.style.display = "flex";
+      ghost.style.alignItems = "center";
+      ghost.style.justifyContent = "center";
+      ghost.style.pointerEvents = "none";
+      ghost.innerHTML = `
+        <div style="position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 64 64" style="width:100%;height:100%;fill:#ffffff;stroke:#000000;stroke-width:2.5px;">
+            <path d="M20 10 L26 10 C28 14 36 14 38 10 L44 10 L56 20 L50 28 L44 24 L44 54 L20 54 L20 24 L14 28 L8 20 Z" />
+          </svg>
+          <span style="position:absolute;font-family:monospace;font-weight:900;font-size:12px;color:#000000;margin-top:4px;">
+            ${suplente.dorsal}
+          </span>
+        </div>
+      `;
+      document.body.appendChild(ghost);
+      e.dataTransfer.setDragImage(ghost, 24, 24);
+      setTimeout(() => {
+        if (ghost.parentNode) document.body.removeChild(ghost);
+      }, 0);
+    }
   };
 
   const handleDragOverTitular = (e, titular) => {
@@ -467,27 +465,23 @@ const Formaciones = () => {
 
   return (
     <div className="space-y-8 relative">
-      {/* auras de luz ambiental indigo / violeta para la pizarra tactica */}
-      <div className="absolute -top-10 right-1/4 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.053),transparent_70%)] pointer-events-none -z-10"></div>
-      <div className="absolute top-64 left-10 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.038),transparent_70%)] pointer-events-none -z-10"></div>
-      {/* cabecera principal estandarizada */}
+      {/* cabecera principal minimalista */}
       <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="inline-block w-2.5 h-2.5 bg-indigo-400 rounded-full shadow-[0_0_12px_rgba(129,140,248,0.9)] animate-pulse"></span>
-            <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400">
+          <div className="flex items-center gap-2.5 mb-2 flex-wrap">
+            <span className="inline-block w-1.5 h-1.5 bg-white"></span>
+            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-400">
               CC Analytics // Táctica y Estrategia
             </span>
-            <span className="text-neutral-700 text-xs hidden sm:inline">•</span>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400 border border-white/10 px-2 py-0.5 bg-white/2">
+            <span className="text-[10px] uppercase font-bold tracking-[0.14em] text-neutral-300 border border-white/15 px-2 py-0.5 bg-white/[0.03]">
               Temporada 2026
             </span>
           </div>
-          <h1 className="text-3xl lg:text-4xl font-black uppercase tracking-widest text-white leading-none">
+          <h1 className="text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-white leading-none">
             Pizarra Táctica
           </h1>
-          <p className="text-neutral-500 text-xs font-bold uppercase tracking-[0.2em] mt-2">
-            Distribución Posicional, Esquemas y Parámetros del Partido
+          <p className="text-neutral-400 text-xs font-medium mt-2">
+            Distribución posicional, esquemas y parámetros del partido
           </p>
         </div>
 
@@ -496,21 +490,21 @@ const Formaciones = () => {
           <button
             type="button"
             onClick={() => setModalNuevoEsquema(true)}
-            className="text-[10px] uppercase font-black tracking-wider text-black bg-white hover:bg-neutral-200 px-3.5 py-2.5 transition-colors cursor-pointer"
+            className="text-[10px] uppercase font-extrabold tracking-wider text-black bg-white hover:bg-neutral-200 px-3.5 py-2.5 transition-colors cursor-pointer"
           >
             + Nuevo Esquema
           </button>
           <button
             type="button"
             onClick={handleGuardarConfiguracion}
-            className="text-[10px] uppercase font-black tracking-wider text-white border border-emerald-500/60 bg-emerald-500/10 hover:bg-emerald-500 hover:text-black px-3.5 py-2.5 transition-colors cursor-pointer"
+            className="text-[10px] uppercase font-bold tracking-wider text-white border border-white/15 bg-white/[0.03] hover:bg-white hover:text-black px-3.5 py-2.5 transition-colors cursor-pointer"
           >
             Guardar Configuración
           </button>
           <button
             type="button"
             onClick={handleRestablecerEsquema}
-            className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3.5 py-2.5 bg-white/2 transition-colors cursor-pointer"
+            className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3.5 py-2.5 bg-white/[0.02] transition-colors cursor-pointer"
             title="Restablecer posiciones al esquema oficial"
           >
             Restablecer Posiciones
@@ -605,22 +599,19 @@ const Formaciones = () => {
                 onClick={() => handleCambiarFormacion(formacion.id)}
                 className={`p-3.5 border text-left transition-all cursor-pointer relative overflow-hidden ${
                   estaActiva
-                    ? "border-white bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.06)]"
+                    ? "border-white bg-white/[0.06] text-white"
                     : "border-white/10 bg-[#0a0a0a]/80 text-neutral-400 hover:border-white/30 hover:text-white"
                 }`}
               >
-                {estaActiva && (
-                  <span className="absolute top-0 left-0 right-0 h-0.5 bg-emerald-400"></span>
-                )}
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs sm:text-sm font-black tracking-wider uppercase truncate">
+                  <span className="text-xs sm:text-sm font-extrabold tracking-tight uppercase truncate">
                     {formacion.nombre.split(" ")[0]}
                   </span>
                   {estaActiva ? (
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.9)]"></span>
+                    <span className="w-2 h-2 rounded-full bg-white"></span>
                   ) : (
                     !formacion.esOficial && (
-                      <span className="text-[9px] uppercase font-bold text-amber-400">Custom</span>
+                      <span className="text-[9px] uppercase font-bold text-neutral-400">Custom</span>
                     )
                   )}
                 </div>
@@ -705,7 +696,6 @@ const Formaciones = () => {
             {posicionesDinamicas.map((jugador) => {
               const estaSeleccionado = jugadorSeleccionado?.id === jugador.id;
               const esDestinoHover = titularDestinoHover === jugador.id;
-              const colorInfo = obtenerColorLinea(jugador.posicion);
 
               const compatibleConArrastrado =
                 suplenteArrastrado && esCompatible(suplenteArrastrado, jugador);
@@ -719,10 +709,10 @@ const Formaciones = () => {
                     transform: "translate(-50%, -50%)",
                     transition: "left 0.4s cubic-bezier(0.16, 1, 0.3, 1), top 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
-                  className={`absolute z-10 flex flex-col items-center group cursor-pointer ${
+                  className={`absolute z-10 flex flex-col items-center group cursor-pointer p-4 -m-4 ${
                     esDestinoHover
                       ? compatibleConArrastrado
-                        ? "scale-[1.20] z-30"
+                        ? "scale-[1.22] z-30"
                         : "scale-105 opacity-80"
                       : ""
                   }`}
@@ -731,34 +721,65 @@ const Formaciones = () => {
                   onDragLeave={handleDragLeaveTitular}
                   onDrop={(e) => handleDropTitular(e, jugador)}
                 >
-                  {/* circulo con dorsal y aro de demarcacion */}
-                  <div
-                    className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 flex flex-col items-center justify-center font-black transition-[transform,background-color,border-color,box-shadow] duration-200 shadow-xl ${
-                      estaSeleccionado
-                        ? "border-amber-400 bg-amber-400 text-black scale-[1.15] shadow-[0_0_22px_rgba(251,191,36,0.9)]"
-                        : esDestinoHover && compatibleConArrastrado
-                        ? "border-emerald-400 bg-emerald-500 text-white ring-4 ring-emerald-400/80"
-                        : esDestinoHover && !compatibleConArrastrado
-                        ? "border-rose-500 bg-rose-600 text-white ring-4 ring-rose-500/80 cursor-not-allowed"
-                        : `bg-[#0a0b0d] text-white ${colorInfo.borde} hover:scale-105 hover:border-white`
-                    }`}
-                  >
-                    <span className="text-sm font-black leading-none">{jugador.dorsal}</span>
-                    <span className="text-[8px] font-bold uppercase tracking-wider opacity-80 leading-none mt-0.5">
+                  {/* icono de camiseta minimalista con dorsal interior y resalte sobre las lineas de la cancha */}
+                  <div className="relative flex flex-col items-center justify-center">
+                    <span className="text-[8px] font-bold uppercase tracking-wider text-neutral-300 bg-black/80 px-1.5 py-0.5 rounded-sm border border-white/10 mb-0.5 leading-none shadow-sm backdrop-blur-[2px]">
                       {jugador.rol}
                     </span>
+
+                    <div
+                      className={`relative w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center transition-all duration-300 ${
+                        estaSeleccionado
+                          ? "scale-110 drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]"
+                          : esDestinoHover && compatibleConArrastrado
+                          ? "scale-115 drop-shadow-[0_0_15px_rgba(16,185,129,0.7)]"
+                          : esDestinoHover && !compatibleConArrastrado
+                          ? "scale-110 drop-shadow-[0_0_15px_rgba(239,68,68,0.7)]"
+                          : "group-hover:scale-105"
+                      }`}
+                    >
+                      {estaSeleccionado && (
+                        <span className="absolute -inset-1.5 rounded-full border border-white/40 bg-white/10 pointer-events-none animate-pulse" />
+                      )}
+                      <svg
+                        viewBox="0 0 64 64"
+                        className={`w-full h-full drop-shadow-lg transition-colors duration-300 ${
+                          estaSeleccionado
+                            ? "fill-white text-black"
+                            : esDestinoHover && compatibleConArrastrado
+                            ? "fill-emerald-500 text-white"
+                            : esDestinoHover && !compatibleConArrastrado
+                            ? "fill-rose-600 text-white"
+                            : "fill-[#050505] text-white"
+                        }`}
+                        stroke="currentColor"
+                        strokeWidth="2.8"
+                        aria-hidden="true"
+                      >
+                        <path d="M20 10 L26 10 C28 14 36 14 38 10 L44 10 L56 20 L50 28 L44 24 L44 54 L20 54 L20 24 L14 28 L8 20 Z" />
+                      </svg>
+                      <span
+                        className={`absolute font-mono font-extrabold text-[11px] leading-none mt-1 select-none ${
+                          estaSeleccionado ? "text-black" : "text-white"
+                        }`}
+                      >
+                        {jugador.dorsal}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* etiqueta con nombre y calificacion */}
+                  {/* etiqueta con nombre y calificacion con pastilla oscura de alto contraste para que no se pierda con el blanco de la cal */}
                   <div
-                    className={`mt-1 px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-center leading-tight whitespace-nowrap transition-colors ${
+                    className={`mt-1 px-2 py-0.5 rounded-sm text-[9px] sm:text-[10px] font-bold tracking-tight text-center leading-tight whitespace-nowrap transition-all duration-300 border backdrop-blur-md shadow-md ${
                       estaSeleccionado
-                        ? "bg-amber-400 text-black font-black shadow-md"
-                        : "bg-black/90 text-neutral-200 border border-white/10 group-hover:border-white/40"
+                        ? "bg-white text-black border-white font-extrabold"
+                        : "bg-[#050505]/95 text-neutral-200 border-white/20 group-hover:border-white/50 group-hover:text-white"
                     }`}
                   >
                     <span>{jugador.nombre}</span>
-                    <span className="text-neutral-400 font-normal ml-1">({jugador.media || 80})</span>
+                    <span className={`font-semibold ml-1 ${estaSeleccionado ? "text-neutral-700" : "text-neutral-400"}`}>
+                      {jugador.media || 80}
+                    </span>
                   </div>
                 </div>
               );
@@ -798,32 +819,51 @@ const Formaciones = () => {
               </div>
             )}
 
-            {/* tarjetas horizontales de futbolistas suplentes */}
+            {/* tarjetas horizontales de futbolistas suplentes con estilo de camiseta como el mockup */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               {suplentes.map((suplente) => {
                 const colorInfo = obtenerColorLinea(suplente.posicion);
+                const esArrastrado = suplenteArrastrado?.id === suplente.id;
                 return (
                   <div
                     key={suplente.id}
                     draggable={true}
                     onDragStart={(e) => handleDragStartSuplente(e, suplente)}
+                    onDragEnd={() => setSuplenteArrastrado(null)}
                     onClick={() => handleClicSuplente(suplente)}
-                    className="border border-white/10 bg-white/2 hover:bg-white/5 hover:border-white/30 p-2.5 transition-all cursor-grab active:cursor-grabbing flex flex-col justify-between group"
-                    title={`Arrastra a ${suplente.nombre} hacia la cancha o haz clic si ya tienes un titular seleccionado`}
+                    className={`border border-white/10 bg-[#0a0a0a] hover:border-white/30 p-2.5 transition-all cursor-grab active:cursor-grabbing flex flex-col justify-between group select-none ${
+                      esArrastrado ? "opacity-40 border-white/40 scale-95" : ""
+                    }`}
+                    title={`Arrastra la camiseta de ${suplente.nombre} hacia la cancha o haz clic para sustituir`}
                   >
-                    <div className="flex items-start justify-between gap-1 mb-1.5">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-black text-white">#{suplente.dorsal}</span>
-                        <span className={`text-[9px] font-bold uppercase px-1 py-0.5 border ${colorInfo.badge}`}>
-                          {suplente.rol}
-                        </span>
-                      </div>
-                      <span className="text-[10px] font-black text-neutral-400">
+                    <div className="flex items-center justify-between gap-1 mb-2">
+                      <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 border ${colorInfo.badge}`}>
+                        {suplente.rol}
+                      </span>
+                      <span className="text-[10px] font-mono font-bold text-neutral-400">
                         {suplente.media || 79}
                       </span>
                     </div>
 
-                    <p className="text-[11px] font-bold text-white uppercase tracking-wider truncate mb-2">
+                    {/* camiseta del suplente con su dorsal */}
+                    <div className="flex flex-col items-center justify-center my-1">
+                      <div className="relative w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+                        <svg
+                          viewBox="0 0 64 64"
+                          className="w-full h-full fill-[#060606] text-white/80 group-hover:text-white drop-shadow"
+                          stroke="currentColor"
+                          strokeWidth="2.8"
+                          aria-hidden="true"
+                        >
+                          <path d="M20 10 L26 10 C28 14 36 14 38 10 L44 10 L56 20 L50 28 L44 24 L44 54 L20 54 L20 24 L14 28 L8 20 Z" />
+                        </svg>
+                        <span className="absolute font-mono font-extrabold text-[11px] text-white leading-none mt-1">
+                          {suplente.dorsal}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-[11px] font-bold text-white uppercase tracking-wider truncate text-center my-1.5">
                       {suplente.nombre}
                     </p>
 
@@ -833,7 +873,7 @@ const Formaciones = () => {
                         e.stopPropagation();
                         handleClicSuplente(suplente);
                       }}
-                      className="w-full text-[9px] font-bold uppercase tracking-wider py-1 border border-white/10 text-neutral-400 group-hover:border-white group-hover:text-black group-hover:bg-white transition-colors cursor-pointer text-center"
+                      className="w-full text-[9px] font-bold uppercase tracking-wider py-1 border border-white/10 text-neutral-400 group-hover:border-white group-hover:text-black group-hover:bg-white transition-colors cursor-pointer text-center mt-1"
                     >
                       Sustituir
                     </button>
