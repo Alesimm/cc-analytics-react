@@ -54,6 +54,15 @@ const Login = () => {
     setErrors(newErrors);
 
     if (isValid) {
+      try {
+        localStorage.setItem(
+          "cc_usuario_sesion",
+          JSON.stringify({ correo: email.trim(), rol: "Admin" })
+        );
+      } catch {
+        // fallback en caso de restricciones de almacenamiento
+      }
+
       setCargando(true);
       setMensajeCarga("Verificando credenciales...");
 
@@ -145,9 +154,9 @@ const Login = () => {
       </div>
 
       {/* lado derecho con el cuadro de login limpio y estructurado */}
-      <div className="relative z-10 w-full lg:w-[50%] flex items-center justify-center p-6 sm:p-10 xl:p-16 bg-black/50 backdrop-blur-sm animate-login-enter delay-200">
+      <div className="relative z-10 w-full lg:w-[50%] flex items-center justify-center p-4 sm:p-10 xl:p-16 bg-black/50 backdrop-blur-sm animate-login-enter delay-200">
         {/* logo superior oficial en la esquina derecha */}
-        <div className="absolute top-6 right-6 lg:top-8 lg:right-10 flex items-center gap-3 select-none">
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-10 flex items-center gap-2 sm:gap-3 select-none">
           <div className="text-right hidden sm:block">
             <p className="text-white font-extrabold uppercase tracking-[0.15em] leading-none mb-1 text-sm">
               Colo-Colo
@@ -159,14 +168,14 @@ const Login = () => {
           <img
             src="/photos/logo-colocolo.webp"
             alt="Escudo Colo-Colo"
-            className="w-10 h-auto"
+            className="w-8 sm:w-10 h-auto"
           />
         </div>
 
         {/* cuadro de login amplio con bordes definidos */}
-        <div className="w-full max-w-xl bg-[#080808]/95 border border-white/15 p-8 sm:p-11 lg:p-12 shadow-[0_25px_70px_rgba(0,0,0,0.85)] mt-10 lg:mt-0">
-          <div className="mb-8 border-b border-white/10 pb-6">
-            <h3 className="text-3xl sm:text-4xl font-extrabold text-white uppercase tracking-tight mb-2">
+        <div className="w-full max-w-xl bg-[#080808]/95 border border-white/15 p-6 sm:p-10 lg:p-12 shadow-[0_25px_70px_rgba(0,0,0,0.85)] mt-12 sm:mt-8 lg:mt-0">
+          <div className="mb-6 sm:mb-8 border-b border-white/10 pb-5 sm:pb-6">
+            <h3 className="text-2xl sm:text-4xl font-extrabold text-white uppercase tracking-tight mb-2">
               Iniciar Sesión
             </h3>
             <p className="text-neutral-400 text-xs font-medium">

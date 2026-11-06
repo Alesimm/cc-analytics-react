@@ -335,18 +335,18 @@ const Rendimiento = () => {
         )}
       </div>
 
-      {/* SI NO HAY JUGADOR SELECCIONADO: ESTADO SKELETON ESPERANDO ASIGNACION */}
+      {/* SI NO HAY JUGADOR SELECCIONADO: ESTADO ESTRUCTURAL ESTÁTICO SIN PARPADEOS */}
       {!jugadorSeleccionado ? (
         <div className="space-y-8 animate-fade-in">
-          {/* banner informativo de asignacion con skeleton */}
-          <div className="border border-white/15 bg-[#0a0a0a]/90 p-8 sm:p-12 text-center space-y-4">
-            <div className="w-16 h-16 mx-auto rounded-full border border-white/15 bg-white/[0.03] flex items-center justify-center text-neutral-400">
+          {/* banner informativo de asignacion estructurado y limpio */}
+          <div className="border border-white/15 bg-[#0a0a0a] p-8 sm:p-10 text-center space-y-4 shadow-xl">
+            <div className="w-14 h-14 mx-auto rounded-full border border-white/15 bg-white/[0.04] flex items-center justify-center text-neutral-300">
               <svg
                 viewBox="0 0 24 24"
-                className="w-8 h-8"
+                className="w-7 h-7"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.5"
+                strokeWidth="1.6"
                 aria-hidden="true"
               >
                 <circle cx="12" cy="8" r="4" />
@@ -354,44 +354,164 @@ const Rendimiento = () => {
               </svg>
             </div>
             <div className="max-w-md mx-auto space-y-2">
-              <h3 className="text-lg font-extrabold uppercase tracking-tight text-white">
+              <h3 className="text-base sm:text-lg font-black uppercase tracking-tight text-white">
                 Ningún Futbolista Seleccionado
               </h3>
               <p className="text-xs text-neutral-400 leading-relaxed font-normal">
-                Usa el buscador superior o haz clic en <strong>Catálogo</strong> para elegir a un jugador del plantel y cargar su perfil poligonal, rendimiento reciente y directrices.
+                Selecciona a un futbolista del plantel para visualizar su polígono de rendimiento, evolución en los últimos cotejos y registrar directrices tácticas.
               </p>
+            </div>
+
+            {/* accesos rapidos con un solo clic */}
+            <div className="pt-2 flex items-center justify-center gap-2 flex-wrap text-xs">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">
+                Acceso rápido:
+              </span>
+              {plantel.slice(0, 4).map((j) => (
+                <button
+                  key={j.id}
+                  type="button"
+                  onClick={() => handleSeleccionarJugador(j.id)}
+                  className="px-2.5 py-1 text-[11px] font-bold text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
+                >
+                  #{j.dorsal} {j.nombre.split(" ").pop()}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* SKELETON ESTRUCTURAL DE LAS DOS COLUMNAS */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start opacity-40">
-            {/* skeleton izquierda: radar */}
-            <div className="lg:col-span-6 border border-white/10 bg-[#0a0a0a]/50 p-6 space-y-4">
-              <div className="h-4 w-44 bg-white/10 animate-pulse"></div>
-              <div className="w-64 h-64 mx-auto rounded-full border border-dashed border-white/10 flex items-center justify-center">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-600">
-                  Esperando selección...
+          {/* ESTRUCTURA ESTÁTICA Y MINIMALISTA (SIN ANIMATE-PULSE PARA EVITAR LAG) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* columna izquierda: esquema estático del radar poligonal */}
+            <div className="lg:col-span-6 border border-white/10 bg-[#0a0a0a] p-6 space-y-5 shadow-lg">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <span className="text-xs font-black uppercase tracking-wider text-neutral-400 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-neutral-600 inline-block"></span>
+                  Radar Poligonal Multieje
+                </span>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">
+                  6 Dimensiones
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-2 pt-2">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="h-10 bg-white/5 animate-pulse"></div>
+
+              {/* dibujo estatico del radar en telaraña tenue */}
+              <div className="w-full max-w-[280px] sm:max-w-[320px] aspect-square mx-auto flex items-center justify-center relative">
+                <svg
+                  viewBox="0 0 320 320"
+                  className="w-full h-full stroke-white/15"
+                  fill="none"
+                  strokeWidth="1.2"
+                >
+                  {/* poligonos concentricos estaticos */}
+                  {[0.25, 0.5, 0.75, 1.0].map((escala) => {
+                    const r = 110 * escala;
+                    const pts = [0, 1, 2, 3, 4, 5]
+                      .map((idx) => {
+                        const ang = (idx * 2 * Math.PI) / 6 - Math.PI / 2;
+                        return `${(160 + r * Math.cos(ang)).toFixed(1)},${(
+                          160 + r * Math.sin(ang)
+                        ).toFixed(1)}`;
+                      })
+                      .join(" ");
+                    return (
+                      <polygon
+                        key={escala}
+                        points={pts}
+                        className="stroke-white/10"
+                        strokeDasharray={escala === 1.0 ? "none" : "2,3"}
+                      />
+                    );
+                  })}
+                  {/* ejes radiales */}
+                  {[0, 1, 2, 3, 4, 5].map((idx) => {
+                    const ang = (idx * 2 * Math.PI) / 6 - Math.PI / 2;
+                    return (
+                      <line
+                        key={idx}
+                        x1="160"
+                        y1="160"
+                        x2={(160 + 110 * Math.cos(ang)).toFixed(1)}
+                        y2={(160 + 110 * Math.sin(ang)).toFixed(1)}
+                        className="stroke-white/10"
+                      />
+                    );
+                  })}
+                  <circle cx="160" cy="160" r="3" fill="rgba(255,255,255,0.2)" />
+                </svg>
+
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center pointer-events-none">
+                  <span className="text-[10px] uppercase font-extrabold tracking-widest text-neutral-400 bg-black/80 px-2.5 py-1 border border-white/10 rounded-sm">
+                    Esperando futbolista
+                  </span>
+                </div>
+              </div>
+
+              {/* placeholders estaticos de las 6 metricas */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-2">
+                {[
+                  "Físico",
+                  "Pase",
+                  "Remate",
+                  "Defensa",
+                  "Regate",
+                  "Táctica",
+                ].map((nombre) => (
+                  <div
+                    key={nombre}
+                    className="border border-white/10 bg-white/[0.02] p-2.5 flex items-center justify-between"
+                  >
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                      {nombre}
+                    </span>
+                    <span className="text-xs font-mono font-bold text-neutral-600">
+                      --
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
 
-            {/* skeleton derecha: partidos recientes */}
-            <div className="lg:col-span-6 border border-white/10 bg-[#0a0a0a]/50 p-6 space-y-3">
-              <div className="h-4 w-52 bg-white/10 animate-pulse"></div>
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-14 bg-white/5 animate-pulse"></div>
-              ))}
+            {/* columna derecha: partidos recientes estaticos */}
+            <div className="lg:col-span-6 border border-white/10 bg-[#0a0a0a] p-6 space-y-4 shadow-lg">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <span className="text-xs font-black uppercase tracking-wider text-neutral-400 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-neutral-600 inline-block"></span>
+                  Registro de Partidos Recientes
+                </span>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">
+                  Últimos 5 encuentros
+                </span>
+              </div>
+
+              <div className="space-y-2.5">
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <div
+                    key={num}
+                    className="border border-white/10 bg-white/[0.02] p-3.5 flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 border border-white/10 bg-white/[0.04] text-neutral-500 font-mono text-[10px] font-bold flex items-center justify-center">
+                        F{num}
+                      </span>
+                      <div>
+                        <div className="h-3 w-28 bg-white/10 mb-1 rounded-xs"></div>
+                        <div className="h-2 w-20 bg-white/5 rounded-xs"></div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] font-mono font-bold text-neutral-600 border border-white/5 px-2 py-0.5 bg-white/[0.02]">
+                        -- min
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       ) : (
-        /* VISTA ACTIVA CON DATOS DEL FUTBOLISTA SELECCIONADO */
-        <div className="space-y-8 animate-fade-in">
+        /* VISTA ACTIVA CON DATOS DEL FUTBOLISTA SELECCIONADO (CON TRANSICIÓN SUTIL Y ELEGANTE) */
+        <div key={jugadorSeleccionado.id} className="space-y-8 animate-entrada-suave-jugador">
           {/* ficha de identidad */}
           <section
             aria-labelledby="perfil-jugador"

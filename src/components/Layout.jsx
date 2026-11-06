@@ -22,6 +22,11 @@ const Layout = () => {
 
   // funcion para cerrar sesion y volver al login
   const handleLogout = () => {
+    try {
+      localStorage.removeItem("cc_usuario_sesion");
+    } catch {
+      // fallback
+    }
     setMenuUsuarioAbierto(false);
     navigate("/login");
   };
@@ -58,46 +63,55 @@ const Layout = () => {
     };
   }, [menuUsuarioAbierto]);
 
-  // dato del usuario autenticado
+  // dato del usuario autenticado con sincronizacion de sesion
+  const usuarioGuardado = (() => {
+    try {
+      const data = localStorage.getItem("cc_usuario_sesion");
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  })();
+
   const usuario = {
     rol: "Admin",
-    correo: "admin@colocolo.cl",
+    correo: usuarioGuardado?.correo || "admin@colocolo.cl",
     area: "Dirección Deportiva Integral",
   };
 
   return (
     <div className="h-screen overflow-hidden bg-[#050505] relative flex flex-col text-white font-sans selection:bg-white selection:text-black">
-      {/* barra superior (topbar) minimalista de alto contraste */}
-      <header className="relative z-40 h-16 border-b border-white/10 bg-[#070707]/95 backdrop-blur-md px-4 sm:px-8 lg:px-12 flex items-center justify-between gap-4 shrink-0">
+      {/* barra superior (topbar) minimalista de alto contraste y 100% adaptable */}
+      <header className="relative z-40 h-16 border-b border-white/10 bg-[#070707]/95 backdrop-blur-md px-3 sm:px-8 lg:px-12 flex items-center justify-between gap-2 sm:gap-4 shrink-0">
         {/* marca e items de navegacion */}
-        <div className="flex items-center gap-6 lg:gap-8 min-w-0 flex-1">
+        <div className="flex items-center gap-3 sm:gap-6 lg:gap-8 min-w-0 flex-1">
           <NavLink
             to="/dashboard"
-            className="flex items-center gap-2.5 shrink-0 group"
+            className="flex items-center gap-2 sm:gap-2.5 shrink-0 group"
           >
             <img
               src="/photos/logo-colocolo.webp"
               alt="Colo-Colo"
-              className="w-6 h-6 object-contain opacity-95 group-hover:opacity-100 transition-opacity"
+              className="w-5 h-5 sm:w-6 sm:h-6 object-contain opacity-95 group-hover:opacity-100 transition-opacity"
             />
-            <span className="text-xs font-extrabold uppercase tracking-[0.18em] text-white whitespace-nowrap">
+            <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] sm:tracking-[0.18em] text-white whitespace-nowrap">
               CC Analytics
             </span>
           </NavLink>
 
           <div className="h-4 w-px bg-white/10 hidden md:block shrink-0" />
 
-          {/* navegacion horizontal adaptable */}
+          {/* navegacion horizontal adaptable con soporte tactil */}
           <nav
             aria-label="Navegación principal"
-            className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-1"
+            className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-none py-1 scroll-smooth pr-2"
           >
             {ENLACES_MENU.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] whitespace-nowrap border transition-all duration-150 ${
+                  `px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.08em] whitespace-nowrap border transition-all duration-150 ${
                     isActive
                       ? "border-white/25 bg-white/10 text-white"
                       : "border-transparent text-neutral-400 hover:text-white hover:bg-white/[0.04]"
@@ -118,7 +132,7 @@ const Layout = () => {
             aria-expanded={menuUsuarioAbierto}
             aria-haspopup="true"
             aria-label="Menú de sesión de usuario"
-            className={`flex items-center gap-3 py-1.5 px-2.5 border transition-all duration-200 cursor-pointer ${
+            className={`flex items-center gap-2 sm:gap-3 py-1 sm:py-1.5 px-2 sm:px-2.5 border transition-all duration-200 cursor-pointer ${
               menuUsuarioAbierto
                 ? "border-white/30 bg-white/10"
                 : "border-transparent hover:border-white/15 hover:bg-white/[0.04]"
@@ -166,7 +180,7 @@ const Layout = () => {
           {menuUsuarioAbierto && (
             <div
               role="menu"
-              className="absolute right-0 top-full mt-2 w-64 bg-[#0a0a0a] border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.85)] p-4 space-y-3.5 animate-modal-pop z-50"
+              className="absolute right-0 top-full mt-2 w-64 max-w-[calc(100vw-24px)] bg-[#0a0a0a] border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.85)] p-4 space-y-3.5 animate-modal-pop z-50"
             >
               <div className="flex items-center gap-3 pb-3 border-b border-white/10">
                 <div className="w-10 h-10 rounded-full border border-white/25 bg-white/10 flex items-center justify-center shrink-0">

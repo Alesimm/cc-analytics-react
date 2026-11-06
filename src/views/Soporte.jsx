@@ -347,7 +347,7 @@ const Soporte = () => {
         {/* columna izquierda (6 columnas): formulario de contacto controlado */}
         <section
           aria-labelledby="titulo-formulario-contacto"
-          className="lg:col-span-6 border border-white/10 bg-[#0a0a0a]/90 p-6 sm:p-8 space-y-6 shadow-2xl relative"
+          className="lg:col-span-6 border border-white/10 bg-[#0a0a0a]/90 p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl relative"
         >
           <div className="border-b border-white/10 pb-4">
             <div className="flex items-center justify-between gap-2">

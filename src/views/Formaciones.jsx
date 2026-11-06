@@ -137,31 +137,38 @@ const Formaciones = () => {
     return (suma / titulares.length).toFixed(1);
   }, [titulares]);
 
-  // calculo de posiciones dinamicas optimizadas con aceleracion gpu
+  // calculo de posiciones dinamicas optimizadas con alineacion y simetria perfecta
   const posicionesDinamicas = useMemo(() => {
     return titulares.map((titular) => {
-      // portero permanece en el area chica
+      // portero permanece en el corazon del area chica bien centrado
       if (titular.rol === "POR") {
-        return { ...titular, xCalc: 50, yCalc: 88 };
+        return { ...titular, xCalc: 50, yCalc: 90 };
       }
 
-      // desplazamiento vertical segun altura de bloque defensivo
-      let factorY = 0.12;
-      if (titular.posicion === "Defensa") factorY = 0.18;
-      if (titular.posicion === "Mediocampo") factorY = 0.14;
-      if (titular.posicion === "Delantero") factorY = 0.08;
+      // desplazamiento vertical uniforme por linea segun la altura del bloque defensivo (amplitud tactica visible)
+      let factorAmplitudY = 8.0;
+      if (titular.posicion === "Defensa") factorAmplitudY = 11.0;
+      if (titular.posicion === "Mediocampo") factorAmplitudY = 8.5;
+      if (titular.posicion === "Delantero") factorAmplitudY = 6.5;
 
-      const deltaY = (50 - alturaBloque) * factorY;
-      const yCalculada = Math.min(Math.max(titular.y + deltaY, 12), 85);
+      const deltaY = ((50 - alturaBloque) / 50) * factorAmplitudY;
+      const yCalculada = Math.min(Math.max(titular.y + deltaY, 12), 87);
 
-      // desplazamiento horizontal segun anchura del equipo
-      let xCalculada = titular.x;
-      if (titular.x < 45) {
-        const deltaX = ((anchuraEquipo - 50) / 50) * 8;
-        xCalculada = Math.max(titular.x - deltaX, 8);
-      } else if (titular.x > 55) {
-        const deltaX = ((anchuraEquipo - 50) / 50) * 8;
-        xCalculada = Math.min(titular.x + deltaX, 92);
+      // desplazamiento horizontal simetrico segun anchura del equipo (tacticamente visible y dinamico)
+      let xCalculada;
+      if (titular.x < 48) {
+        // jugadores en banda izquierda (extremos, laterales, interiores)
+        const factorBanda = titular.x < 25 ? 9 : 6.5;
+        const deltaX = ((anchuraEquipo - 50) / 50) * factorBanda;
+        xCalculada = Math.max(titular.x - deltaX, 7);
+      } else if (titular.x > 52) {
+        // jugadores en banda derecha (extremos, laterales, interiores)
+        const factorBanda = titular.x > 75 ? 9 : 6.5;
+        const deltaX = ((anchuraEquipo - 50) / 50) * factorBanda;
+        xCalculada = Math.min(titular.x + deltaX, 93);
+      } else {
+        // futbolistas en el eje central (POR, MCD, DC) quedan clavados exactamente en 50.0%
+        xCalculada = 50;
       }
 
       return {
@@ -649,50 +656,65 @@ const Formaciones = () => {
             </span>
           </div>
 
-          {/* campo de juego estilo pizarra tactica negra con lineas blancas de alto contraste */}
+          {/* campo de juego estilo pizarra tactica negra con proporciones calibradas */}
           <div
-            className="relative w-full aspect-[4/5] max-h-[660px] rounded-xl border border-white/20 bg-[#050505] overflow-hidden select-none shadow-[0_0_35px_rgba(0,0,0,0.9)]"
+            className="relative w-full aspect-[4/5] max-h-[560px] rounded-xl border border-white/20 bg-gradient-to-b from-[#080a0e] via-[#050608] to-[#040507] overflow-hidden select-none shadow-[0_0_35px_rgba(0,0,0,0.95)]"
             aria-label="Cancha táctica con posiciones de jugadores"
           >
-            {/* lineas de cal en blanco nitido de alta definicion segun referencia visual */}
+            {/* franjas sutiles horizontales de corte de césped para profundidad y realismo táctico */}
+            <div className="absolute inset-0 pointer-events-none flex flex-col opacity-20">
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`flex-1 ${
+                    i % 2 === 0 ? "bg-white/[0.02]" : "bg-transparent"
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* lineas de cal en blanco nítido con proporciones exactas 4:5 */}
             <svg
               className="absolute inset-0 w-full h-full pointer-events-none opacity-90 stroke-white"
               fill="none"
               strokeWidth="1.8"
-              viewBox="0 0 300 400"
+              viewBox="0 0 360 450"
               preserveAspectRatio="none"
             >
-              {/* perimetro exterior con curvatura */}
-              <rect x="10" y="10" width="280" height="380" rx="3" />
-              {/* linea divisoria central */}
-              <line x1="10" y1="200" x2="290" y2="200" />
-              {/* circulo y punto central */}
-              <circle cx="150" cy="200" r="42" />
-              <circle cx="150" cy="200" r="3" fill="white" />
-              {/* area grande superior */}
-              <rect x="68" y="10" width="164" height="66" />
-              {/* area chica superior */}
-              <rect x="104" y="10" width="92" height="24" />
+              {/* perímetro exterior del campo */}
+              <rect x="18" y="18" width="324" height="414" rx="4" />
+              {/* línea divisoria central */}
+              <line x1="18" y1="225" x2="342" y2="225" />
+              {/* círculo central y punto central */}
+              <circle cx="180" cy="225" r="46" />
+              <circle cx="180" cy="225" r="2.5" fill="white" />
+
+              {/* área grande superior (ataque) */}
+              <rect x="85" y="18" width="190" height="70" />
+              {/* área chica superior */}
+              <rect x="125" y="18" width="110" height="24" />
               {/* arco de penal superior */}
-              <path d="M 120 76 A 30 30 0 0 0 180 76" />
+              <path d="M 148 88 A 32 32 0 0 0 212 88" />
               {/* punto de penal superior */}
-              <circle cx="150" cy="50" r="2.5" fill="white" />
-              {/* area grande inferior */}
-              <rect x="68" y="324" width="164" height="66" />
-              {/* area chica inferior */}
-              <rect x="104" y="366" width="92" height="24" />
+              <circle cx="180" cy="58" r="2.5" fill="white" />
+
+              {/* área grande inferior (defensa / portero) */}
+              <rect x="85" y="362" width="190" height="70" />
+              {/* área chica inferior */}
+              <rect x="125" y="408" width="110" height="24" />
               {/* arco de penal inferior */}
-              <path d="M 120 324 A 30 30 0 0 1 180 324" />
+              <path d="M 148 362 A 32 32 0 0 1 212 362" />
               {/* punto de penal inferior */}
-              <circle cx="150" cy="350" r="2.5" fill="white" />
+              <circle cx="180" cy="392" r="2.5" fill="white" />
+
               {/* arcos de esquina en las 4 esquinas */}
-              <path d="M 10 24 A 14 14 0 0 0 24 10" />
-              <path d="M 276 10 A 14 14 0 0 0 290 24" />
-              <path d="M 10 376 A 14 14 0 0 1 24 390" />
-              <path d="M 276 390 A 14 14 0 0 1 290 376" />
+              <path d="M 18 34 A 16 16 0 0 0 34 18" />
+              <path d="M 326 18 A 16 16 0 0 0 342 34" />
+              <path d="M 18 416 A 16 16 0 0 1 34 432" />
+              <path d="M 326 432 A 16 16 0 0 1 342 416" />
             </svg>
 
-            {/* fichas de los futbolistas con traslacion fluida a 60 fps mediante transformaciones aceleradas */}
+            {/* fichas de los futbolistas centradas con exactitud milimétrica */}
             {posicionesDinamicas.map((jugador) => {
               const estaSeleccionado = jugadorSeleccionado?.id === jugador.id;
               const esDestinoHover = titularDestinoHover === jugador.id;
@@ -709,7 +731,7 @@ const Formaciones = () => {
                     transform: "translate(-50%, -50%)",
                     transition: "left 0.4s cubic-bezier(0.16, 1, 0.3, 1), top 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
-                  className={`absolute z-10 flex flex-col items-center group cursor-pointer p-4 -m-4 ${
+                  className={`absolute z-10 flex flex-col items-center group cursor-pointer select-none ${
                     esDestinoHover
                       ? compatibleConArrastrado
                         ? "scale-[1.22] z-30"
@@ -721,56 +743,61 @@ const Formaciones = () => {
                   onDragLeave={handleDragLeaveTitular}
                   onDrop={(e) => handleDropTitular(e, jugador)}
                 >
-                  {/* icono de camiseta minimalista con dorsal interior y resalte sobre las lineas de la cancha */}
-                  <div className="relative flex flex-col items-center justify-center">
-                    <span className="text-[8px] font-bold uppercase tracking-wider text-neutral-300 bg-black/80 px-1.5 py-0.5 rounded-sm border border-white/10 mb-0.5 leading-none shadow-sm backdrop-blur-[2px]">
-                      {jugador.rol}
-                    </span>
+                  {/* sensor invisible ampliado para facilitar el drop sin alterar el centro exacto */}
+                  <span className="absolute -inset-3 -z-10 rounded-lg pointer-events-auto" aria-hidden="true" />
 
-                    <div
-                      className={`relative w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center transition-all duration-300 ${
+                  {/* rol táctico posicionado encima de la camiseta */}
+                  <span className="text-[8px] font-bold uppercase tracking-wider text-neutral-300 bg-black/90 px-1.5 py-0.5 rounded-xs border border-white/15 mb-0.5 leading-none shadow-sm backdrop-blur-sm">
+                    {jugador.rol}
+                  </span>
+
+                  {/* silueta de camiseta centrada */}
+                  <div
+                    className={`relative w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center transition-all duration-300 ${
+                      estaSeleccionado
+                        ? "scale-110 drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]"
+                        : esDestinoHover && compatibleConArrastrado
+                        ? "scale-115 drop-shadow-[0_0_15px_rgba(16,185,129,0.7)]"
+                        : esDestinoHover && !compatibleConArrastrado
+                        ? "scale-110 drop-shadow-[0_0_15px_rgba(239,68,68,0.7)]"
+                        : "group-hover:scale-105"
+                    }`}
+                  >
+                    {/* fondo negro opaco para que las lineas de la cancha no se trasluzcan por el cuello o la silueta */}
+                    <span className="absolute inset-1 rounded-full bg-[#050505] -z-10" />
+
+                    {estaSeleccionado && (
+                      <span className="absolute -inset-1.5 rounded-full border border-white/40 bg-white/10 pointer-events-none animate-pulse" />
+                    )}
+                    <svg
+                      viewBox="0 0 64 64"
+                      className={`w-full h-full drop-shadow-lg transition-colors duration-300 ${
                         estaSeleccionado
-                          ? "scale-110 drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]"
+                          ? "fill-white text-black"
                           : esDestinoHover && compatibleConArrastrado
-                          ? "scale-115 drop-shadow-[0_0_15px_rgba(16,185,129,0.7)]"
+                          ? "fill-emerald-500 text-white"
                           : esDestinoHover && !compatibleConArrastrado
-                          ? "scale-110 drop-shadow-[0_0_15px_rgba(239,68,68,0.7)]"
-                          : "group-hover:scale-105"
+                          ? "fill-rose-600 text-white"
+                          : "fill-[#050505] text-white"
+                      }`}
+                      stroke="currentColor"
+                      strokeWidth="2.8"
+                      aria-hidden="true"
+                    >
+                      <path d="M20 10 L26 10 C28 14 36 14 38 10 L44 10 L56 20 L50 28 L44 24 L44 54 L20 54 L20 24 L14 28 L8 20 Z" />
+                    </svg>
+                    <span
+                      className={`absolute font-mono font-extrabold text-[11px] leading-none mt-1 select-none ${
+                        estaSeleccionado ? "text-black" : "text-white"
                       }`}
                     >
-                      {estaSeleccionado && (
-                        <span className="absolute -inset-1.5 rounded-full border border-white/40 bg-white/10 pointer-events-none animate-pulse" />
-                      )}
-                      <svg
-                        viewBox="0 0 64 64"
-                        className={`w-full h-full drop-shadow-lg transition-colors duration-300 ${
-                          estaSeleccionado
-                            ? "fill-white text-black"
-                            : esDestinoHover && compatibleConArrastrado
-                            ? "fill-emerald-500 text-white"
-                            : esDestinoHover && !compatibleConArrastrado
-                            ? "fill-rose-600 text-white"
-                            : "fill-[#050505] text-white"
-                        }`}
-                        stroke="currentColor"
-                        strokeWidth="2.8"
-                        aria-hidden="true"
-                      >
-                        <path d="M20 10 L26 10 C28 14 36 14 38 10 L44 10 L56 20 L50 28 L44 24 L44 54 L20 54 L20 24 L14 28 L8 20 Z" />
-                      </svg>
-                      <span
-                        className={`absolute font-mono font-extrabold text-[11px] leading-none mt-1 select-none ${
-                          estaSeleccionado ? "text-black" : "text-white"
-                        }`}
-                      >
-                        {jugador.dorsal}
-                      </span>
-                    </div>
+                      {jugador.dorsal}
+                    </span>
                   </div>
 
-                  {/* etiqueta con nombre y calificacion con pastilla oscura de alto contraste para que no se pierda con el blanco de la cal */}
+                  {/* pastilla oscura con nombre y calificacion */}
                   <div
-                    className={`mt-1 px-2 py-0.5 rounded-sm text-[9px] sm:text-[10px] font-bold tracking-tight text-center leading-tight whitespace-nowrap transition-all duration-300 border backdrop-blur-md shadow-md ${
+                    className={`mt-1 px-2 py-0.5 rounded-xs text-[9px] sm:text-[10px] font-bold tracking-tight text-center leading-tight whitespace-nowrap transition-all duration-300 border backdrop-blur-md shadow-md ${
                       estaSeleccionado
                         ? "bg-white text-black border-white font-extrabold"
                         : "bg-[#050505]/95 text-neutral-200 border-white/20 group-hover:border-white/50 group-hover:text-white"
@@ -1119,12 +1146,12 @@ const Formaciones = () => {
       {/* modal minimalista para crear nuevo esquema tactico montado en portal sobre todo el viewport */}
       {modalNuevoEsquema && typeof document !== "undefined" && createPortal(
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
           onClick={(e) => {
             if (e.target === e.currentTarget) setModalNuevoEsquema(false);
           }}
         >
-          <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-md p-6 space-y-4 shadow-2xl relative my-auto animate-modal-pop">
+          <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-md p-5 sm:p-6 space-y-4 shadow-2xl relative my-auto animate-modal-pop max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-sm font-black uppercase tracking-widest text-white">
                 Crear Nuevo Esquema Táctico
@@ -1223,12 +1250,12 @@ const Formaciones = () => {
       {/* modal para editar nombre y descripcion del esquema activo montado en portal sobre todo el viewport */}
       {modalEditarEsquema && typeof document !== "undefined" && createPortal(
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
           onClick={(e) => {
             if (e.target === e.currentTarget) setModalEditarEsquema(false);
           }}
         >
-          <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-md p-6 space-y-4 shadow-2xl relative my-auto animate-modal-pop">
+          <div className="border border-white/10 bg-[#0a0a0a] w-full max-w-md p-5 sm:p-6 space-y-4 shadow-2xl relative my-auto animate-modal-pop max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-sm font-black uppercase tracking-widest text-white">
                 Editar Esquema Táctico
