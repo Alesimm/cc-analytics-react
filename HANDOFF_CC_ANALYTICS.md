@@ -1,15 +1,15 @@
 # HANDOFF — CC Analytics
 
 ## 1. Propósito
-CC Analytics es una plataforma integral de gestión y analítica deportiva desarrollada para Colo-Colo, correspondiente al proyecto de la asignatura **Desarrollo Fullstack II** de **Duoc UC**.
+CC Analytics es una plataforma integral de gestión y analítica deportiva desarrollada para el Club Social y Deportivo Colo-Colo.
 El frontend centraliza la información deportiva del club: control de plantilla profesional, análisis individual de rendimiento, pizarra táctica de formaciones, calendario oficial de partidos, seguimiento médico de lesiones y mesa de ayuda de soporte técnico.
 
 ---
 
-## 2. Fases del Proyecto
+## 2. Fases de Desarrollo
 - **Fase 1 (Previa):** Maqueta inicial funcional desarrollada en Vanilla JS y Tailwind CSS.
-- **Fase 2 (Actual - 100% UI completada):** Migración y construcción integral en **React 19 + Vite**, componentes modulares, gestión de estado con React Hooks (`useState`, `useMemo`), validaciones JavaScript puras, navegación mediante **React Router DOM v7**, persistencia en `localStorage`, y cobertura de pruebas unitarias con **Vitest** y **React Testing Library**.
-- **Fase 3 (Futura):** Arquitectura backend con Spring Boot y MariaDB / microservicios (no adelantar ni implementar antes de que sea formalmente requerida por la asignatura).
+- **Fase 2 (Actual - 100% UI completada):** Construcción integral en **React 19 + Vite**, componentes modulares, gestión de estado con React Hooks (`useState`, `useMemo`, `useRef`), validaciones JavaScript puras, navegación mediante **React Router DOM v7**, persistencia en `localStorage`, y cobertura de pruebas unitarias con **Vitest** y **React Testing Library**.
+- **Fase 3 (Futura):** Arquitectura backend de servicios RESTful y persistencia relacional.
 
 ---
 
@@ -17,7 +17,7 @@ El frontend centraliza la información deportiva del club: control de plantilla 
 - **Runtime & Build:** Node.js, Vite 8, React 19.
 - **Enrutamiento:** React Router DOM v7 (`src/App.jsx`), con layout persistente (`src/components/Layout.jsx`).
 - **Estilos:** Tailwind CSS v4 (`@tailwindcss/vite`), paleta Premium Brutalist de alto contraste adaptada para Colo-Colo.
-- **Testing Unitario:** Vitest v5 + React Testing Library + `@testing-library/jest-dom` + `jsdom`. Cobertura activa de **40/40 tests aprobados** distribuidos en 7 suites co-localizadas.
+- **Testing Unitario:** Vitest v5 + React Testing Library + `@testing-library/jest-dom` + `jsdom`. Cobertura activa de **44/44 tests aprobados** distribuidos en 8 suites co-localizadas.
 - **Calidad de Código:** ESLint configurado con reglas para React y React Hooks (0 errores, 0 advertencias).
 - **Estructura del Proyecto:**
   ```text
@@ -135,44 +135,26 @@ El frontend centraliza la información deportiva del club: control de plantilla 
 
 ---
 
-## 6. Cumplimiento Académico Estricto (Rúbrica Duoc UC)
-- **Atributos HTML Prohibidos:** Ningún formulario del sistema utiliza `required`, `minLength`, `maxLength` ni `type="email"`.
-- **Ventanas Emergentes Nativas:** Se eliminó por completo el uso de `alert()` o `confirm()`. Todas las alertas son componentes visuales con Tailwind y las eliminaciones cuentan con botones inline de confirmación/cancelación.
+## 6. Estándares de Implementación y UX
+- **Validaciones Controladas:** Formularios sin atributos HTML nativos restrictivos (`required`, `minLength`, `maxLength`, `type="email"`).
+- **Feedback Inline:** Ausencia de ventanas emergentes nativas (`alert()` o `confirm()`), empleando diálogos y confirmaciones inline con Tailwind CSS.
 - **Gestión de Estado:** 100% de los formularios controlados con React `useState` e implementan el atributo `noValidate` en los tags `<form>`.
-- **Validaciones Propias:** Validaciones matemáticas y expresiones regulares en funciones JavaScript puras que alimentan objetos de error (`errors`) mostrados de forma accesible en la UI.
+- **Validaciones Propias:** Validaciones matemáticas y expresiones regulares en funciones JavaScript puras que alimentan estados de error mostrados de forma accesible en la UI.
 
 ---
 
 ## 7. Estado de Testing y Calidad Actual
-- **Vitest:** 7 archivos de pruebas unitarias, **40 tests ejecutados y 40 aprobados (100% passing)**.
+- **Vitest:** 8 archivos de pruebas unitarias, **44 tests ejecutados y 44 aprobados (100% passing)**.
 - **ESLint:** 0 errores y 0 advertencias (`npm run lint`).
 - **Vite Build:** Compilación limpia para producción (`npm run build`).
 
 ---
 
-## 8. Próximos Pasos Mandatorios: Cierre de Fase 2 y Entregables Duoc UC
-Habiendo alcanzado el 100% de la interfaz de usuario en la Fase 2, **no se debe continuar programando a ciegas**. El siguiente paso consiste en preparar y cerrar los 4 entregables oficiales requeridos por la pauta de evaluación de Duoc UC (Págs. 4 y 12 del PDF de la asignatura), que ponderan el 40% de la nota final:
-
-### 1. Documentación Obligatoria
-1. **Documento ERS (Especificación de Requisitos de Software) versión 2:**
-   - Actualizar el documento de la entrega anterior para documentar la arquitectura real implementada: React + Vite + Tailwind CSS v4.
-   - Detallar el mapa de las 8 pantallas de CC Analytics con sus capturas, rutas y componentes.
-   - Especificar casos de uso cubiertos (CRUD de plantel, fichas médicas, táctica, calendario, soporte).
-   - Documentar el modelo de persistencia local en `localStorage`.
-2. **Documento de Cobertura de Testing:**
-   - Informe formal de pruebas unitarias:
-     - Configuración técnica del entorno (Vitest + React Testing Library + jsdom).
-     - Casos de prueba cubiertos (mínimo 2 pruebas por formulario, renderizado, props, eventos de usuario y mocks).
-     - Tabla detallada de resultados demostrando el 100% de aprobación (40/40 pruebas).
-3. **Repositorio GitHub limpio y público:**
-   - Enlace al repositorio con el historial ordenado de Pull Requests semánticos (`feature/...` hacia `main`), demostrando el avance modular del equipo.
-4. **Archivo comprimido (.zip) del proyecto:**
-   - Exportar el código fuente limpio, excluyendo estrictamente las carpetas pesadas `node_modules` y `dist`.
-
-### 2. Auditoría Final de Rúbrica y Diseño (Pulido de Detalles)
-- **Diseño responsivo:** Comprobar que todas las pantallas y formularios se adapten limpiamente a móvil, tablet y escritorio.
-- **Consistencia visual:** Verificar que no queden textos desalineados, colores fuera de la paleta brutalista de Colo-Colo o elementos que no cumplan la guía de estilo.
-- **Checklist académico estricto:** Asegurarse de que ningún formulario use atributos HTML prohibidos (`required`, `minLength`, `maxLength`, `type="email"`) ni ventanas del navegador (`alert()` / `confirm()`).
+## 8. Arquitectura de Entregables y Documentación
+- **Documento ERS:** Especificación formal de requisitos de software y arquitectura del sistema.
+- **Informe de Testing:** Detalle de pruebas unitarias y cobertura de componentes.
+- **Repositorio:** Estructura modular de ramas y control de versiones semántico.
+- **Empaquetado:** Código fuente exportado sin dependencias generadas (`node_modules`, `dist`).
 
 ---
 

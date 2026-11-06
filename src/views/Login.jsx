@@ -31,10 +31,9 @@ const Login = () => {
     let isValid = true;
 
     const dominiosPermitidos = [
-      "@duoc.cl",
-      "@profesor.duoc.cl",
-      "@gmail.com",
       "@colocolo.cl",
+      "@csdcolocolo.cl",
+      "@gmail.com",
     ];
     const emailValido = dominiosPermitidos.some((dominio) =>
       email.trim().toLowerCase().endsWith(dominio)
@@ -104,7 +103,7 @@ const Login = () => {
           />
 
           <h1 className="text-5xl xl:text-6xl font-extrabold text-white tracking-tight leading-[1.08] mb-6">
-            Inteligencia deportiva para el cuerpo técnico.
+            Analítica estratégica para el cuerpo técnico.
           </h1>
           <p className="text-neutral-300 text-lg xl:text-xl leading-relaxed max-w-lg font-normal">
             Plantel, rendimiento, formaciones, calendario y centro médico en un

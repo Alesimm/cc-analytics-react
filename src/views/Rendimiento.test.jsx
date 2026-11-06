@@ -64,7 +64,7 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
     expect(screen.getAllByText(/atajadas/i).length).toBeGreaterThan(0);
   });
 
-  // prueba 3 (formulario - regla del profesor): validacion de errores al intentar registrar directriz vacia
+  // prueba 3 (formulario): validacion de errores al intentar registrar directriz vacia
   it("muestra mensajes de error cuando se envia una directriz o recomendacion vacia", () => {
     render(<Rendimiento />);
 
@@ -87,7 +87,7 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
     ).toBeInTheDocument();
   });
 
-  // prueba 4 (formulario - regla del profesor): creacion exitosa de una directriz tactica
+  // prueba 4 (formulario): creacion exitosa de una directriz tactica
   it("permite registrar una nueva directriz para el futbolista y muestra feedback inline", () => {
     render(<Rendimiento />);
 
