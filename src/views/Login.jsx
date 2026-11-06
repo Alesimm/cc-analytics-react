@@ -41,7 +41,7 @@ const Login = () => {
 
     if (!emailValido) {
       newErrors.email =
-        "El correo debe terminar en @colocolo.cl, @gmail.com, @duoc.cl o @profesor.duoc.cl";
+        "El correo debe terminar en @colocolo.cl o @gmail.com";
       isValid = false;
     }
 
@@ -120,9 +120,7 @@ const Login = () => {
 
       {/* lado derecho con formulario protegido con vidrio borroso */}
       <div className="relative z-10 w-full lg:w-[42%] lg:ml-auto flex items-center justify-center p-6 sm:p-8 bg-[linear-gradient(90deg,rgba(10,10,10,0.18)_0%,rgba(10,10,10,0.4)_35%,rgba(10,10,10,0.7)_100%)] border-l border-white/5 shadow-[-20px_0_40px_rgba(0,0,0,0.28)] animate-login-enter delay-200 overflow-hidden">
-        {/* auras de luz ambiental para el acceso al sistema */}
-        <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.053),transparent_70%)] pointer-events-none"></div>
-        <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.038),transparent_70%)] pointer-events-none"></div>
+
         {/* logo arriba a la derecha */}
         <div className="absolute top-8 right-8 flex items-center gap-4 select-none animate-login-enter delay-400">
           <div className="text-right hidden sm:block">
@@ -211,7 +209,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={cargando}
-                className="relative overflow-hidden w-full bg-transparent border border-neutral-700 text-white font-bold uppercase tracking-[0.2em] text-xs p-4 hover:bg-white hover:text-black hover:border-white transition-all duration-500 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-3 disabled:border-white/30 disabled:text-white disabled:cursor-wait"
+                className="relative overflow-hidden w-full bg-transparent border border-neutral-700 text-white font-bold uppercase tracking-[0.2em] text-xs p-4 hover:enabled:bg-white hover:enabled:text-black hover:enabled:border-white transition-all duration-500 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-3 disabled:border-white/30 disabled:text-white disabled:cursor-wait disabled:bg-transparent"
               >
                 {/* barra animada de progreso */}
                 {cargando && (

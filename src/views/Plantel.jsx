@@ -5,8 +5,8 @@ import {
   eliminarJugadorStorage,
   restablecerPlantelStorage,
 } from "../data/plantelData";
-import JugadorCard from "./JugadorCard";
-import JugadorForm from "./JugadorForm";
+import JugadorCard from "../components/JugadorCard";
+import JugadorForm from "../components/JugadorForm";
 
 const POSICIONES_FILTRO = [
   "Todos",
@@ -302,12 +302,12 @@ const Plantel = () => {
         />
       )}
 
-      {/* pie de pagina academico */}
+      {/* pie de pagina */}
       <footer className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[10px] uppercase tracking-widest text-neutral-600 gap-2">
         <p>
-          CC Analytics — Plataforma Académica Duoc UC // Desarrollo Fullstack II
+          CC Analytics — Plataforma Oficial // Colo-Colo
         </p>
-        <p>Persistencia local activa para control de plantel</p>
+        <p>Control de plantilla y gestión deportiva profesional</p>
       </footer>
     </div>
   );

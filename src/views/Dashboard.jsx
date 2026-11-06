@@ -450,12 +450,12 @@ const Dashboard = () => {
         </section>
       </div>
 
-      {/* pie de pagina con la nota de datos simulados para la asignatura */}
+      {/* pie de pagina */}
       <footer className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[10px] uppercase tracking-widest text-neutral-600 gap-2">
         <p>
-          CC Analytics — Plataforma Académica Duoc UC // Desarrollo Fullstack II
+          CC Analytics — Plataforma Oficial de Gestión // Colo-Colo
         </p>
-        <p>Datos simulados para control de interfaz deportiva</p>
+        <p>Métricas consolidadas y control operativo del plantel</p>
       </footer>
     </div>
   );

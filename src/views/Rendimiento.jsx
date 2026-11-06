@@ -1075,7 +1075,7 @@ const Rendimiento = () => {
       {/* pie de pagina */}
       <footer className="pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[10px] uppercase tracking-widest text-neutral-600 gap-2">
         <p>
-          CC Analytics — Plataforma Académica Duoc UC // Desarrollo Fullstack II
+          CC Analytics — Plataforma Oficial // Colo-Colo
         </p>
         <p>Módulo de analítica y optimización táctica individual</p>
       </footer>
