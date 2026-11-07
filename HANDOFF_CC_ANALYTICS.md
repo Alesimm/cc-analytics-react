@@ -33,7 +33,8 @@ El frontend centraliza la información deportiva del club: control de plantilla 
   │   ├── data/                # Modelos de datos y adaptadores de LocalStorage
   │   │   ├── calendarioData.js
   │   │   ├── formacionesData.js
-  │   │   ├── plantelData.js\r\n  │   │   ├── medicoData.js
+  │   │   ├── plantelData.js
+  │   │   ├── medicoData.js
   │   │   └── soporteData.js
   │   ├── views/               # Las 8 pantallas principales de la aplicación
   │   │   ├── Login.jsx & Login.test.jsx
