@@ -55,3 +55,14 @@ La plataforma utiliza una dirección de diseño **Brutalista Deportiva Premium**
 - Paleta cromática de alto contraste sobre fondos oscuros, alineada a los colores institucionales del club (blanco y negro).
 - Tipografía técnica, jerarquías visuales claras y legibilidad optimizada para entornos de análisis dinámicos y alta exigencia competitiva.
 - Navegación fluida y estructurada mediante barra superior persistente en todas las áreas de la plataforma.
+
+---
+
+## Equipo de Desarrollo
+
+Proyecto desarrollado de forma colaborativa por:
+
+- **Alexander Simpertigue** — Arquitectura Frontend, Lógica Táctica y Testing Unitario
+- **Joseph** — Documentación Técnica, Especificaciones y Control Clínico
+- **Cristóbal** — Diseño de Interfaces, Accesibilidad y Control de Calidad
+
