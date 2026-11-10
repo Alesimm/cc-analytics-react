@@ -74,24 +74,13 @@ const Rendimiento = () => {
     };
   }, []);
 
-  // cerrar el catalogo con la tecla escape o al hacer clic afuera
-  const selectorRef = useRef(null);
-
+  // cerrar el catalogo con la tecla escape
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") setMenuAbierto(false);
     };
-    const handleClickAfuera = (e) => {
-      if (selectorRef.current && !selectorRef.current.contains(e.target)) {
-        setMenuAbierto(false);
-      }
-    };
     window.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("mousedown", handleClickAfuera);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("mousedown", handleClickAfuera);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   // jugador actual seleccionado (null si aun no se ha seleccionado ninguno)
@@ -256,12 +245,7 @@ const Rendimiento = () => {
       </header>
 
       {/* buscador y selector de catalogo (iconos vectoriales svg limpios) */}
-      <div
-        ref={selectorRef}
-        className={`animate-fade-in-up stagger-2 relative ${
-          menuAbierto ? "z-30" : "z-10"
-        }`}
-      >
+      <div className="animate-fade-in-up stagger-2 relative">
         <div className="relative flex items-center">
           <span className="absolute left-3.5 text-neutral-500 pointer-events-none flex items-center">
             <svg
@@ -330,7 +314,7 @@ const Rendimiento = () => {
 
         {/* catalogo desplegable profesional */}
         {menuAbierto && (
-          <div className="absolute z-50 left-0 right-0 top-full mt-1.5 max-h-72 overflow-y-auto bg-[#0a0a0a] border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.9)] p-2 space-y-1">
+          <div className="absolute z-30 left-0 right-0 mt-1 max-h-72 overflow-y-auto bg-[#0a0a0a] border border-white/20 shadow-2xl p-2 space-y-1">
             <div className="px-2 py-1 text-[9px] uppercase font-bold tracking-widest text-neutral-500 border-b border-white/5 flex justify-between">
               <span>Plantel Profesional Colo-Colo</span>
               <span>{jugadoresFiltrados.length} disponibles</span>
