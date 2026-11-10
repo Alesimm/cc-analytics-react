@@ -220,7 +220,7 @@ const Soporte = () => {
   return (
     <div className="space-y-8 relative">
       {/* cabecera principal minimalista */}
-      <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <header className="animate-fade-in-up stagger-1 border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 mb-2 flex-wrap">
             <span className="inline-block w-1.5 h-1.5 bg-white"></span>
@@ -270,7 +270,7 @@ const Soporte = () => {
       )}
 
       {/* kpis cuantitativos del servicio de soporte */}
-      <section aria-labelledby="metricas-soporte" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section aria-labelledby="metricas-soporte" className="animate-fade-in-up stagger-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <h2 id="metricas-soporte" className="sr-only">
           Métricas generales de la mesa de ayuda
         </h2>
@@ -343,7 +343,7 @@ const Soporte = () => {
       </section>
 
       {/* cuerpo principal de dos columnas: formulario de envio + catalogo de tickets */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="animate-fade-in-up stagger-3 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* columna izquierda (6 columnas): formulario de contacto controlado */}
         <section
           aria-labelledby="titulo-formulario-contacto"

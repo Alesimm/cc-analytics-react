@@ -81,6 +81,8 @@ const Formaciones = () => {
     return 70;
   });
 
+  // true mientras se arrastra un slider, para que las fichas respondan sin retraso
+  const [ajustandoSlider, setAjustandoSlider] = useState(false);
   const [intensidadPresion, setIntensidadPresion] = useState(() => {
     const guardado = obtenerConfiguracionTactica();
     if (guardado?.formacionId === "4-3-3" && typeof guardado.intensidadPresion === "number") {
@@ -181,6 +183,7 @@ const Formaciones = () => {
 
   // cambiar formacion activa
   const handleCambiarFormacion = (nuevoId) => {
+    setAjustandoSlider(false);
     setFormacionActivaId(nuevoId);
     setJugadorSeleccionado(null);
     setErrorSuplentes("");
@@ -473,7 +476,7 @@ const Formaciones = () => {
   return (
     <div className="space-y-8 relative">
       {/* cabecera principal minimalista */}
-      <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <header className="animate-fade-in-up stagger-1 border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 mb-2 flex-wrap">
             <span className="inline-block w-1.5 h-1.5 bg-white"></span>
@@ -537,7 +540,7 @@ const Formaciones = () => {
       )}
 
       {/* selector y gestion de esquemas tacticos */}
-      <section aria-labelledby="titulo-esquemas" className="space-y-3">
+      <section aria-labelledby="titulo-esquemas" className="animate-fade-in-up stagger-2 space-y-3">
         <div className="flex items-center justify-between border-b border-white/10 pb-2 flex-wrap gap-2">
           <h2
             id="titulo-esquemas"
@@ -636,7 +639,7 @@ const Formaciones = () => {
       </section>
 
       {/* cuerpo principal: cancha de alta definicion (estilo gris oscuro brutalista) y parametros */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="animate-fade-in-up stagger-3 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* columna izquierda (7 columnas): cancha tactica y bandeja horizontal de suplentes */}
         <section
           aria-labelledby="titulo-cancha"
@@ -715,7 +718,7 @@ const Formaciones = () => {
             </svg>
 
             {/* fichas de los futbolistas centradas con exactitud milimétrica */}
-            {posicionesDinamicas.map((jugador) => {
+            {posicionesDinamicas.map((jugador, index) => {
               const estaSeleccionado = jugadorSeleccionado?.id === jugador.id;
               const esDestinoHover = titularDestinoHover === jugador.id;
 
@@ -724,12 +727,16 @@ const Formaciones = () => {
 
               return (
                 <div
-                  key={jugador.id}
+                  key={`slot-tactico-${index}`}
                   style={{
                     left: `${jugador.xCalc}%`,
                     top: `${jugador.yCalc}%`,
                     transform: "translate(-50%, -50%)",
-                    transition: "left 0.4s cubic-bezier(0.16, 1, 0.3, 1), top 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+                    // reactivo y directo al mover sliders, coreografia fluida de 60 fps al cambiar esquema
+                    transition: ajustandoSlider
+                      ? "left 0.05s ease-out, top 0.05s ease-out"
+                      : "left 0.55s cubic-bezier(0.22, 1, 0.36, 1), top 0.55s cubic-bezier(0.22, 1, 0.36, 1)",
+                    willChange: "left, top",
                   }}
                   className={`absolute z-10 flex flex-col items-center group cursor-pointer select-none ${
                     esDestinoHover
@@ -1008,6 +1015,12 @@ const Formaciones = () => {
                 max="100"
                 value={alturaBloque}
                 onChange={(e) => setAlturaBloque(Number(e.target.value))}
+                onPointerDown={() => setAjustandoSlider(true)}
+                onPointerUp={() => setAjustandoSlider(false)}
+                onPointerCancel={() => setAjustandoSlider(false)}
+                onTouchStart={() => setAjustandoSlider(true)}
+                onTouchEnd={() => setAjustandoSlider(false)}
+                onBlur={() => setAjustandoSlider(false)}
                 aria-label="Altura del Bloque Defensivo"
                 className="w-full accent-white bg-neutral-800 h-1.5 cursor-pointer"
               />
@@ -1034,6 +1047,12 @@ const Formaciones = () => {
                 max="100"
                 value={anchuraEquipo}
                 onChange={(e) => setAnchuraEquipo(Number(e.target.value))}
+                onPointerDown={() => setAjustandoSlider(true)}
+                onPointerUp={() => setAjustandoSlider(false)}
+                onPointerCancel={() => setAjustandoSlider(false)}
+                onTouchStart={() => setAjustandoSlider(true)}
+                onTouchEnd={() => setAjustandoSlider(false)}
+                onBlur={() => setAjustandoSlider(false)}
                 aria-label="Anchura del Equipo"
                 className="w-full accent-white bg-neutral-800 h-1.5 cursor-pointer"
               />
@@ -1146,7 +1165,7 @@ const Formaciones = () => {
       {/* modal minimalista para crear nuevo esquema tactico montado en portal sobre todo el viewport */}
       {modalNuevoEsquema && typeof document !== "undefined" && createPortal(
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm animate-fade-in flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
           onClick={(e) => {
             if (e.target === e.currentTarget) setModalNuevoEsquema(false);
           }}
@@ -1250,7 +1269,7 @@ const Formaciones = () => {
       {/* modal para editar nombre y descripcion del esquema activo montado en portal sobre todo el viewport */}
       {modalEditarEsquema && typeof document !== "undefined" && createPortal(
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm animate-fade-in flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
           onClick={(e) => {
             if (e.target === e.currentTarget) setModalEditarEsquema(false);
           }}

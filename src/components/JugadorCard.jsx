@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 
 // insignia sobria y monocromatica para la posicion tactica (sin ruido de color innecesario)
 const estiloPosicion = () => {
@@ -24,7 +24,7 @@ const JugadorCard = ({ jugador, onEditar, onEliminar }) => {
   const [confirmando, setConfirmando] = useState(false);
 
   return (
-    <article className="border border-white/10 bg-[#0a0a0a]/80 p-5 hover:border-white/30 transition-all duration-300 flex flex-col justify-between group">
+    <article className="border border-white/10 bg-[#0a0a0a]/80 p-5 hover:border-white/30 hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
       <div>
         {/* cabecera de la ficha: dorsal y badges */}
         <div className="flex items-start justify-between gap-3 mb-4">
@@ -144,4 +144,4 @@ const JugadorCard = ({ jugador, onEditar, onEliminar }) => {
   );
 };
 
-export default JugadorCard;
+export default memo(JugadorCard);

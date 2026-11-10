@@ -53,14 +53,15 @@ h1, h2, h3, h4 {
   animation: parpadeo-error 2s ease-in-out infinite;
 }
 
-/* animacion suave de aparicion */
+/* animacion suave y sincronizada de aparicion */
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 .animate-fade-in {
-  animation: fade-in 0.4s ease-out both;
+  animation: fade-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity;
 }
 
 /* transicion sutil y elegante al cargar un futbolista y sus estadisticas en rendimiento */
@@ -84,7 +85,7 @@ h1, h2, h3, h4 {
 @keyframes modal-pop {
   0% {
     opacity: 0;
-    transform: scale(0.97) translateY(4px);
+    transform: scale(0.93) translateY(12px);
   }
   100% {
     opacity: 1;
@@ -93,65 +94,96 @@ h1, h2, h3, h4 {
 }
 
 .animate-modal-pop {
-  animation: modal-pop 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: modal-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
   will-change: transform, opacity;
 }
 
 /* animacion de entrada deliberada y cinematografica para el login */
 @keyframes login-enter {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(22px) scale(0.99);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .animate-login-enter {
-  animation: login-enter 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: login-enter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, transform;
 }
 
 /* barra de progreso lineal calibrada para la carga del login */
 @keyframes login-progress {
   0% {
-    width: 0%;
+    transform: scaleX(0);
   }
   30% {
-    width: 40%;
+    transform: scaleX(0.4);
   }
   65% {
-    width: 75%;
+    transform: scaleX(0.75);
   }
   90% {
-    width: 92%;
+    transform: scaleX(0.92);
   }
   100% {
-    width: 100%;
+    transform: scaleX(1);
   }
 }
 
 .animate-login-progress {
+  width: 100%;
+  transform-origin: left;
+  will-change: transform;
   animation: login-progress 1.85s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* transicion sutil, fluida y deliberada entre vistas */
+/* transicion cinematografica, fluida y perceptible entre vistas a 60 fps */
 @keyframes page-enter {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(18px) scale(0.99);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .animate-page-enter,
 .animate-fade-in-up {
-  animation: page-enter 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: page-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, transform;
 }
+
+/* feedback tactil elastico al pulsar cualquier boton habilitado */
+button:not(:disabled) {
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.972);
+}
+
+/* micro-elevacion e iluminacion sutil al pasar el cursor sobre tarjetas */
+.card-hover-tactil {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.card-hover-tactil:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* clases de cascada escalonada para despliegue armonico de tarjetas y secciones */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 110ms; }
+.stagger-3 { animation-delay: 170ms; }
+.stagger-4 { animation-delay: 230ms; }
+.stagger-5 { animation-delay: 290ms; }
 
 /* retrasos progresivos para elementos que entran en cascada */
 .delay-150 { animation-delay: 150ms; }

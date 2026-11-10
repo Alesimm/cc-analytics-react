@@ -166,7 +166,7 @@ const CentroMedico = () => {
   return (
     <div className="space-y-8 relative">
       {/* Cabecera principal minimalista */}
-      <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <header className="animate-fade-in-up stagger-1 border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 mb-2 flex-wrap">
             <span className="inline-block w-1.5 h-1.5 bg-white"></span>
@@ -226,7 +226,7 @@ const CentroMedico = () => {
       {/* Tarjetas de estado cuantitativo del departamento medico */}
       <section
         aria-labelledby="metricas-medicas"
-        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        className="animate-fade-in-up stagger-2 grid grid-cols-1 sm:grid-cols-3 gap-4"
       >
         <h2 id="metricas-medicas" className="sr-only">
           Métricas cuantitativas del centro médico
@@ -269,7 +269,7 @@ const CentroMedico = () => {
       </section>
 
       {/* Barra de control: Buscador y Filtros */}
-      <div className="border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-4 space-y-4">
+      <div className="animate-fade-in-up stagger-3 border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-sm p-4 space-y-4">
         {/* Buscador de texto */}
         <div className="relative">
           <input
