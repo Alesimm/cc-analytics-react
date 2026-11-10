@@ -200,10 +200,10 @@ const Dashboard = () => {
 
         {/* tarjetas con las 4 metricas mas importantes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          {metricasEquipo.map((item) => (
+          {metricasEquipo.map((item, idx) => (
             <div
               key={item.id}
-              className="border border-white/10 bg-[#0a0a0a]/80 p-5 hover:border-white/30 transition-all duration-300 flex flex-col justify-between group"
+              className={`border border-white/10 bg-[#0a0a0a]/80 p-5 hover:border-white/30 hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group animate-fade-in-up stagger-${idx + 1}`}
             >
               <div className="flex items-center justify-between gap-2 mb-3">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 leading-tight">
@@ -231,7 +231,7 @@ const Dashboard = () => {
         {/* lado izquierdo con el resumen completo del ultimo partido jugado */}
         <section
           aria-labelledby="seccion-ultimo-partido"
-          className="lg:col-span-7 space-y-4"
+          className="lg:col-span-7 space-y-4 animate-fade-in-up stagger-2"
         >
           <div className="flex items-center justify-between border-b border-white/10 pb-2">
             <h3
@@ -264,6 +264,9 @@ const Dashboard = () => {
                   <img
                     src={ultimoPartido.local.escudo}
                     alt={ultimoPartido.local.nombre}
+                    width="48"
+                    height="48"
+                    decoding="async"
                     className="w-8 h-8 sm:w-12 sm:h-12 object-contain drop-shadow"
                   />
                 </div>
@@ -298,6 +301,10 @@ const Dashboard = () => {
                   <img
                     src={ultimoPartido.visita.escudo}
                     alt={ultimoPartido.visita.nombre}
+                    width="48"
+                    height="48"
+                    loading="lazy"
+                    decoding="async"
                     className="w-8 h-8 sm:w-12 sm:h-12 object-contain drop-shadow"
                   />
                 </div>
@@ -380,7 +387,7 @@ const Dashboard = () => {
         {/* lado derecho con el panel de noticias y boton selector */}
         <section
           aria-labelledby="seccion-noticias"
-          className="lg:col-span-5 space-y-4"
+          className="lg:col-span-5 space-y-4 animate-fade-in-up stagger-3"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-2 gap-2">
             <h3
@@ -423,7 +430,7 @@ const Dashboard = () => {
             {listaNoticias.map((noticia) => (
               <article
                 key={noticia.id}
-                className="border border-white/10 bg-[#0a0a0a]/80 p-4 hover:border-white/30 transition-all duration-300 space-y-2 group"
+                className="border border-white/10 bg-[#0a0a0a]/80 p-4 hover:border-white/30 hover:-translate-y-0.5 transition-all duration-200 space-y-2 group"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import {
@@ -43,10 +43,33 @@ const Calendario = () => {
   const [erroresForm, setErroresForm] = useState({});
   const [mensajeFeedback, setMensajeFeedback] = useState("");
 
+  // un solo timer: un mensaje nuevo cancela el borrado del anterior
+  const timerMensajeRef = useRef(null);
+
+  const mostrarMensaje = (texto) => {
+    setMensajeFeedback(texto);
+    if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
+    timerMensajeRef.current = setTimeout(() => {
+      setMensajeFeedback("");
+    }, 3500);
+  };
+
+  // limpia el timer al salir de la vista
+  useEffect(() => {
+    return () => {
+      if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
+    };
+  }, []);
+
   // partido mas proximo en el tiempo
   const siguientePartido = useMemo(() => {
     return partidos.find((p) => p.tipo === "proximo");
   }, [partidos]);
+
+  // escudo del rival del proximo partido, se resuelve una sola vez
+  const escudoRivalSiguiente = siguientePartido
+    ? resolverEscudoRival(siguientePartido)
+    : null;
 
   // lista de partidos filtrados
   const partidosFiltrados = useMemo(() => {
@@ -154,8 +177,7 @@ const Calendario = () => {
       relevancia: "",
     });
     setErroresForm({});
-    setMensajeFeedback(`Partido contra ${nuevo.rival} programado exitosamente en el calendario.`);
-    setTimeout(() => setMensajeFeedback(""), 4000);
+    mostrarMensaje(`Partido contra ${nuevo.rival} programado exitosamente en el calendario.`);
   };
 
   // eliminar partido (crud: delete)
@@ -164,8 +186,7 @@ const Calendario = () => {
     setPartidos(obtenerPartidos());
     setConfirmarEliminarId(null);
     if (partidoDetalleId === id) setPartidoDetalleId(null);
-    setMensajeFeedback(`Partido contra ${rival} eliminado del calendario.`);
-    setTimeout(() => setMensajeFeedback(""), 3500);
+    mostrarMensaje(`Partido contra ${rival} eliminado del calendario.`);
   };
 
   // bloquear scroll y tecla escape para modal de programar partido
@@ -242,7 +263,7 @@ const Calendario = () => {
       {siguientePartido && (pestanaActiva === "proximos" || pestanaActiva === "todos") && (
         <section
           aria-labelledby="titulo-proximo-desafio"
-          className="border border-white/10 bg-[#0a0a0a]/90 p-6 sm:p-8 lg:p-10 relative overflow-hidden shadow-2xl transition-all duration-300"
+          className="border border-white/10 bg-[#0a0a0a]/90 p-6 sm:p-8 lg:p-10 relative overflow-hidden shadow-2xl transition-all duration-300 animate-fade-in-up stagger-1"
         >
 
 
@@ -272,6 +293,9 @@ const Calendario = () => {
                   <img
                     src={ESCUDO_COLO_COLO}
                     alt="Colo-Colo"
+                    width="80"
+                    height="80"
+                    decoding="async"
                     className="w-full h-full object-contain drop-shadow"
                   />
                 </div>
@@ -304,10 +328,13 @@ const Calendario = () => {
                   style={{ borderColor: siguientePartido.rivalEscudoColor }}
                   className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 border border-white/10 bg-white/5 flex items-center justify-center p-3 sm:p-4 shadow-xl"
                 >
-                  {resolverEscudoRival(siguientePartido) ? (
+                  {escudoRivalSiguiente ? (
                     <img
-                      src={resolverEscudoRival(siguientePartido)}
+                      src={escudoRivalSiguiente}
                       alt={siguientePartido.rival}
+                      width="80"
+                      height="80"
+                      decoding="async"
                       className="w-full h-full object-contain drop-shadow"
                     />
                   ) : (
@@ -541,7 +568,7 @@ const Calendario = () => {
                   className={`border transition-all duration-200 ${
                     estaExpandido
                       ? "border-white bg-[#0e0e0e] shadow-xl"
-                      : "border-white/10 bg-[#0a0a0a]/80 hover:border-white/30 hover:bg-[#0c0c0c]"
+                      : "border-white/10 bg-[#0a0a0a]/80 hover:border-white/30 hover:bg-[#0c0c0c] hover:-translate-y-0.5"
                   }`}
                 >
                   {/* estructura fija de 12 columnas: columna 1 (4 cols), columna 2 (6 cols), columna 3 (2 cols) */}
@@ -594,6 +621,10 @@ const Calendario = () => {
                             <img
                               src={escudoLocal}
                               alt={equipoLocal}
+                              width="20"
+                              height="20"
+                              loading="lazy"
+                              decoding="async"
                               className="w-5 h-5 object-contain"
                             />
                           ) : (
@@ -639,6 +670,10 @@ const Calendario = () => {
                             <img
                               src={escudoVisita}
                               alt={equipoVisita}
+                              width="20"
+                              height="20"
+                              loading="lazy"
+                              decoding="async"
                               className="w-5 h-5 object-contain"
                             />
                           ) : (
@@ -806,7 +841,7 @@ const Calendario = () => {
       {/* modal para programar nuevo partido montado en portal sobre todo el viewport */}
       {modalNuevoPartido && typeof document !== "undefined" && createPortal(
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm animate-fade-in flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
           onClick={(e) => {
             if (e.target === e.currentTarget) setModalNuevoPartido(false);
           }}

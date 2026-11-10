@@ -99,6 +99,10 @@ const Login = () => {
           <img
             src="/photos/logo-escudo-blanco.webp"
             alt="Cacique Logo"
+            width="112"
+            height="112"
+            fetchPriority="high"
+            decoding="async"
             className="w-28 h-auto mb-10 drop-shadow-2xl"
           />
 
@@ -167,6 +171,9 @@ const Login = () => {
           <img
             src="/photos/logo-colocolo.webp"
             alt="Escudo Colo-Colo"
+            width="40"
+            height="40"
+            decoding="async"
             className="w-8 sm:w-10 h-auto"
           />
         </div>
