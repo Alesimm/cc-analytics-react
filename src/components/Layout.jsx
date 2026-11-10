@@ -1,5 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, Suspense } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
+
+// descarga la vista en segundo plano al pasar el cursor o enfocar el enlace
+const prefetchMap = {
+  "/dashboard": () => import("../views/Dashboard"),
+  "/plantel": () => import("../views/Plantel"),
+  "/rendimiento": () => import("../views/Rendimiento"),
+  "/formaciones": () => import("../views/Formaciones"),
+  "/calendario": () => import("../views/Calendario"),
+  "/medico": () => import("../views/CentroMedico"),
+  "/soporte": () => import("../views/Soporte"),
+};
 
 const ENLACES_MENU = [
   { to: "/dashboard", label: "Inicio" },
@@ -64,20 +75,22 @@ const Layout = () => {
   }, [menuUsuarioAbierto]);
 
   // dato del usuario autenticado con sincronizacion de sesion
-  const usuarioGuardado = (() => {
+  // se lee solo al cambiar de ruta, no al abrir el menu
+  const usuario = useMemo(() => {
+    let guardado = null;
     try {
       const data = localStorage.getItem("cc_usuario_sesion");
-      return data ? JSON.parse(data) : null;
+      guardado = data ? JSON.parse(data) : null;
     } catch {
-      return null;
+      // fallback
     }
-  })();
-
-  const usuario = {
-    rol: "Admin",
-    correo: usuarioGuardado?.correo || "admin@colocolo.cl",
-    area: "Dirección Deportiva Integral",
-  };
+    return {
+      rol: "Admin",
+      correo: guardado?.correo || "admin@colocolo.cl",
+      area: "Dirección Deportiva Integral",
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   return (
     <div className="h-screen overflow-hidden bg-[#050505] relative flex flex-col text-white font-sans selection:bg-white selection:text-black">
@@ -92,6 +105,9 @@ const Layout = () => {
             <img
               src="/photos/logo-colocolo.webp"
               alt="Colo-Colo"
+              width="24"
+              height="24"
+              decoding="async"
               className="w-5 h-5 sm:w-6 sm:h-6 object-contain opacity-95 group-hover:opacity-100 transition-opacity"
             />
             <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] sm:tracking-[0.18em] text-white whitespace-nowrap">
@@ -110,6 +126,8 @@ const Layout = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
+                onMouseEnter={() => prefetchMap[item.to]?.()}
+                onFocus={() => prefetchMap[item.to]?.()}
                 className={({ isActive }) =>
                   `px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.08em] whitespace-nowrap border transition-all duration-150 ${
                     isActive
@@ -258,7 +276,19 @@ const Layout = () => {
           key={location.pathname}
           className="max-w-[1440px] mx-auto w-full animate-page-enter"
         >
-          <Outlet />
+          {/* el menu y la barra superior quedan fijos mientras carga la vista */}
+          <Suspense
+            fallback={
+              <div className="py-20 flex flex-col items-center justify-center select-none animate-fade-in">
+                <div className="w-7 h-7 rounded-full border-2 border-white/10 border-t-white animate-spin mb-3" />
+                <span className="text-[10px] uppercase font-mono tracking-[0.25em] text-neutral-400">
+                  CC Analytics // Cargando Módulo
+                </span>
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </div>
       </main>
     </div>

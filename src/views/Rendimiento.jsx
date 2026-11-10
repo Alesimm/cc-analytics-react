@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
   obtenerPlantel,
   obtenerRendimientoJugador,
@@ -55,6 +55,33 @@ const Rendimiento = () => {
   });
   const [erroresDirectriz, setErroresDirectriz] = useState({});
   const [mensajeFeedback, setMensajeFeedback] = useState("");
+
+  // un solo timer: un mensaje nuevo cancela el borrado del anterior
+  const timerMensajeRef = useRef(null);
+
+  const mostrarMensaje = (texto) => {
+    setMensajeFeedback(texto);
+    if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
+    timerMensajeRef.current = setTimeout(() => {
+      setMensajeFeedback("");
+    }, 3500);
+  };
+
+  // limpia el timer al salir de la vista
+  useEffect(() => {
+    return () => {
+      if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
+    };
+  }, []);
+
+  // cerrar el catalogo con la tecla escape
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setMenuAbierto(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // jugador actual seleccionado (null si aun no se ha seleccionado ninguno)
   const jugadorSeleccionado = useMemo(() => {
@@ -166,14 +193,13 @@ const Rendimiento = () => {
       guardarDirectrizStorage(payload);
       setTodasDirectrices(obtenerDirectricesStorage());
 
-      setMensajeFeedback(
+      mostrarMensaje(
         dirEnEdicionId
           ? "Directriz táctica actualizada correctamente."
           : `Directriz táctica registrada para ${jugadorSeleccionado.nombre}.`
       );
 
       handleCancelarForm();
-      setTimeout(() => setMensajeFeedback(""), 3500);
     }
   };
 
@@ -182,8 +208,7 @@ const Rendimiento = () => {
     eliminarDirectrizStorage(id);
     setTodasDirectrices(obtenerDirectricesStorage());
     setDirAEliminarId(null);
-    setMensajeFeedback("Directriz táctica eliminada del plan del jugador.");
-    setTimeout(() => setMensajeFeedback(""), 3000);
+    mostrarMensaje("Directriz táctica eliminada del plan del jugador.");
   };
 
   // constantes geometricas para el radar svg (6 ejes)
@@ -199,7 +224,7 @@ const Rendimiento = () => {
   return (
     <div className="space-y-8 relative">
       {/* cabecera principal minimalista */}
-      <header className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <header className="animate-fade-in-up stagger-1 border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 mb-2 flex-wrap">
             <span className="inline-block w-1.5 h-1.5 bg-white"></span>
@@ -220,7 +245,7 @@ const Rendimiento = () => {
       </header>
 
       {/* buscador y selector de catalogo (iconos vectoriales svg limpios) */}
-      <div className="relative">
+      <div className="animate-fade-in-up stagger-2 relative">
         <div className="relative flex items-center">
           <span className="absolute left-3.5 text-neutral-500 pointer-events-none flex items-center">
             <svg

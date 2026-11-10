@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
   obtenerPlantel,
   guardarJugadorStorage,
@@ -31,12 +31,23 @@ const Plantel = () => {
   // mensaje inline de feedback (sin alert ni popups)
   const [mensajeExito, setMensajeExito] = useState("");
 
-  const mostrarMensaje = (texto) => {
+  // un solo timer: un mensaje nuevo cancela el borrado del anterior
+  const timerMensajeRef = useRef(null);
+
+  const mostrarMensaje = useCallback((texto) => {
     setMensajeExito(texto);
-    setTimeout(() => {
+    if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
+    timerMensajeRef.current = setTimeout(() => {
       setMensajeExito("");
     }, 3500);
-  };
+  }, []);
+
+  // limpia el timer al salir de la vista
+  useEffect(() => {
+    return () => {
+      if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
+    };
+  }, []);
 
   // apertura de modal para creacion
   const handleAbrirCrear = () => {
@@ -45,10 +56,10 @@ const Plantel = () => {
   };
 
   // apertura de modal para edicion
-  const handleAbrirEditar = (jugador) => {
+  const handleAbrirEditar = useCallback((jugador) => {
     setJugadorEnEdicion(jugador);
     setModalAbierto(true);
-  };
+  }, []);
 
   // guardar (crear o actualizar)
   const handleGuardarJugador = (jugadorData) => {
@@ -64,16 +75,21 @@ const Plantel = () => {
   };
 
   // eliminar (confirmado inline)
-  const handleEliminarJugador = (id) => {
-    const jugadorEliminado = plantel.find((j) => j.id === id);
-    const actualizado = eliminarJugadorStorage(id);
-    setPlantel(actualizado);
-    mostrarMensaje(
-      `El jugador ${
-        jugadorEliminado ? jugadorEliminado.nombre : ""
-      } fue dado de baja del plantel.`
-    );
-  };
+  // referencia estable: no depende del plantel, asi memo(JugadorCard) sirve
+  const handleEliminarJugador = useCallback(
+    (id) => {
+      // el nombre se lee del storage antes de borrar
+      const jugadorEliminado = obtenerPlantel().find((j) => j.id === id);
+      eliminarJugadorStorage(id);
+      setPlantel((prev) => prev.filter((j) => j.id !== id));
+      mostrarMensaje(
+        `El jugador ${
+          jugadorEliminado ? jugadorEliminado.nombre : ""
+        } fue dado de baja del plantel.`
+      );
+    },
+    [mostrarMensaje]
+  );
 
   // restablecer valores de prueba
   const handleRestablecer = () => {
@@ -101,10 +117,14 @@ const Plantel = () => {
 
   // metricas resumidas
   const totalJugadores = plantel.length;
-  const disponibles = plantel.filter((j) => j.estado === "Disponible").length;
-  const enRecuperacion = plantel.filter(
-    (j) => j.estado === "En recuperación"
-  ).length;
+  const { disponibles, enRecuperacion } = useMemo(
+    () => ({
+      disponibles: plantel.filter((j) => j.estado === "Disponible").length,
+      enRecuperacion: plantel.filter((j) => j.estado === "En recuperación")
+        .length,
+    }),
+    [plantel]
+  );
 
   return (
     <div className="space-y-8 relative">
@@ -171,7 +191,7 @@ const Plantel = () => {
         <h2 id="metricas-plantel" className="sr-only">
           Resumen cuantitativo del plantel
         </h2>
-        <div className="border border-white/10 bg-[#0a0a0a]/80 p-4 relative overflow-hidden group hover:border-white/30 transition-all">
+        <div className="border border-white/10 bg-[#0a0a0a]/80 p-4 relative overflow-hidden group hover:border-white/30 hover:-translate-y-1 transition-all duration-200 animate-fade-in-up stagger-1">
 
           <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block mb-1">
             Total en Plantel
@@ -184,7 +204,7 @@ const Plantel = () => {
           </span>
         </div>
 
-        <div className="border border-white/10 bg-[#0a0a0a]/80 p-4 relative overflow-hidden group hover:border-white/30 transition-all">
+        <div className="border border-white/10 bg-[#0a0a0a]/80 p-4 relative overflow-hidden group hover:border-white/30 hover:-translate-y-1 transition-all duration-200 animate-fade-in-up stagger-2">
 
           <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block mb-1">
             Aptos para Competir
@@ -197,7 +217,7 @@ const Plantel = () => {
           </span>
         </div>
 
-        <div className="border border-white/10 bg-[#0a0a0a]/80 p-4 relative overflow-hidden group hover:border-white/30 transition-all">
+        <div className="border border-white/10 bg-[#0a0a0a]/80 p-4 relative overflow-hidden group hover:border-white/30 hover:-translate-y-1 transition-all duration-200 animate-fade-in-up stagger-3">
 
           <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block mb-1">
             Área Médica
@@ -254,7 +274,7 @@ const Plantel = () => {
 
       {/* grid del catalogo de jugadores */}
       {jugadoresFiltrados.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 animate-fade-in-up stagger-2">
           {jugadoresFiltrados.map((jugador) => (
             <JugadorCard
               key={jugador.id}

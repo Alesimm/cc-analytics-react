@@ -1,13 +1,16 @@
+import { lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './views/Login';
 import Layout from './components/Layout';
-import Dashboard from './views/Dashboard';
-import Plantel from './views/Plantel';
-import Rendimiento from './views/Rendimiento';
-import Formaciones from './views/Formaciones';
-import Calendario from './views/Calendario';
-import CentroMedico from './views/CentroMedico';
-import Soporte from './views/Soporte';
+
+// vistas internas con carga diferida por ruta
+const Dashboard = lazy(() => import('./views/Dashboard'));
+const Plantel = lazy(() => import('./views/Plantel'));
+const Rendimiento = lazy(() => import('./views/Rendimiento'));
+const Formaciones = lazy(() => import('./views/Formaciones'));
+const Calendario = lazy(() => import('./views/Calendario'));
+const CentroMedico = lazy(() => import('./views/CentroMedico'));
+const Soporte = lazy(() => import('./views/Soporte'));
 
 const App = () => {
   return (
@@ -16,10 +19,10 @@ const App = () => {
         {/* la raiz manda al login */}
         <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* login, no lleva menu lateral */}
+        {/* login, no lleva menu */}
         <Route path="/login" element={<Login />} />
 
-        {/* pantallas internas, todas con el menu lateral */}
+        {/* pantallas internas, el suspense vive dentro del layout */}
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/plantel" element={<Plantel />} />

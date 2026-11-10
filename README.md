@@ -58,6 +58,34 @@ La plataforma utiliza una dirección de diseño **Brutalista Deportiva Premium**
 
 ---
 
+## Stack Tecnológico y Ejecución Local
+
+### Tecnologías Principales
+- **Frontend:** React 19 + Vite 8
+- **Enrutamiento:** React Router DOM v7 (con carga diferida `React.lazy`, `<Suspense>` en `Layout` y precarga predictiva)
+- **Estilos:** Tailwind CSS v4
+- **Persistencia:** `localStorage` estructurado con datos iniciales de respaldo en `src/data/`
+- **Testing Unitario:** Vitest + React Testing Library + `jsdom` (46 pruebas unitarias distribuidas en 9 suites con 100% de aprobación)
+
+### Comandos de Ejecución
+
+```bash
+# 1. Instalar dependencias
+npm install
+
+# 2. Iniciar servidor de desarrollo
+npm run dev
+
+# 3. Ejecutar suite completa de pruebas unitarias (46 tests)
+npm test
+
+# 4. Verificar estándar de código (ESLint) y compilar para producción
+npm run lint
+npm run build
+```
+
+---
+
 ## Equipo de Desarrollo
 
 Proyecto desarrollado de forma colaborativa por:
