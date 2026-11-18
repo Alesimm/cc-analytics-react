@@ -58,3 +58,23 @@ export const cerrarSesion = () => {
     // sin almacenamiento disponible no hay nada que borrar
   }
 };
+
+// devuelve el rol activo de la sesion (si no hay sesion en tests unitarios asume ADMIN)
+export const obtenerRolActual = () => {
+  const usuario = obtenerUsuario();
+  return usuario?.rol || "ADMIN";
+};
+
+// permisos por rol (rbac) segun la matriz oficial del proyecto
+export const puedeGestionarPlantel = (rol = obtenerRolActual()) =>
+  rol === "ADMIN";
+
+export const puedeGestionarTactica = (rol = obtenerRolActual()) =>
+  rol === "ADMIN" || rol === "CUERPO_TECNICO";
+
+export const puedeAccederMedico = (rol = obtenerRolActual()) =>
+  rol === "ADMIN" || rol === "CUERPO_TECNICO";
+
+export const puedeEliminarRegistros = (rol = obtenerRolActual()) =>
+  rol === "ADMIN";
+

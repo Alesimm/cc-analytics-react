@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, Suspense } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
-import { obtenerUsuario, cerrarSesion, ETIQUETA_ROL } from "../data/authData";
+import { obtenerUsuario, cerrarSesion, ETIQUETA_ROL, puedeAccederMedico } from "../data/authData";
 
 // descarga la vista en segundo plano al pasar el cursor o enfocar el enlace
 const prefetchMap = {
@@ -75,13 +75,24 @@ const Layout = () => {
   // se lee solo al cambiar de ruta, no al abrir el menu
   const usuario = useMemo(() => {
     const guardado = obtenerUsuario();
+    const codigoRol = guardado?.rol || "ADMIN";
     return {
-      rol: ETIQUETA_ROL[guardado?.rol] || "Sin rol",
-      correo: guardado?.correo || "",
-      area: guardado?.cargo || "",
+      codigoRol,
+      rol: ETIQUETA_ROL[codigoRol] || "Administrador",
+      correo: guardado?.correo || "admin@colocolo.cl",
+      area: guardado?.cargo || "Dirección Deportiva Integral",
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
+
+  // oculta centro medico en la barra superior cuando el rol es analista de lectura
+  const enlacesVisibles = useMemo(
+    () =>
+      ENLACES_MENU.filter(
+        (item) => item.to !== "/medico" || puedeAccederMedico(usuario.codigoRol)
+      ),
+    [usuario.codigoRol]
+  );
 
   return (
     <div className="h-screen overflow-hidden bg-[#050505] relative flex flex-col text-white font-sans selection:bg-white selection:text-black">
@@ -113,7 +124,7 @@ const Layout = () => {
             aria-label="Navegación principal"
             className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-none py-1 scroll-smooth pr-2"
           >
-            {ENLACES_MENU.map((item) => (
+            {enlacesVisibles.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
@@ -222,9 +233,9 @@ const Layout = () => {
               </div>
 
               <div className="space-y-1 text-[11px]">
-                <div className="flex items-center justify-between text-neutral-400 py-1">
-                  <span>Departamento</span>
-                  <span className="text-neutral-200 font-semibold">Cuerpo Técnico</span>
+                <div className="flex items-center justify-between text-neutral-400 py-1 gap-2">
+                  <span>Cargo</span>
+                  <span className="text-neutral-200 font-semibold truncate">{usuario.area}</span>
                 </div>
                 <div className="flex items-center justify-between text-neutral-400 py-1">
                   <span>Temporada</span>

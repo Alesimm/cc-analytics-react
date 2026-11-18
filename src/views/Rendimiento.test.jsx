@@ -189,4 +189,20 @@ describe("Módulo de Rendimiento Individual (Pantalla 4)", () => {
       screen.getAllByText(/sin participación/i).length
     ).toBeGreaterThan(0);
   });
+
+  // prueba 8: restriccion rbac en rendimiento para analista de lectura
+  it("oculta los controles de crear, editar y eliminar directrices para el rol ANALISTA_LECTURA", () => {
+    localStorage.setItem(
+      "cc_usuario_sesion",
+      JSON.stringify({ id: "usr-consulta", correo: "consulta@colocolo.cl", rol: "ANALISTA_LECTURA" })
+    );
+
+    render(<Rendimiento />);
+    seleccionarFutbolistaDemo(/arturo vidal/i);
+
+    expect(
+      screen.queryByRole("button", { name: /\+ nueva directriz táctica/i })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /eliminar/i })).not.toBeInTheDocument();
+  });
 });

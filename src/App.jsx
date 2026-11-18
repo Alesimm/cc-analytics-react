@@ -31,7 +31,9 @@ const App = () => {
             <Route path="/rendimiento" element={<Rendimiento />} />
             <Route path="/formaciones" element={<Formaciones />} />
             <Route path="/calendario" element={<Calendario />} />
-            <Route path="/medico" element={<CentroMedico />} />
+            <Route element={<RutaPrivada rolesPermitidos={["ADMIN", "CUERPO_TECNICO"]} />}>
+              <Route path="/medico" element={<CentroMedico />} />
+            </Route>
             <Route path="/soporte" element={<Soporte />} />
           </Route>
         </Route>

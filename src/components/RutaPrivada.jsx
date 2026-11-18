@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { obtenerPerfil } from "../services/api";
-import { obtenerToken, guardarUsuario, cerrarSesion } from "../data/authData";
+import { obtenerToken, obtenerUsuario, guardarUsuario, cerrarSesion } from "../data/authData";
 
 // guardia de las pantallas privadas: si no hay sesion valida manda al login.
 // al recargar con f5 pregunta al backend (/me) si el token sigue vigente antes de mostrar la pantalla.
-const RutaPrivada = () => {
+// si recibe rolesPermitidos y el rol del usuario no esta incluido, redirige a /dashboard.
+const RutaPrivada = ({ rolesPermitidos = null }) => {
   const tieneToken = Boolean(obtenerToken());
   const [estado, setEstado] = useState(tieneToken ? "verificando" : "rechazada");
+  const [rolUsuario, setRolUsuario] = useState(() => obtenerUsuario()?.rol || null);
 
   useEffect(() => {
     if (!tieneToken) return;
@@ -17,6 +19,7 @@ const RutaPrivada = () => {
       .then(({ usuario }) => {
         if (!activo) return;
         guardarUsuario(usuario);
+        setRolUsuario(usuario?.rol || null);
         setEstado("valida");
       })
       .catch((error) => {
@@ -42,6 +45,10 @@ const RutaPrivada = () => {
         </span>
       </div>
     );
+  }
+
+  if (Array.isArray(rolesPermitidos) && rolUsuario && !rolesPermitidos.includes(rolUsuario)) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;
