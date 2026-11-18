@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './views/Login';
 import Layout from './components/Layout';
+import RutaPrivada from './components/RutaPrivada';
 
 // vistas internas con carga diferida por ruta
 const Dashboard = lazy(() => import('./views/Dashboard'));
@@ -22,15 +23,17 @@ const App = () => {
         {/* login, no lleva menu */}
         <Route path="/login" element={<Login />} />
 
-        {/* pantallas internas, el suspense vive dentro del layout */}
-        <Route element={<Layout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/plantel" element={<Plantel />} />
-          <Route path="/rendimiento" element={<Rendimiento />} />
-          <Route path="/formaciones" element={<Formaciones />} />
-          <Route path="/calendario" element={<Calendario />} />
-          <Route path="/medico" element={<CentroMedico />} />
-          <Route path="/soporte" element={<Soporte />} />
+        {/* pantallas internas: solo entran usuarios con sesion valida, el suspense vive dentro del layout */}
+        <Route element={<RutaPrivada />}>
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/plantel" element={<Plantel />} />
+            <Route path="/rendimiento" element={<Rendimiento />} />
+            <Route path="/formaciones" element={<Formaciones />} />
+            <Route path="/calendario" element={<Calendario />} />
+            <Route path="/medico" element={<CentroMedico />} />
+            <Route path="/soporte" element={<Soporte />} />
+          </Route>
         </Route>
 
         {/* cualquier ruta inexistente vuelve al login */}
