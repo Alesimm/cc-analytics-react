@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, Suspense } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { obtenerUsuario, cerrarSesion, ETIQUETA_ROL } from "../data/authData";
 
 // descarga la vista en segundo plano al pasar el cursor o enfocar el enlace
 const prefetchMap = {
@@ -33,11 +34,7 @@ const Layout = () => {
 
   // funcion para cerrar sesion y volver al login
   const handleLogout = () => {
-    try {
-      localStorage.removeItem("cc_usuario_sesion");
-    } catch {
-      // fallback
-    }
+    cerrarSesion();
     setMenuUsuarioAbierto(false);
     navigate("/login");
   };
@@ -74,20 +71,14 @@ const Layout = () => {
     };
   }, [menuUsuarioAbierto]);
 
-  // dato del usuario autenticado con sincronizacion de sesion
+  // datos del usuario autenticado, leidos de la sesion guardada al iniciar sesion
   // se lee solo al cambiar de ruta, no al abrir el menu
   const usuario = useMemo(() => {
-    let guardado = null;
-    try {
-      const data = localStorage.getItem("cc_usuario_sesion");
-      guardado = data ? JSON.parse(data) : null;
-    } catch {
-      // fallback
-    }
+    const guardado = obtenerUsuario();
     return {
-      rol: "Admin",
-      correo: guardado?.correo || "admin@colocolo.cl",
-      area: "Dirección Deportiva Integral",
+      rol: ETIQUETA_ROL[guardado?.rol] || "Sin rol",
+      correo: guardado?.correo || "",
+      area: guardado?.cargo || "",
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);

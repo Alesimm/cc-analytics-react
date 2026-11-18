@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { iniciarSesion } from "../services/api";
+import { guardarSesion } from "../data/authData";
 
 // funcion para cambiar el color del borde si hay error
 const claseInput = (error) =>
@@ -24,7 +26,10 @@ const Login = () => {
   // estado para guardar mensajes de error
   const [errors, setErrors] = useState({ email: "", password: "" });
 
-  const handleLogin = (e) => {
+  // mensaje de error que devuelve el servidor (credenciales malas, backend apagado, etc.)
+  const [errorServidor, setErrorServidor] = useState("");
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     let newErrors = { email: "", password: "" };
@@ -53,18 +58,19 @@ const Login = () => {
     setErrors(newErrors);
 
     if (isValid) {
-      try {
-        localStorage.setItem(
-          "cc_usuario_sesion",
-          JSON.stringify({ correo: email.trim(), rol: "Admin" })
-        );
-      } catch {
-        // fallback en caso de restricciones de almacenamiento
-      }
-
       setCargando(true);
       setMensajeCarga("Verificando credenciales...");
+      setErrorServidor("");
 
+      // se valida contra el backend y se guarda el token jwt para mantener la sesion
+      try {
+        const { token, usuario } = await iniciarSesion(email.trim(), password);
+        guardarSesion(token, usuario);
+      } catch (error) {
+        setErrorServidor(error.message);
+        setCargando(false);
+        return;
+      }
       // en entorno de test navegamos de inmediato para no demorar la prueba unitaria
       if (import.meta.env?.MODE === "test") {
         navigate("/dashboard");
@@ -264,6 +270,17 @@ const Login = () => {
             </div>
 
             <div className="space-y-5 pt-2">
+              {/* error que responde el servidor */}
+              {errorServidor && (
+                <p
+                  role="alert"
+                  className="text-red-400 text-xs font-semibold flex items-center gap-2 parpadeo-error antialiased border border-red-500/40 bg-red-500/5 p-3"
+                >
+                  <span className="inline-block w-1.5 h-1.5 bg-red-500 rounded-full shrink-0"></span>
+                  {errorServidor}
+                </p>
+              )}
+
               {/* boton de ingreso */}
               <button
                 type="submit"
