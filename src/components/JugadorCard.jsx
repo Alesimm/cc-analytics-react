@@ -19,7 +19,7 @@ const estiloEstado = (estado) => {
   }
 };
 
-const JugadorCard = ({ jugador, onEditar, onEliminar }) => {
+const JugadorCard = ({ jugador, onEditar, onEliminar, puedeEditar = true }) => {
   // estado local para confirmacion inline de eliminacion (confirmación en la propia tarjeta)
   const [confirmando, setConfirmando] = useState(false);
 
@@ -121,22 +121,28 @@ const JugadorCard = ({ jugador, onEditar, onEliminar }) => {
             <span className="text-[10px] uppercase tracking-widest text-neutral-600 font-mono">
               ID: {jugador.id}
             </span>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => onEditar(jugador)}
-                className="text-[10px] uppercase font-bold tracking-wider text-neutral-300 hover:text-white px-2.5 py-1 border border-white/10 hover:border-white/30 bg-white/2 transition-colors cursor-pointer"
-              >
-                Editar
-              </button>
-              <button
-                type="button"
-                onClick={() => setConfirmando(true)}
-                className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-red-400 px-2.5 py-1 border border-white/10 hover:border-red-500/40 bg-white/2 transition-colors cursor-pointer"
-              >
-                Eliminar
-              </button>
-            </div>
+            {puedeEditar ? (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onEditar(jugador)}
+                  className="text-[10px] uppercase font-bold tracking-wider text-neutral-300 hover:text-white px-2.5 py-1 border border-white/10 hover:border-white/30 bg-white/2 transition-colors cursor-pointer"
+                >
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmando(true)}
+                  className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-red-400 px-2.5 py-1 border border-white/10 hover:border-red-500/40 bg-white/2 transition-colors cursor-pointer"
+                >
+                  Eliminar
+                </button>
+              </div>
+            ) : (
+              <span className="text-[9px] uppercase tracking-widest text-neutral-500 font-bold">
+                Solo lectura
+              </span>
+            )}
           </div>
         )}
       </div>

@@ -91,4 +91,18 @@ describe("Módulo de Plantel de Jugadores (Pantalla 3 - Integración CRUD)", () 
       screen.getByText(/fue dado de baja del plantel/i)
     ).toBeInTheDocument();
   });
+
+  // prueba 5: restriccion rbac para roles sin permiso de administracion del plantel
+  it("oculta los botones de fichar, editar y eliminar cuando el rol no es ADMIN", () => {
+    localStorage.setItem(
+      "cc_usuario_sesion",
+      JSON.stringify({ id: "usr-consulta", correo: "consulta@colocolo.cl", rol: "ANALISTA_LECTURA" })
+    );
+
+    render(<Plantel />);
+
+    expect(screen.queryByRole("button", { name: /nuevo jugador/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /eliminar/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/modo consulta/i)).toBeInTheDocument();
+  });
 });

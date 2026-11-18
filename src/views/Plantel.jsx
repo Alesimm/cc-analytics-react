@@ -5,6 +5,8 @@ import {
   eliminarJugadorStorage,
   restablecerPlantelStorage,
 } from "../data/plantelData";
+import { obtenerToken, puedeGestionarPlantel } from "../data/authData";
+import { api } from "../services/api";
 import JugadorCard from "../components/JugadorCard";
 import JugadorForm from "../components/JugadorForm";
 
@@ -17,8 +19,9 @@ const POSICIONES_FILTRO = [
 ];
 
 const Plantel = () => {
-  // lista de jugadores con persistencia en localStorage
+  // lista de jugadores inicializada desde cache y sincronizada con el backend
   const [plantel, setPlantel] = useState(obtenerPlantel);
+  const esAdmin = puedeGestionarPlantel();
 
   // estados de busqueda y filtros
   const [busqueda, setBusqueda] = useState("");
@@ -49,22 +52,63 @@ const Plantel = () => {
     };
   }, []);
 
+  // si hay sesion jwt activa, sincroniza el plantel desde /api/v1/jugadores
+  useEffect(() => {
+    if (!obtenerToken()) return;
+    let activo = true;
+    api
+      .get("/api/v1/jugadores")
+      .then((res) => {
+        if (activo && Array.isArray(res.jugadores)) {
+          setPlantel(res.jugadores);
+        }
+      })
+      .catch(() => {
+        // si el backend no responde mantiene la lista local
+      });
+    return () => {
+      activo = false;
+    };
+  }, []);
+
   // apertura de modal para creacion
   const handleAbrirCrear = () => {
+    if (!esAdmin) return;
     setJugadorEnEdicion(null);
     setModalAbierto(true);
   };
 
   // apertura de modal para edicion
   const handleAbrirEditar = useCallback((jugador) => {
+    if (!esAdmin) return;
     setJugadorEnEdicion(jugador);
     setModalAbierto(true);
-  }, []);
+  }, [esAdmin]);
 
-  // guardar (crear o actualizar)
-  const handleGuardarJugador = (jugadorData) => {
-    const actualizado = guardarJugadorStorage(jugadorData);
-    setPlantel(actualizado);
+  // guardar (crear o actualizar) sincronizando con backend si hay token
+  const handleGuardarJugador = async (jugadorData) => {
+    if (obtenerToken()) {
+      try {
+        if (jugadorData.id) {
+          const res = await api.put(`/api/v1/jugadores/${jugadorData.id}`, jugadorData);
+          if (res.jugador) {
+            setPlantel((prev) => prev.map((j) => (j.id === res.jugador.id ? res.jugador : j)));
+          }
+        } else {
+          const res = await api.post("/api/v1/jugadores", jugadorData);
+          if (res.jugador) {
+            setPlantel((prev) => [...prev, res.jugador].sort((a, b) => a.dorsal - b.dorsal));
+          }
+        }
+      } catch (error) {
+        mostrarMensaje(error.message);
+        return;
+      }
+    } else {
+      const actualizado = guardarJugadorStorage(jugadorData);
+      setPlantel(actualizado);
+    }
+
     setModalAbierto(false);
     setJugadorEnEdicion(null);
     mostrarMensaje(
@@ -75,12 +119,22 @@ const Plantel = () => {
   };
 
   // eliminar (confirmado inline)
-  // referencia estable: no depende del plantel, asi memo(JugadorCard) sirve
   const handleEliminarJugador = useCallback(
-    (id) => {
-      // el nombre se lee del storage antes de borrar
-      const jugadorEliminado = obtenerPlantel().find((j) => j.id === id);
-      eliminarJugadorStorage(id);
+    async (id) => {
+      if (!esAdmin) return;
+      const jugadorEliminado = plantel.find((j) => j.id === id) || obtenerPlantel().find((j) => j.id === id);
+
+      if (obtenerToken()) {
+        try {
+          await api.delete(`/api/v1/jugadores/${id}`);
+        } catch (error) {
+          mostrarMensaje(error.message);
+          return;
+        }
+      } else {
+        eliminarJugadorStorage(id);
+      }
+
       setPlantel((prev) => prev.filter((j) => j.id !== id));
       mostrarMensaje(
         `El jugador ${
@@ -88,7 +142,7 @@ const Plantel = () => {
         } fue dado de baja del plantel.`
       );
     },
-    [mostrarMensaje]
+    [esAdmin, mostrarMensaje, plantel]
   );
 
   // restablecer valores de prueba
@@ -148,24 +202,32 @@ const Plantel = () => {
           </p>
         </div>
 
-        {/* accion principal: anadir jugador */}
+        {/* accion principal: anadir jugador (exclusivo admin) */}
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={handleRestablecer}
-            className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-2.5 bg-white/2 transition-colors cursor-pointer"
-            title="Restablecer a los 15 futbolistas por defecto"
-          >
-            Restablecer Demo
-          </button>
-          <button
-            type="button"
-            onClick={handleAbrirCrear}
-            className="flex items-center gap-2 bg-white text-black hover:bg-neutral-200 text-xs uppercase font-black tracking-widest px-4 py-2.5 transition-colors cursor-pointer"
-          >
-            <span className="text-base leading-none font-black">+</span>
-            <span>Nuevo Jugador</span>
-          </button>
+          {esAdmin ? (
+            <>
+              <button
+                type="button"
+                onClick={handleRestablecer}
+                className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-2.5 bg-white/2 transition-colors cursor-pointer"
+                title="Restablecer a los 15 futbolistas por defecto"
+              >
+                Restablecer Demo
+              </button>
+              <button
+                type="button"
+                onClick={handleAbrirCrear}
+                className="flex items-center gap-2 bg-white text-black hover:bg-neutral-200 text-xs uppercase font-black tracking-widest px-4 py-2.5 transition-colors cursor-pointer"
+              >
+                <span className="text-base leading-none font-black">+</span>
+                <span>Nuevo Jugador</span>
+              </button>
+            </>
+          ) : (
+            <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400 border border-white/15 px-3 py-2 bg-white/2">
+              Modo Consulta
+            </span>
+          )}
         </div>
       </header>
 
@@ -281,6 +343,7 @@ const Plantel = () => {
               jugador={jugador}
               onEditar={handleAbrirEditar}
               onEliminar={handleEliminarJugador}
+              puedeEditar={esAdmin}
             />
           ))}
         </div>

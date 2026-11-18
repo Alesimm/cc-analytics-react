@@ -6,6 +6,8 @@ import {
   guardarDirectrizStorage,
   eliminarDirectrizStorage,
 } from "../data/plantelData";
+import { obtenerToken, puedeGestionarTactica } from "../data/authData";
+import { api } from "../services/api";
 
 // calculo de vertices para el radar poligonal svg nativo (6 ejes)
 const generarPuntosRadar = (metricas, cx, cy, radioMaximo) => {
@@ -27,8 +29,9 @@ const estiloPosicion = () => {
 };
 
 const Rendimiento = () => {
-  // obtener plantel completo
-  const [plantel] = useState(obtenerPlantel);
+  // obtener plantel completo y permisos de edicion tactica segun rol
+  const [plantel, setPlantel] = useState(obtenerPlantel);
+  const puedeEditarDirectrices = puedeGestionarTactica();
 
   // id del jugador seleccionado (inicialmente vacio para estado skeleton)
   const [jugadorIdSeleccionado, setJugadorIdSeleccionado] = useState("");
@@ -71,6 +74,30 @@ const Rendimiento = () => {
   useEffect(() => {
     return () => {
       if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
+    };
+  }, []);
+
+  // si hay sesion jwt activa, sincroniza desde /api/v2/jugadores (incluye directrices anidadas)
+  useEffect(() => {
+    if (!obtenerToken()) return;
+    let activo = true;
+    api
+      .get("/api/v2/jugadores")
+      .then((res) => {
+        if (!activo || !Array.isArray(res.jugadores)) return;
+        setPlantel(res.jugadores);
+        const directricesBackend = res.jugadores.flatMap((j) =>
+          Array.isArray(j.directrices) ? j.directrices : []
+        );
+        if (directricesBackend.length > 0) {
+          setTodasDirectrices(directricesBackend);
+        }
+      })
+      .catch(() => {
+        // si el servidor no responde conserva los datos locales
+      });
+    return () => {
+      activo = false;
     };
   }, []);
 
@@ -192,6 +219,7 @@ const Rendimiento = () => {
     setErroresDirectriz(nuevosErrores);
 
     if (esValido) {
+      if (!puedeEditarDirectrices) return;
       const payload = {
         id: dirEnEdicionId || undefined,
         jugadorId: jugadorSeleccionado.id,
@@ -206,6 +234,17 @@ const Rendimiento = () => {
       guardarDirectrizStorage(payload);
       setTodasDirectrices(obtenerDirectricesStorage());
 
+      if (obtenerToken() && !dirEnEdicionId) {
+        api
+          .post(`/api/v1/jugadores/${jugadorSeleccionado.id}/directrices`, payload)
+          .then((res) => {
+            if (res.directriz) {
+              setTodasDirectrices((prev) => [res.directriz, ...prev.filter((d) => d.indicacion !== res.directriz.indicacion)]);
+            }
+          })
+          .catch(() => {});
+      }
+
       mostrarMensaje(
         dirEnEdicionId
           ? "Directriz táctica actualizada correctamente."
@@ -218,8 +257,12 @@ const Rendimiento = () => {
 
   // confirmar eliminacion
   const handleConfirmarEliminar = (id) => {
+    if (!puedeEditarDirectrices) return;
     eliminarDirectrizStorage(id);
-    setTodasDirectrices(obtenerDirectricesStorage());
+    setTodasDirectrices((prev) => prev.filter((d) => d.id !== id));
+    if (obtenerToken()) {
+      api.delete(`/api/v1/directrices/${id}`).catch(() => {});
+    }
     setDirAEliminarId(null);
     mostrarMensaje("Directriz táctica eliminada del plan del jugador.");
   };
@@ -892,7 +935,7 @@ const Rendimiento = () => {
                 </p>
               </div>
 
-              {!mostrarFormulario && (
+              {puedeEditarDirectrices && !mostrarFormulario && (
                 <button
                   type="button"
                   onClick={() => {
@@ -1071,47 +1114,49 @@ const Rendimiento = () => {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        {dirAEliminarId === dir.id ? (
-                          <div className="flex items-center gap-1.5 text-[10px] animate-fade-in">
-                            <span className="text-red-400 font-bold">
-                              ¿Eliminar directriz?
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleConfirmarEliminar(dir.id)}
-                              className="px-2 py-0.5 bg-red-600 hover:bg-red-500 text-white font-bold uppercase cursor-pointer"
-                            >
-                              Sí
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setDirAEliminarId(null)}
-                              className="px-2 py-0.5 border border-white/20 text-neutral-300 hover:text-white cursor-pointer"
-                            >
-                              No
-                            </button>
-                          </div>
-                        ) : (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => handleIniciarEdicion(dir)}
-                              className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white cursor-pointer px-1.5 py-0.5 hover:bg-white/5"
-                            >
-                              Editar
-                            </button>
-                            <span className="text-neutral-700 text-xs">•</span>
-                            <button
-                              type="button"
-                              onClick={() => setDirAEliminarId(dir.id)}
-                              className="text-[10px] uppercase font-bold tracking-wider text-red-400/80 hover:text-red-300 cursor-pointer px-1.5 py-0.5 hover:bg-red-500/10"
-                            >
-                              Eliminar
-                            </button>
-                          </>
-                        )}
-                      </div>
+                      {puedeEditarDirectrices && (
+                        <div className="flex items-center gap-2">
+                          {dirAEliminarId === dir.id ? (
+                            <div className="flex items-center gap-1.5 text-[10px] animate-fade-in">
+                              <span className="text-red-400 font-bold">
+                                ¿Eliminar directriz?
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleConfirmarEliminar(dir.id)}
+                                className="px-2 py-0.5 bg-red-600 hover:bg-red-500 text-white font-bold uppercase cursor-pointer"
+                              >
+                                Sí
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setDirAEliminarId(null)}
+                                className="px-2 py-0.5 border border-white/20 text-neutral-300 hover:text-white cursor-pointer"
+                              >
+                                No
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleIniciarEdicion(dir)}
+                                className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white cursor-pointer px-1.5 py-0.5 hover:bg-white/5"
+                              >
+                                Editar
+                              </button>
+                              <span className="text-neutral-700 text-xs">•</span>
+                              <button
+                                type="button"
+                                onClick={() => setDirAEliminarId(dir.id)}
+                                className="text-[10px] uppercase font-bold tracking-wider text-red-400/80 hover:text-red-300 cursor-pointer px-1.5 py-0.5 hover:bg-red-500/10"
+                              >
+                                Eliminar
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <p className="text-xs text-neutral-300 font-sans leading-relaxed flex items-start gap-2">

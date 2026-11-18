@@ -60,4 +60,25 @@ describe("Guardia de rutas privadas (sesion JWT)", () => {
       expect(localStorage.getItem("cc_token")).toBeNull();
     });
   });
+
+  it("redirige a /dashboard cuando el rol autenticado no tiene permiso en la ruta", async () => {
+    localStorage.setItem("cc_token", "token-analista");
+    obtenerPerfil.mockResolvedValue({
+      usuario: { id: "usr-consulta", correo: "consulta@colocolo.cl", rol: "ANALISTA_LECTURA" },
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/medico"]}>
+        <Routes>
+          <Route path="/dashboard" element={<p>Panel inicio</p>} />
+          <Route element={<RutaPrivada rolesPermitidos={["ADMIN", "CUERPO_TECNICO"]} />}>
+            <Route path="/medico" element={<p>Centro medico confidencial</p>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText("Panel inicio")).toBeInTheDocument();
+    expect(screen.queryByText("Centro medico confidencial")).not.toBeInTheDocument();
+  });
 });
