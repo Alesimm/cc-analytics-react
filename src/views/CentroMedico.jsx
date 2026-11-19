@@ -89,11 +89,14 @@ const CentroMedico = () => {
 
   // Mensaje inline de feedback
   const [mensajeExito, setMensajeExito] = useState("");
+  const [esErrorMensaje, setEsErrorMensaje] = useState(false);
 
-  const mostrarMensaje = (texto) => {
+  const mostrarMensaje = (texto, esError = false) => {
     setMensajeExito(texto);
+    setEsErrorMensaje(esError);
     setTimeout(() => {
       setMensajeExito("");
+      setEsErrorMensaje(false);
     }, 3500);
   };
 
@@ -126,7 +129,7 @@ const CentroMedico = () => {
           }
         }
       } catch (error) {
-        mostrarMensaje(error.message);
+        mostrarMensaje(error.message, true);
         return;
       }
     } else {
@@ -155,7 +158,7 @@ const CentroMedico = () => {
           setRegistros((prev) => prev.map((r) => (r.id === id ? res.registro : r)));
         }
       } catch (error) {
-        mostrarMensaje(error.message);
+        mostrarMensaje(error.message, true);
         return;
       }
     } else {
@@ -180,7 +183,7 @@ const CentroMedico = () => {
         await api.delete(`/api/v1/medico/${id}`);
         setRegistros((prev) => prev.filter((r) => r.id !== id));
       } catch (error) {
-        mostrarMensaje(error.message);
+        mostrarMensaje(error.message, true);
         return;
       }
     } else {
@@ -258,7 +261,7 @@ const CentroMedico = () => {
 
         {/* Acciones superiores segun rol */}
         <div className="flex items-center gap-3">
-          {esAdmin && (
+          {esAdmin && !obtenerToken() && (
             <button
               type="button"
               onClick={handleRestablecer}
@@ -283,15 +286,32 @@ const CentroMedico = () => {
 
       {/* Banner de feedback inline */}
       {mensajeExito && (
-        <div className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 flex items-center justify-between text-xs text-emerald-400 font-semibold animate-fade-in">
+        <div
+          className={`border p-3.5 flex items-center justify-between text-xs font-semibold animate-fade-in ${
+            esErrorMensaje
+              ? "bg-rose-500/10 border-rose-500/30 text-rose-300"
+              : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+          }`}
+        >
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-emerald-500 rounded-full inline-block shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+            <span
+              className={`w-2 h-2 rounded-full inline-block ${
+                esErrorMensaje
+                  ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"
+                  : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"
+              }`}
+            ></span>
             <span>{mensajeExito}</span>
           </div>
           <button
             type="button"
-            onClick={() => setMensajeExito("")}
-            className="text-emerald-500 hover:text-emerald-300 text-[10px] uppercase font-bold tracking-widest cursor-pointer"
+            onClick={() => {
+              setMensajeExito("");
+              setEsErrorMensaje(false);
+            }}
+            className={`${
+              esErrorMensaje ? "text-rose-400 hover:text-rose-200" : "text-emerald-500 hover:text-emerald-300"
+            } text-[10px] uppercase font-bold tracking-widest cursor-pointer`}
           >
             Cerrar
           </button>

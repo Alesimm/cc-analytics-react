@@ -65,7 +65,7 @@ const Login = () => {
       // se valida contra el backend y se guarda el token jwt para mantener la sesion
       try {
         const { token, usuario } = await iniciarSesion(email.trim(), password);
-        guardarSesion(token, usuario);
+        guardarSesion(token, usuario, recordarSesion);
       } catch (error) {
         setErrorServidor(error.message);
         setCargando(false);

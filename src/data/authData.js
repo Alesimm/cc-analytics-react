@@ -1,5 +1,5 @@
-// manejo de la sesion del usuario: guarda el token jwt y los datos del perfil en localStorage.
-// asi la sesion sigue viva aunque se recargue la pagina con f5, y se borra al cerrar sesion.
+// manejo de la sesion del usuario: guarda el token jwt y los datos del perfil en almacenamiento del navegador.
+// si recordar es true usa localStorage (persiste al cerrar), si es false usa sessionStorage (solo la pestaña activa).
 
 const CLAVE_TOKEN = "cc_token";
 const CLAVE_USUARIO = "cc_usuario_sesion";
@@ -11,10 +11,22 @@ export const ETIQUETA_ROL = {
   ANALISTA_LECTURA: "Analista de Lectura",
 };
 
+// devuelve el almacenamiento donde este guardada la sesion actual
+function obtenerAlmacenActivo() {
+  try {
+    if (sessionStorage.getItem(CLAVE_TOKEN) || sessionStorage.getItem(CLAVE_USUARIO)) {
+      return sessionStorage;
+    }
+    return localStorage;
+  } catch {
+    return null;
+  }
+}
+
 // devuelve el token guardado o null si no hay sesion
 export const obtenerToken = () => {
   try {
-    return localStorage.getItem(CLAVE_TOKEN);
+    return localStorage.getItem(CLAVE_TOKEN) || sessionStorage.getItem(CLAVE_TOKEN);
   } catch {
     return null;
   }
@@ -23,7 +35,8 @@ export const obtenerToken = () => {
 // devuelve los datos del usuario guardado (id, nombre, correo, rol, cargo) o null
 export const obtenerUsuario = () => {
   try {
-    const guardado = localStorage.getItem(CLAVE_USUARIO);
+    const guardado =
+      localStorage.getItem(CLAVE_USUARIO) || sessionStorage.getItem(CLAVE_USUARIO);
     return guardado ? JSON.parse(guardado) : null;
   } catch {
     return null;
@@ -31,19 +44,30 @@ export const obtenerUsuario = () => {
 };
 
 // guarda el token y el usuario despues de un login exitoso
-export const guardarSesion = (token, usuario) => {
+export const guardarSesion = (token, usuario, recordar = true) => {
   try {
-    localStorage.setItem(CLAVE_TOKEN, token);
-    localStorage.setItem(CLAVE_USUARIO, JSON.stringify(usuario));
+    localStorage.removeItem(CLAVE_TOKEN);
+    localStorage.removeItem(CLAVE_USUARIO);
+    sessionStorage.removeItem(CLAVE_TOKEN);
+    sessionStorage.removeItem(CLAVE_USUARIO);
+
+    const destino = recordar ? localStorage : sessionStorage;
+    destino.setItem(CLAVE_TOKEN, token);
+    destino.setItem(CLAVE_USUARIO, JSON.stringify(usuario));
   } catch {
     // si el navegador bloquea el almacenamiento, la sesion solo dura mientras no se recargue
   }
 };
 
-// actualiza solo los datos del usuario (por ejemplo despues de validar /me)
-export const guardarUsuario = (usuario) => {
+// actualiza los datos del usuario y el token renovado (despues de validar /me)
+export const guardarUsuario = (usuario, tokenRenovado = null) => {
   try {
-    localStorage.setItem(CLAVE_USUARIO, JSON.stringify(usuario));
+    const destino = obtenerAlmacenActivo();
+    if (!destino) return;
+    destino.setItem(CLAVE_USUARIO, JSON.stringify(usuario));
+    if (tokenRenovado) {
+      destino.setItem(CLAVE_TOKEN, tokenRenovado);
+    }
   } catch {
     // sin almacenamiento disponible no hay nada que actualizar
   }
@@ -54,6 +78,8 @@ export const cerrarSesion = () => {
   try {
     localStorage.removeItem(CLAVE_TOKEN);
     localStorage.removeItem(CLAVE_USUARIO);
+    sessionStorage.removeItem(CLAVE_TOKEN);
+    sessionStorage.removeItem(CLAVE_USUARIO);
   } catch {
     // sin almacenamiento disponible no hay nada que borrar
   }
@@ -77,4 +103,3 @@ export const puedeAccederMedico = (rol = obtenerRolActual()) =>
 
 export const puedeEliminarRegistros = (rol = obtenerRolActual()) =>
   rol === "ADMIN";
-
