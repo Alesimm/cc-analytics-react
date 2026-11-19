@@ -183,4 +183,19 @@ describe("Módulo de Calendario de Partidos y Fixture (Pantalla 6)", () => {
     ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /eliminar/i })).not.toBeInTheDocument();
   });
+
+  // prueba 8 (rbac): ocultar boton programar partido si el rol no es ADMIN
+  it("oculta el boton de programar partido y muestra modo consulta para roles no administradores", () => {
+    localStorage.setItem(
+      "cc_usuario_sesion",
+      JSON.stringify({ id: "usr-tecnico", correo: "tecnico@colocolo.cl", rol: "CUERPO_TECNICO" })
+    );
+
+    renderCalendario();
+
+    expect(
+      screen.queryByRole("button", { name: /\+ programar partido/i })
+    ).not.toBeInTheDocument();
+    expect(screen.getByText(/modo consulta/i)).toBeInTheDocument();
+  });
 });

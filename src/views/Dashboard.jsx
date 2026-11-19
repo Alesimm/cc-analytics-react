@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { obtenerToken } from "../data/authData";
+import { api } from "../services/api";
+import { ESCUDO_COLO_COLO, resolverEscudoRival } from "../data/calendarioData";
 
 // datos ficticios del ultimo partido jugado por el equipo
 const ultimoPartido = {
@@ -155,6 +158,48 @@ const noticiasClub = [
 const Dashboard = () => {
   // estado para alternar entre noticias de futbol chileno y noticias internas
   const [categoriaNoticias, setCategoriaNoticias] = useState("chileno");
+  const [partidoReciente, setPartidoReciente] = useState(ultimoPartido);
+
+  // si hay sesion activa, actualiza el ultimo partido desde /api/v1/partidos?tipo=anterior
+  useEffect(() => {
+    if (!obtenerToken()) return;
+    let activo = true;
+    api
+      .get("/api/v1/partidos?tipo=anterior")
+      .then((res) => {
+        const p = res.partidos?.[0];
+        if (!activo || !p) return;
+        const esLocal = p.condicion === "Local";
+        const escudoRival = resolverEscudoRival(p);
+        setPartidoReciente({
+          torneo: `${p.torneo} — ${p.jornada || "Oficial"}`,
+          fecha: `${p.fecha}, ${p.hora} hrs`,
+          estadio: p.estadio,
+          local: {
+            nombre: esLocal ? "Colo-Colo" : p.rival,
+            sigla: esLocal ? "CC" : p.siglaRival,
+            goles: esLocal ? p.golesColoColo ?? 0 : p.golesRival ?? 0,
+            escudo: esLocal ? ESCUDO_COLO_COLO : escudoRival,
+          },
+          visita: {
+            nombre: esLocal ? p.rival : "Colo-Colo",
+            sigla: esLocal ? p.siglaRival : "CC",
+            goles: esLocal ? p.golesRival ?? 0 : p.golesColoColo ?? 0,
+            escudo: esLocal ? escudoRival : ESCUDO_COLO_COLO,
+          },
+          estado: "Finalizado",
+          resultado: p.resultado || "Victoria",
+          goleadores: ultimoPartido.goleadores,
+          estadisticas: ultimoPartido.estadisticas,
+        });
+      })
+      .catch(() => {
+        // si el backend no responde mantiene el resumen local
+      });
+    return () => {
+      activo = false;
+    };
+  }, []);
 
   // lista activa segun la pestana seleccionada
   const listaNoticias =
@@ -242,7 +287,7 @@ const Dashboard = () => {
               Último Partido
             </h3>
             <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">
-              {ultimoPartido.estado}
+              {partidoReciente.estado}
             </span>
           </div>
 
@@ -251,28 +296,32 @@ const Dashboard = () => {
             {/* encabezado con el torneo y la fecha del encuentro */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] uppercase tracking-widest text-neutral-400 gap-1 border-b border-white/5 pb-4">
               <span className="font-bold text-white">
-                {ultimoPartido.torneo}
+                {partidoReciente.torneo}
               </span>
-              <span>{ultimoPartido.fecha}</span>
+              <span>{partidoReciente.fecha}</span>
             </div>
 
             {/* marcador central con los equipos y el resultado final */}
             <div className="grid grid-cols-3 items-center text-center py-3 sm:py-4 gap-2">
-              {/* equipo local: colo-colo con su escudo oficial webp sin fondo blanco */}
+              {/* equipo local */}
               <div className="flex flex-col items-center gap-2 sm:gap-3">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 border border-white/10 bg-white/5 flex items-center justify-center p-1.5 sm:p-2">
-                  <img
-                    src={ultimoPartido.local.escudo}
-                    alt={ultimoPartido.local.nombre}
-                    width="48"
-                    height="48"
-                    decoding="async"
-                    className="w-8 h-8 sm:w-12 sm:h-12 object-contain drop-shadow"
-                  />
+                  {partidoReciente.local.escudo ? (
+                    <img
+                      src={partidoReciente.local.escudo}
+                      alt={partidoReciente.local.nombre}
+                      width="48"
+                      height="48"
+                      decoding="async"
+                      className="w-8 h-8 sm:w-12 sm:h-12 object-contain drop-shadow"
+                    />
+                  ) : (
+                    <span className="text-sm font-black text-neutral-300">{partidoReciente.local.sigla}</span>
+                  )}
                 </div>
                 <div>
                   <h4 className="text-xs sm:text-base font-black uppercase tracking-wider text-white truncate max-w-[90px] sm:max-w-none">
-                    {ultimoPartido.local.nombre}
+                    {partidoReciente.local.nombre}
                   </h4>
                   <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-neutral-500">
                     Local
@@ -283,34 +332,38 @@ const Dashboard = () => {
               {/* resultado y estado del partido */}
               <div className="flex flex-col items-center">
                 <div className="flex items-center justify-center gap-2 sm:gap-4 font-black text-3xl sm:text-5xl text-white tracking-widest">
-                  <span>{ultimoPartido.local.goles}</span>
+                  <span>{partidoReciente.local.goles}</span>
                   <span className="text-neutral-600 text-xl sm:text-2xl font-light">-</span>
-                  <span>{ultimoPartido.visita.goles}</span>
+                  <span>{partidoReciente.visita.goles}</span>
                 </div>
                 <span className="mt-1.5 sm:mt-2 text-[9px] sm:text-[10px] uppercase font-bold tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 sm:px-2.5 py-0.5">
-                  Victoria
+                  {partidoReciente.resultado || "Victoria"}
                 </span>
                 <span className="mt-1.5 sm:mt-2 text-[9px] sm:text-[10px] uppercase tracking-wider text-neutral-500 text-center line-clamp-1">
-                  {ultimoPartido.estadio}
+                  {partidoReciente.estadio}
                 </span>
               </div>
 
-              {/* equipo visitante: cobreloa con su escudo oficial webp sin fondo blanco */}
+              {/* equipo visitante */}
               <div className="flex flex-col items-center gap-2 sm:gap-3">
                 <div className="w-12 h-12 sm:w-16 sm:h-16 border border-white/10 bg-white/5 flex items-center justify-center p-1.5 sm:p-2">
-                  <img
-                    src={ultimoPartido.visita.escudo}
-                    alt={ultimoPartido.visita.nombre}
-                    width="48"
-                    height="48"
-                    loading="lazy"
-                    decoding="async"
-                    className="w-8 h-8 sm:w-12 sm:h-12 object-contain drop-shadow"
-                  />
+                  {partidoReciente.visita.escudo ? (
+                    <img
+                      src={partidoReciente.visita.escudo}
+                      alt={partidoReciente.visita.nombre}
+                      width="48"
+                      height="48"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-8 h-8 sm:w-12 sm:h-12 object-contain drop-shadow"
+                    />
+                  ) : (
+                    <span className="text-sm font-black text-neutral-300">{partidoReciente.visita.sigla}</span>
+                  )}
                 </div>
                 <div>
                   <h4 className="text-xs sm:text-base font-black uppercase tracking-wider text-white truncate max-w-[90px] sm:max-w-none">
-                    {ultimoPartido.visita.nombre}
+                    {partidoReciente.visita.nombre}
                   </h4>
                   <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-neutral-500">
                     Visita
