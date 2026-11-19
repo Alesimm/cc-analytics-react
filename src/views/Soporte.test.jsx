@@ -166,5 +166,22 @@ describe("Módulo de Soporte Técnico y Contacto (Pantalla 8)", () => {
       screen.getByText(/ticket eliminado del registro de soporte/i)
     ).toBeInTheDocument();
   });
+
+  // prueba 8 (rbac): analista de lectura puede crear tickets pero no gestionar estados ni eliminar
+  it("permite crear tickets pero oculta acciones administrativas para ANALISTA_LECTURA", () => {
+    localStorage.setItem(
+      "cc_usuario_sesion",
+      JSON.stringify({ id: "usr-consulta", correo: "consulta@colocolo.cl", rol: "ANALISTA_LECTURA" })
+    );
+
+    render(<Soporte />);
+
+    expect(
+      screen.getByRole("button", { name: /registrar ticket en mesa de ayuda/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /marcar resuelto/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^eliminar$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /restablecer demo/i })).not.toBeInTheDocument();
+  });
 });
 

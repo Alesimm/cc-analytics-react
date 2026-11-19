@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   obtenerTickets,
   guardarNuevoTicket,
@@ -6,6 +6,8 @@ import {
   eliminarTicket,
   restablecerTicketsStorage,
 } from "../data/soporteData";
+import { obtenerToken, puedeEliminarRegistros } from "../data/authData";
+import { api } from "../services/api";
 
 const DEPARTAMENTOS_DISPONIBLES = [
   "Cuerpo Técnico",
@@ -29,6 +31,26 @@ const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const Soporte = () => {
   const [tickets, setTickets] = useState(() => obtenerTickets());
+  const esAdmin = puedeEliminarRegistros();
+
+  // si hay sesion jwt activa, carga los tickets desde /api/v1/soporte
+  useEffect(() => {
+    if (!obtenerToken()) return;
+    let activo = true;
+    api
+      .get("/api/v1/soporte")
+      .then((res) => {
+        if (activo && Array.isArray(res.tickets)) {
+          setTickets(res.tickets);
+        }
+      })
+      .catch(() => {
+        // si el servidor no responde mantiene la cache local
+      });
+    return () => {
+      activo = false;
+    };
+  }, []);
   const [busqueda, setBusqueda] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("todos");
   const [filtroCategoria, setFiltroCategoria] = useState("todos");
@@ -112,11 +134,11 @@ const Soporte = () => {
     return esValido;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validarFormulario()) return;
 
-    const nuevo = guardarNuevoTicket({
+    const datosEnvio = {
       nombreSolicitante: formData.nombreSolicitante.trim(),
       email: formData.email.trim().toLowerCase(),
       departamento: formData.departamento,
@@ -124,10 +146,28 @@ const Soporte = () => {
       prioridad: formData.prioridad,
       asunto: formData.asunto.trim(),
       descripcion: formData.descripcion.trim(),
-    });
+    };
+
+    let nuevo = null;
+    if (obtenerToken()) {
+      try {
+        const res = await api.post("/api/v1/soporte", datosEnvio);
+        nuevo = res.ticket || null;
+        if (nuevo) {
+          setTickets((prev) => [nuevo, ...prev]);
+        }
+      } catch (error) {
+        setErrores((prev) => ({ ...prev, asunto: error.message }));
+        return;
+      }
+    } else {
+      nuevo = guardarNuevoTicket(datosEnvio);
+      if (nuevo) {
+        setTickets(obtenerTickets());
+      }
+    }
 
     if (nuevo) {
-      setTickets(obtenerTickets());
       setTicketGenerado(nuevo);
       setMensajeFeedback(`Ticket ${nuevo.id.toUpperCase()} generado exitosamente en la Mesa de Ayuda.`);
       // resetear formulario
@@ -144,16 +184,44 @@ const Soporte = () => {
     }
   };
 
-  const handleCambiarEstado = (id, nuevoEstado) => {
-    const actualizados = cambiarEstadoTicket(id, nuevoEstado);
-    setTickets(actualizados);
+  const handleCambiarEstado = async (id, nuevoEstado) => {
+    if (!esAdmin) return;
+
+    if (obtenerToken()) {
+      try {
+        const res = await api.patch(`/api/v1/soporte/${id}/estado`, { estado: nuevoEstado });
+        if (res.ticket) {
+          setTickets((prev) => prev.map((t) => (t.id === id ? res.ticket : t)));
+        }
+      } catch (error) {
+        setMensajeFeedback(error.message);
+        return;
+      }
+    } else {
+      const actualizados = cambiarEstadoTicket(id, nuevoEstado);
+      setTickets(actualizados);
+    }
+
     setMensajeFeedback(`Estado del ticket actualizado a "${nuevoEstado}".`);
     setTimeout(() => setMensajeFeedback(""), 3500);
   };
 
-  const handleConfirmarEliminar = (id) => {
-    const actualizados = eliminarTicket(id);
-    setTickets(actualizados);
+  const handleConfirmarEliminar = async (id) => {
+    if (!esAdmin) return;
+
+    if (obtenerToken()) {
+      try {
+        await api.delete(`/api/v1/soporte/${id}`);
+        setTickets((prev) => prev.filter((t) => t.id !== id));
+      } catch (error) {
+        setMensajeFeedback(error.message);
+        return;
+      }
+    } else {
+      const actualizados = eliminarTicket(id);
+      setTickets(actualizados);
+    }
+
     setConfirmarEliminarId(null);
     if (ticketDetalleId === id) setTicketDetalleId(null);
     setMensajeFeedback("Ticket eliminado del registro de soporte.");
@@ -239,16 +307,18 @@ const Soporte = () => {
           </p>
         </div>
 
-        {/* boton de restablecer demo */}
+        {/* boton de restablecer demo (solo admin) */}
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={handleRestablecer}
-            className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3.5 py-2.5 bg-white/2 transition-colors cursor-pointer"
-            title="Restablecer tickets a los valores demo por defecto"
-          >
-            Restablecer Demo
-          </button>
+          {esAdmin && (
+            <button
+              type="button"
+              onClick={handleRestablecer}
+              className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3.5 py-2.5 bg-white/2 transition-colors cursor-pointer"
+              title="Restablecer tickets a los valores demo por defecto"
+            >
+              Restablecer Demo
+            </button>
+          )}
         </div>
       </header>
 
@@ -763,33 +833,35 @@ const Soporte = () => {
                         {esDetalleAbierto ? "Ocultar Respuesta" : "Ver Respuesta Técnica"}
                       </button>
 
-                      <div className="flex items-center gap-2">
-                        {ticket.estado !== "Resuelto" ? (
-                          <button
-                            type="button"
-                            onClick={() => handleCambiarEstado(ticket.id, "Resuelto")}
-                            className="text-[9px] uppercase font-bold text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 hover:border-emerald-500 px-2 py-1 bg-emerald-500/5 cursor-pointer"
-                          >
-                            Marcar Resuelto
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => handleCambiarEstado(ticket.id, "En Revisión")}
-                            className="text-[9px] uppercase font-bold text-amber-400 hover:text-amber-300 border border-amber-500/30 hover:border-amber-500 px-2 py-1 bg-amber-500/5 cursor-pointer"
-                          >
-                            Reabrir Caso
-                          </button>
-                        )}
+                      {esAdmin && (
+                        <div className="flex items-center gap-2">
+                          {ticket.estado !== "Resuelto" ? (
+                            <button
+                              type="button"
+                              onClick={() => handleCambiarEstado(ticket.id, "Resuelto")}
+                              className="text-[9px] uppercase font-bold text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 hover:border-emerald-500 px-2 py-1 bg-emerald-500/5 cursor-pointer"
+                            >
+                              Marcar Resuelto
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleCambiarEstado(ticket.id, "En Revisión")}
+                              className="text-[9px] uppercase font-bold text-amber-400 hover:text-amber-300 border border-amber-500/30 hover:border-amber-500 px-2 py-1 bg-amber-500/5 cursor-pointer"
+                            >
+                              Reabrir Caso
+                            </button>
+                          )}
 
-                        <button
-                          type="button"
-                          onClick={() => setConfirmarEliminarId(ticket.id)}
-                          className="text-[9px] uppercase font-bold text-rose-400 hover:text-rose-300 px-2 py-1 border border-rose-500/20 hover:border-rose-500/50 cursor-pointer"
-                        >
-                          Eliminar
-                        </button>
-                      </div>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmarEliminarId(ticket.id)}
+                            className="text-[9px] uppercase font-bold text-rose-400 hover:text-rose-300 px-2 py-1 border border-rose-500/20 hover:border-rose-500/50 cursor-pointer"
+                          >
+                            Eliminar
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </article>
                 );
