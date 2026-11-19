@@ -8,10 +8,13 @@ import {
   guardarNuevoPartido,
   eliminarPartido,
 } from "../data/calendarioData";
+import { obtenerToken, puedeGestionarPlantel } from "../data/authData";
+import { api } from "../services/api";
 
 const Calendario = () => {
-  // estado de partidos cargados desde localstorage o datos iniciales
+  // estado de partidos cargados desde cache y sincronizados con el backend
   const [partidos, setPartidos] = useState(() => obtenerPartidos());
+  const esAdmin = puedeGestionarPlantel();
 
   // pestana activa: "proximos" | "anteriores" | "todos"
   const [pestanaActiva, setPestanaActiva] = useState("proximos");
@@ -58,6 +61,25 @@ const Calendario = () => {
   useEffect(() => {
     return () => {
       if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
+    };
+  }, []);
+
+  // si hay sesion jwt activa, sincroniza el calendario desde /api/v1/partidos
+  useEffect(() => {
+    if (!obtenerToken()) return;
+    let activo = true;
+    api
+      .get("/api/v1/partidos")
+      .then((res) => {
+        if (activo && Array.isArray(res.partidos) && res.partidos.length > 0) {
+          setPartidos(res.partidos);
+        }
+      })
+      .catch(() => {
+        // si el backend no responde conserva el calendario local
+      });
+    return () => {
+      activo = false;
     };
   }, []);
 
@@ -133,8 +155,9 @@ const Calendario = () => {
   };
 
   // crear nuevo partido (crud: create)
-  const handleGuardarNuevoPartido = (e) => {
+  const handleGuardarNuevoPartido = async (e) => {
     e.preventDefault();
+    if (!esAdmin) return;
 
     if (!validarFormularioNuevo()) {
       return;
@@ -162,8 +185,21 @@ const Calendario = () => {
       relevancia: formNuevo.relevancia.trim() || "Encuentro programado en fixture",
     };
 
-    guardarNuevoPartido(nuevo);
-    setPartidos(obtenerPartidos());
+    if (obtenerToken()) {
+      try {
+        const res = await api.post("/api/v1/partidos", nuevo);
+        if (res.partido) {
+          setPartidos((prev) => [res.partido, ...prev]);
+        }
+      } catch (error) {
+        mostrarMensaje(error.message);
+        return;
+      }
+    } else {
+      guardarNuevoPartido(nuevo);
+      setPartidos(obtenerPartidos());
+    }
+
     setModalNuevoPartido(false);
     setFormNuevo({
       rival: "",
@@ -181,9 +217,22 @@ const Calendario = () => {
   };
 
   // eliminar partido (crud: delete)
-  const handleConfirmarEliminar = (id, rival) => {
-    eliminarPartido(id);
-    setPartidos(obtenerPartidos());
+  const handleConfirmarEliminar = async (id, rival) => {
+    if (!esAdmin) return;
+
+    if (obtenerToken()) {
+      try {
+        await api.delete(`/api/v1/partidos/${id}`);
+        setPartidos((prev) => prev.filter((p) => p.id !== id));
+      } catch (error) {
+        mostrarMensaje(error.message);
+        return;
+      }
+    } else {
+      eliminarPartido(id);
+      setPartidos(obtenerPartidos());
+    }
+
     setConfirmarEliminarId(null);
     if (partidoDetalleId === id) setPartidoDetalleId(null);
     mostrarMensaje(`Partido contra ${rival} eliminado del calendario.`);
@@ -230,15 +279,21 @@ const Calendario = () => {
           </p>
         </div>
 
-        {/* boton de accion para programar nuevo partido */}
+        {/* boton de accion para programar nuevo partido (solo admin) */}
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setModalNuevoPartido(true)}
-            className="text-[10px] uppercase font-extrabold tracking-wider text-black bg-white hover:bg-neutral-200 px-4 py-2.5 transition-colors cursor-pointer"
-          >
-            + Programar Partido
-          </button>
+          {esAdmin ? (
+            <button
+              type="button"
+              onClick={() => setModalNuevoPartido(true)}
+              className="text-[10px] uppercase font-extrabold tracking-wider text-black bg-white hover:bg-neutral-200 px-4 py-2.5 transition-colors cursor-pointer"
+            >
+              + Programar Partido
+            </button>
+          ) : (
+            <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400 border border-white/15 px-3 py-2 bg-white/2">
+              Modo Consulta
+            </span>
+          )}
         </div>
       </header>
 
@@ -702,13 +757,13 @@ const Calendario = () => {
                         </button>
                       )}
 
-                      {/* si fue un partido creado por el usuario permitir eliminar */}
-                      {partido.id.startsWith("part-custom") && (
+                      {/* solo admin puede eliminar partidos programados */}
+                      {esAdmin && (partido.id.startsWith("part-custom") || (Boolean(obtenerToken()) && partido.tipo === "proximo")) && (
                         <button
                           type="button"
                           onClick={() => setConfirmarEliminarId(partido.id)}
                           className="text-[10px] uppercase font-bold text-rose-400 hover:text-rose-300 p-1.5 cursor-pointer"
-                          title="Eliminar partido personalizado"
+                          title="Eliminar partido programado"
                         >
                           Eliminar
                         </button>
