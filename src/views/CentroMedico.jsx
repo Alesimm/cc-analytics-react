@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   obtenerRegistrosMedicos,
   guardarRegistroMedicoStorage,
@@ -7,6 +7,8 @@ import {
   restablecerRegistrosMedicosStorage,
 } from "../data/medicoData";
 import { obtenerPlantel } from "../data/plantelData";
+import { obtenerToken, puedeGestionarTactica, puedeEliminarRegistros } from "../data/authData";
+import { api } from "../services/api";
 import RegistroMedicoForm from "../components/RegistroMedicoForm";
 
 const TIPOS_FILTRO = [
@@ -49,9 +51,29 @@ const estiloEstado = (estado) => {
 };
 
 const CentroMedico = () => {
-  // Lista de registros medicos y del plantel
+  // Lista de registros medicos, plantel y permisos por rol
   const [registros, setRegistros] = useState(obtenerRegistrosMedicos);
-  const plantel = useMemo(() => obtenerPlantel(), []);
+  const [plantel, setPlantel] = useState(obtenerPlantel);
+  const puedeGestionarMedico = puedeGestionarTactica();
+  const esAdmin = puedeEliminarRegistros();
+
+  // si hay sesion jwt activa, sincroniza fichas medicas y plantel desde el backend
+  useEffect(() => {
+    if (!obtenerToken()) return;
+    let activo = true;
+    Promise.all([api.get("/api/v1/medico"), api.get("/api/v1/jugadores")])
+      .then(([resMed, resJug]) => {
+        if (!activo) return;
+        if (Array.isArray(resMed.registros)) setRegistros(resMed.registros);
+        if (Array.isArray(resJug.jugadores)) setPlantel(resJug.jugadores);
+      })
+      .catch(() => {
+        // si el servidor no responde mantiene la cache local
+      });
+    return () => {
+      activo = false;
+    };
+  }, []);
 
   // Estados de busqueda y filtros
   const [busqueda, setBusqueda] = useState("");
@@ -87,10 +109,31 @@ const CentroMedico = () => {
     setModalAbierto(true);
   };
 
-  // Guardar (crear o actualizar)
-  const handleGuardarRegistro = (regData) => {
-    const actualizado = guardarRegistroMedicoStorage(regData);
-    setRegistros(actualizado);
+  // Guardar (crear o actualizar) sincronizando con backend si hay sesion
+  const handleGuardarRegistro = async (regData) => {
+    if (!puedeGestionarMedico) return;
+    if (obtenerToken()) {
+      try {
+        if (regData.id) {
+          const res = await api.put(`/api/v1/medico/${regData.id}`, regData);
+          if (res.registro) {
+            setRegistros((prev) => prev.map((r) => (r.id === res.registro.id ? res.registro : r)));
+          }
+        } else {
+          const res = await api.post("/api/v1/medico", regData);
+          if (res.registro) {
+            setRegistros((prev) => [res.registro, ...prev]);
+          }
+        }
+      } catch (error) {
+        mostrarMensaje(error.message);
+        return;
+      }
+    } else {
+      const actualizado = guardarRegistroMedicoStorage(regData);
+      setRegistros(actualizado);
+    }
+
     setModalAbierto(false);
     setRegistroEnEdicion(null);
     mostrarMensaje(
@@ -101,10 +144,25 @@ const CentroMedico = () => {
   };
 
   // Dar alta medica con feedback inline
-  const handleDarAlta = (id) => {
+  const handleDarAlta = async (id) => {
+    if (!puedeGestionarMedico) return;
     const reg = registros.find((r) => r.id === id);
-    const actualizado = darAltaMedicaStorage(id);
-    setRegistros(actualizado);
+
+    if (obtenerToken()) {
+      try {
+        const res = await api.patch(`/api/v1/medico/${id}/alta`, {});
+        if (res.registro) {
+          setRegistros((prev) => prev.map((r) => (r.id === id ? res.registro : r)));
+        }
+      } catch (error) {
+        mostrarMensaje(error.message);
+        return;
+      }
+    } else {
+      const actualizado = darAltaMedicaStorage(id);
+      setRegistros(actualizado);
+    }
+
     mostrarMensaje(
       `Alta médica otorgada a ${
         reg ? reg.jugadorNombre : "futbolista"
@@ -112,11 +170,24 @@ const CentroMedico = () => {
     );
   };
 
-  // Eliminar registro confirmado inline
-  const handleEliminar = (id) => {
+  // Eliminar registro confirmado inline (solo admin)
+  const handleEliminar = async (id) => {
+    if (!esAdmin) return;
     const reg = registros.find((r) => r.id === id);
-    const actualizado = eliminarRegistroMedicoStorage(id);
-    setRegistros(actualizado);
+
+    if (obtenerToken()) {
+      try {
+        await api.delete(`/api/v1/medico/${id}`);
+        setRegistros((prev) => prev.filter((r) => r.id !== id));
+      } catch (error) {
+        mostrarMensaje(error.message);
+        return;
+      }
+    } else {
+      const actualizado = eliminarRegistroMedicoStorage(id);
+      setRegistros(actualizado);
+    }
+
     setConfirmandoId(null);
     mostrarMensaje(
       `Ficha clínica de ${
@@ -185,24 +256,28 @@ const CentroMedico = () => {
           </p>
         </div>
 
-        {/* Acciones superiores */}
+        {/* Acciones superiores segun rol */}
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={handleRestablecer}
-            className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-2.5 bg-white/2 transition-colors cursor-pointer"
-            title="Restablecer registros médicos de prueba"
-          >
-            Restablecer Demo
-          </button>
-          <button
-            type="button"
-            onClick={handleAbrirCrear}
-            className="flex items-center gap-2 bg-white text-black hover:bg-neutral-200 text-xs uppercase font-black tracking-widest px-4 py-2.5 transition-colors cursor-pointer"
-          >
-            <span className="text-base leading-none font-black">+</span>
-            <span>Nuevo Registro Médico</span>
-          </button>
+          {esAdmin && (
+            <button
+              type="button"
+              onClick={handleRestablecer}
+              className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-2.5 bg-white/2 transition-colors cursor-pointer"
+              title="Restablecer registros médicos de prueba"
+            >
+              Restablecer Demo
+            </button>
+          )}
+          {puedeGestionarMedico && (
+            <button
+              type="button"
+              onClick={handleAbrirCrear}
+              className="flex items-center gap-2 bg-white text-black hover:bg-neutral-200 text-xs uppercase font-black tracking-widest px-4 py-2.5 transition-colors cursor-pointer"
+            >
+              <span className="text-base leading-none font-black">+</span>
+              <span>Nuevo Registro Médico</span>
+            </button>
+          )}
         </div>
       </header>
 
@@ -456,7 +531,7 @@ const CentroMedico = () => {
                     </span>
 
                     <div className="flex items-center gap-2 self-end sm:self-auto">
-                      {item.estado !== "Alta Médica" && (
+                      {puedeGestionarMedico && item.estado !== "Alta Médica" && (
                         <button
                           type="button"
                           onClick={() => handleDarAlta(item.id)}
@@ -465,20 +540,24 @@ const CentroMedico = () => {
                           Dar Alta Médica
                         </button>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => handleAbrirEditar(item)}
-                        className="text-[10px] uppercase font-bold tracking-wider text-neutral-300 hover:text-white px-2.5 py-1 border border-white/10 hover:border-white/30 bg-white/2 transition-colors cursor-pointer"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setConfirmandoId(item.id)}
-                        className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-red-400 px-2.5 py-1 border border-white/10 hover:border-red-500/40 bg-white/2 transition-colors cursor-pointer"
-                      >
-                        Archivar
-                      </button>
+                      {puedeGestionarMedico && (
+                        <button
+                          type="button"
+                          onClick={() => handleAbrirEditar(item)}
+                          className="text-[10px] uppercase font-bold tracking-wider text-neutral-300 hover:text-white px-2.5 py-1 border border-white/10 hover:border-white/30 bg-white/2 transition-colors cursor-pointer"
+                        >
+                          Editar
+                        </button>
+                      )}
+                      {esAdmin && (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmandoId(item.id)}
+                          className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-red-400 px-2.5 py-1 border border-white/10 hover:border-red-500/40 bg-white/2 transition-colors cursor-pointer"
+                        >
+                          Archivar
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}

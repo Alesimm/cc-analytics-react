@@ -162,5 +162,21 @@ describe("Módulo de Centro Médico y Control de Lesiones (Pantalla 7)", () => {
       screen.getByRole("button", { name: /sí, archivar/i })
     ).toBeInTheDocument();
   });
+
+  // PRUEBA 8 (RBAC): Cuerpo tecnico puede dar alta y editar pero no archivar/eliminar
+  it("permite dar alta y editar pero oculta Archivar cuando el rol es CUERPO_TECNICO", () => {
+    localStorage.clear();
+    localStorage.setItem(
+      "cc_usuario_sesion",
+      JSON.stringify({ id: "usr-tecnico", correo: "tecnico@colocolo.cl", rol: "CUERPO_TECNICO" })
+    );
+
+    render(<CentroMedico />);
+
+    expect(screen.getByRole("button", { name: /nuevo registro médico/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /dar alta médica/i }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: /archivar/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /restablecer demo/i })).not.toBeInTheDocument();
+  });
 });
 
