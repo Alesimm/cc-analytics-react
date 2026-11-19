@@ -58,15 +58,18 @@ const Rendimiento = () => {
   });
   const [erroresDirectriz, setErroresDirectriz] = useState({});
   const [mensajeFeedback, setMensajeFeedback] = useState("");
+  const [esErrorFeedback, setEsErrorFeedback] = useState(false);
 
   // un solo timer: un mensaje nuevo cancela el borrado del anterior
   const timerMensajeRef = useRef(null);
 
-  const mostrarMensaje = (texto) => {
+  const mostrarMensaje = (texto, esError = false) => {
     setMensajeFeedback(texto);
+    setEsErrorFeedback(esError);
     if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
     timerMensajeRef.current = setTimeout(() => {
       setMensajeFeedback("");
+      setEsErrorFeedback(false);
     }, 3500);
   };
 
@@ -89,9 +92,7 @@ const Rendimiento = () => {
         const directricesBackend = res.jugadores.flatMap((j) =>
           Array.isArray(j.directrices) ? j.directrices : []
         );
-        if (directricesBackend.length > 0) {
-          setTodasDirectrices(directricesBackend);
-        }
+        setTodasDirectrices(directricesBackend);
       })
       .catch(() => {
         // si el servidor no responde conserva los datos locales
@@ -187,7 +188,7 @@ const Rendimiento = () => {
     setErroresDirectriz({});
   };
 
-  const handleGuardarDirectriz = (e) => {
+  const handleGuardarDirectriz = async (e) => {
     e.preventDefault();
     if (!jugadorSeleccionado) return;
 
@@ -228,21 +229,30 @@ const Rendimiento = () => {
         prioridad: formDirectriz.prioridad,
         calificacion: Number(notaNum.toFixed(1)),
         indicacion: indicacionLimpia,
-        comentario: indicacionLimpia,
       };
 
-      guardarDirectrizStorage(payload);
-      setTodasDirectrices(obtenerDirectricesStorage());
-
-      if (obtenerToken() && !dirEnEdicionId) {
-        api
-          .post(`/api/v1/jugadores/${jugadorSeleccionado.id}/directrices`, payload)
-          .then((res) => {
+      if (obtenerToken()) {
+        try {
+          if (dirEnEdicionId) {
+            const res = await api.put(`/api/v1/directrices/${dirEnEdicionId}`, payload);
             if (res.directriz) {
-              setTodasDirectrices((prev) => [res.directriz, ...prev.filter((d) => d.indicacion !== res.directriz.indicacion)]);
+              setTodasDirectrices((prev) =>
+                prev.map((d) => (d.id === res.directriz.id ? res.directriz : d))
+              );
             }
-          })
-          .catch(() => {});
+          } else {
+            const res = await api.post(`/api/v1/jugadores/${jugadorSeleccionado.id}/directrices`, payload);
+            if (res.directriz) {
+              setTodasDirectrices((prev) => [res.directriz, ...prev]);
+            }
+          }
+        } catch (error) {
+          mostrarMensaje(error.message, true);
+          return;
+        }
+      } else {
+        guardarDirectrizStorage(payload);
+        setTodasDirectrices(obtenerDirectricesStorage());
       }
 
       mostrarMensaje(
@@ -256,12 +266,20 @@ const Rendimiento = () => {
   };
 
   // confirmar eliminacion
-  const handleConfirmarEliminar = (id) => {
+  const handleConfirmarEliminar = async (id) => {
     if (!puedeEditarDirectrices) return;
-    eliminarDirectrizStorage(id);
-    setTodasDirectrices((prev) => prev.filter((d) => d.id !== id));
     if (obtenerToken()) {
-      api.delete(`/api/v1/directrices/${id}`).catch(() => {});
+      try {
+        await api.delete(`/api/v1/directrices/${id}`);
+        setTodasDirectrices((prev) => prev.filter((d) => d.id !== id));
+      } catch (error) {
+        mostrarMensaje(error.message, true);
+        setDirAEliminarId(null);
+        return;
+      }
+    } else {
+      eliminarDirectrizStorage(id);
+      setTodasDirectrices((prev) => prev.filter((d) => d.id !== id));
     }
     setDirAEliminarId(null);
     mostrarMensaje("Directriz táctica eliminada del plan del jugador.");
@@ -950,7 +968,13 @@ const Rendimiento = () => {
             </div>
 
             {mensajeFeedback && (
-              <div className="border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 p-3 text-xs font-bold uppercase tracking-wider flex items-center justify-between animate-fade-in">
+              <div
+                className={`border p-3 text-xs font-bold uppercase tracking-wider flex items-center justify-between animate-fade-in ${
+                  esErrorFeedback
+                    ? "border-rose-500/40 bg-rose-500/10 text-rose-300"
+                    : "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                }`}
+              >
                 <span>{mensajeFeedback}</span>
                 <button
                   type="button"

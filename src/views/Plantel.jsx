@@ -33,15 +33,18 @@ const Plantel = () => {
 
   // mensaje inline de feedback (sin alert ni popups)
   const [mensajeExito, setMensajeExito] = useState("");
+  const [esErrorMensaje, setEsErrorMensaje] = useState(false);
 
   // un solo timer: un mensaje nuevo cancela el borrado del anterior
   const timerMensajeRef = useRef(null);
 
-  const mostrarMensaje = useCallback((texto) => {
+  const mostrarMensaje = useCallback((texto, esError = false) => {
     setMensajeExito(texto);
+    setEsErrorMensaje(esError);
     if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
     timerMensajeRef.current = setTimeout(() => {
       setMensajeExito("");
+      setEsErrorMensaje(false);
     }, 3500);
   }, []);
 
@@ -101,7 +104,7 @@ const Plantel = () => {
           }
         }
       } catch (error) {
-        mostrarMensaje(error.message);
+        mostrarMensaje(error.message, true);
         return;
       }
     } else {
@@ -128,7 +131,7 @@ const Plantel = () => {
         try {
           await api.delete(`/api/v1/jugadores/${id}`);
         } catch (error) {
-          mostrarMensaje(error.message);
+          mostrarMensaje(error.message, true);
           return;
         }
       } else {
@@ -206,14 +209,16 @@ const Plantel = () => {
         <div className="flex items-center gap-3">
           {esAdmin ? (
             <>
-              <button
-                type="button"
-                onClick={handleRestablecer}
-                className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-2.5 bg-white/2 transition-colors cursor-pointer"
-                title="Restablecer a los 15 futbolistas por defecto"
-              >
-                Restablecer Demo
-              </button>
+              {!obtenerToken() && (
+                <button
+                  type="button"
+                  onClick={handleRestablecer}
+                  className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-2.5 bg-white/2 transition-colors cursor-pointer"
+                  title="Restablecer a los 15 futbolistas por defecto"
+                >
+                  Restablecer Demo
+                </button>
+              )}
               <button
                 type="button"
                 onClick={handleAbrirCrear}
@@ -233,15 +238,32 @@ const Plantel = () => {
 
       {/* banner de feedback inline */}
       {mensajeExito && (
-        <div className="bg-emerald-500/10 border border-emerald-500/30 p-3.5 flex items-center justify-between text-xs text-emerald-400 font-semibold animate-fade-in">
+        <div
+          className={`border p-3.5 flex items-center justify-between text-xs font-semibold animate-fade-in ${
+            esErrorMensaje
+              ? "bg-rose-500/10 border-rose-500/30 text-rose-300"
+              : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+          }`}
+        >
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-emerald-500 rounded-full inline-block shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+            <span
+              className={`w-2 h-2 rounded-full inline-block ${
+                esErrorMensaje
+                  ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"
+                  : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"
+              }`}
+            ></span>
             <span>{mensajeExito}</span>
           </div>
           <button
             type="button"
-            onClick={() => setMensajeExito("")}
-            className="text-emerald-500 hover:text-emerald-300 text-[10px] uppercase font-bold tracking-widest cursor-pointer"
+            onClick={() => {
+              setMensajeExito("");
+              setEsErrorMensaje(false);
+            }}
+            className={`${
+              esErrorMensaje ? "text-rose-400 hover:text-rose-200" : "text-emerald-500 hover:text-emerald-300"
+            } text-[10px] uppercase font-bold tracking-widest cursor-pointer`}
           >
             Cerrar
           </button>

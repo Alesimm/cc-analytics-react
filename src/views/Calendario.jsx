@@ -45,15 +45,18 @@ const Calendario = () => {
   });
   const [erroresForm, setErroresForm] = useState({});
   const [mensajeFeedback, setMensajeFeedback] = useState("");
+  const [esErrorFeedback, setEsErrorFeedback] = useState(false);
 
   // un solo timer: un mensaje nuevo cancela el borrado del anterior
   const timerMensajeRef = useRef(null);
 
-  const mostrarMensaje = (texto) => {
+  const mostrarMensaje = (texto, esError = false) => {
     setMensajeFeedback(texto);
+    setEsErrorFeedback(esError);
     if (timerMensajeRef.current) clearTimeout(timerMensajeRef.current);
     timerMensajeRef.current = setTimeout(() => {
       setMensajeFeedback("");
+      setEsErrorFeedback(false);
     }, 3500);
   };
 
@@ -71,7 +74,7 @@ const Calendario = () => {
     api
       .get("/api/v1/partidos")
       .then((res) => {
-        if (activo && Array.isArray(res.partidos) && res.partidos.length > 0) {
+        if (activo && Array.isArray(res.partidos)) {
           setPartidos(res.partidos);
         }
       })
@@ -189,10 +192,12 @@ const Calendario = () => {
       try {
         const res = await api.post("/api/v1/partidos", nuevo);
         if (res.partido) {
-          setPartidos((prev) => [res.partido, ...prev]);
+          setPartidos((prev) =>
+            [...prev, res.partido].sort((a, b) => (a.fecha || "").localeCompare(b.fecha || ""))
+          );
         }
       } catch (error) {
-        mostrarMensaje(error.message);
+        mostrarMensaje(error.message, true);
         return;
       }
     } else {
@@ -225,7 +230,7 @@ const Calendario = () => {
         await api.delete(`/api/v1/partidos/${id}`);
         setPartidos((prev) => prev.filter((p) => p.id !== id));
       } catch (error) {
-        mostrarMensaje(error.message);
+        mostrarMensaje(error.message, true);
         return;
       }
     } else {
@@ -299,14 +304,27 @@ const Calendario = () => {
 
       {/* mensaje de feedback */}
       {mensajeFeedback && (
-        <div className="border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 p-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-between animate-fade-in">
+        <div
+          className={`border p-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-between animate-fade-in ${
+            esErrorFeedback
+              ? "border-rose-500/40 bg-rose-500/10 text-rose-300"
+              : "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+          }`}
+        >
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                esErrorFeedback ? "bg-rose-400" : "bg-emerald-400"
+              }`}
+            ></span>
             <span>{mensajeFeedback}</span>
           </div>
           <button
             type="button"
-            onClick={() => setMensajeFeedback("")}
+            onClick={() => {
+              setMensajeFeedback("");
+              setEsErrorFeedback(false);
+            }}
             className="text-neutral-400 hover:text-white text-sm ml-4 cursor-pointer"
           >
             ×

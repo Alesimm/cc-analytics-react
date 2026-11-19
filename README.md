@@ -1,85 +1,60 @@
-# CC Analytics — Plataforma de Gestión y Analítica Deportiva
+# CC Analytics — Plataforma de Gestión y Analítica Deportiva (Frontend)
 
-**CC Analytics** es una plataforma integral de gestión y analítica deportiva diseñada para el plantel profesional del **Club Social y Deportivo Colo-Colo**. Su objetivo es centralizar la toma de decisiones estratégicas del cuerpo técnico mediante la unificación de métricas de rendimiento físico, análisis táctico y control médico en una interfaz moderna y eficiente.
-
----
-
-## Contexto y Alcance
-
-CC Analytics fue concebido para resolver la dispersión de datos en el fútbol profesional de alto rendimiento, proporcionando una solución digital centralizada y de alta fidelidad que apoya las decisiones del Cuerpo Técnico, Área Médica, Analistas y Dirección Deportiva del club.
+**CC Analytics** es la aplicación web en React para la gestión estratégica del plantel profesional del **Club Social y Deportivo Colo-Colo** (Desarrollo Fullstack II — Duoc UC, Evaluación Parcial 3).
 
 ---
 
-## Perfiles de Usuario
+## Arquitectura Cliente-Servidor (Entrega 3)
 
-La plataforma está pensada para cubrir las necesidades operativas de diversos roles dentro de la institución:
-
-- **Cuerpo Técnico y Entrenadores:** Planificación estratégica de partidos, diseño de alineaciones en pizarra táctica y revisión del rendimiento colectivo del equipo.
-- **Analistas Deportivos:** Monitoreo detallado de estadísticas por jugador, análisis de rivales y seguimiento de patrones tácticos.
-- **Área Médica y Kinesiológica:** Control y seguimiento del estado físico del plantel, registro de lesiones y supervisión de los tiempos de recuperación.
-- **Administración Deportiva:** Visión general de la plantilla, programación del calendario de competencias y gestión documental.
+Este frontend se conecta vía `fetch` (`src/services/api.js`) con el servidor independiente **`cc-analytics-backend`** (`http://localhost:3001`), incorporando:
+- **Autenticación JWT (`POST /api/v1/auth/login`):** Emisión de token y verificación/renovación automática ante recargas de página (`F5`) mediante `GET /api/v1/auth/me`.
+- **Control de Acceso por Roles (RBAC):**
+  - `ADMIN` (`admin@colocolo.cl` / `colo2026`): Acceso completo CRUD en las 8 pantallas.
+  - `CUERPO_TECNICO` (`tecnico@colocolo.cl` / `tecnico26`): Gestión operativa de directrices tácticas, formaciones y centro médico (sin eliminaciones administrativas ni edición del plantel/calendario).
+  - `ANALISTA_LECTURA` (`consulta@colocolo.cl` / `consulta26`): Modo consulta en Plantel, Rendimiento, Formaciones y Calendario; acceso bloqueado a Centro Médico; creación de tickets en Soporte.
 
 ---
 
 ## Módulos de la Plataforma
-
-1. **Acceso y Autenticación:**  
-   Punto de entrada seguro a la plataforma con control de acceso por perfiles institucionales.
-
-2. **Panel Principal (Dashboard):**  
-   Vista panorámica del estado actual del equipo, últimos resultados, indicadores clave de rendimiento e información relevante del club.
-
-3. **Catálogo del Plantel:**  
-   Directorio completo de jugadores con fichas técnicas, posiciones, datos biométricos y estado contractual.
-
-4. **Análisis de Rendimiento Individual:**  
-   Monitoreo exhaustivo de futbolistas mediante métricas físicas, mapas de calor y seguimiento continuo de desempeño.
-
-5. **Pizarra Táctica y Formaciones:**  
-   Herramienta visual para diagramar alineaciones en campo de juego, variantes estratégicas y asignación de roles en pelota parada.
-
-6. **Calendario Competitivo:**  
-   Cronograma oficial de partidos del torneo nacional e internacional, rivales, sedes y registro histórico de marcadores.
-
-7. **Centro Médico y Control de Lesiones:**  
-   Módulo clínico para el registro de altas y bajas médicas, diagnóstico de lesiones musculares o articulares y etapas de rehabilitación.
-
-8. **Soporte y Mesa de Ayuda:**  
-   Canal de asistencia y solicitudes técnicas para el personal del club.
+1. **Login (`/login`):** Inicio de sesión validado contra el backend con opción de recordar sesión (`localStorage` vs `sessionStorage`).
+2. **Panel Principal (`/dashboard`):** Resumen del último encuentro, métricas colectivas y noticias.
+3. **Catálogo del Plantel (`/plantel`):** CRUD conectado a `/api/v1/jugadores` y restricciones por rol.
+4. **Rendimiento Individual (`/rendimiento`):** Radar SVG de 6 ejes, partidos recientes y directrices conectadas a `/api/v2/jugadores` y `/api/v1/directrices`.
+5. **Pizarra Táctica (`/formaciones`):** Cancha táctica con sustitución, parámetros y esquemas en `/api/v1/formaciones`.
+6. **Calendario (`/calendario`):** Fixture de próximos encuentros e historial en `/api/v1/partidos`.
+7. **Centro Médico (`/medico`):** Fichas clínicas, fases y altas médicas en `/api/v1/medico` (oculto para `ANALISTA_LECTURA`).
+8. **Soporte Técnico (`/soporte`):** Mesa de ayuda conectada a `/api/v1/soporte`.
 
 ---
 
-## Identidad Visual y Experiencia de Usuario
-
-La plataforma utiliza una dirección de diseño **Brutalista Deportiva Premium**:
-- Paleta cromática de alto contraste sobre fondos oscuros, alineada a los colores institucionales del club (blanco y negro).
-- Tipografía técnica, jerarquías visuales claras y legibilidad optimizada para entornos de análisis dinámicos y alta exigencia competitiva.
-- Navegación fluida y estructurada mediante barra superior persistente en todas las áreas de la plataforma.
+## Stack Tecnológico
+- **Frontend:** React 19, Vite 8, React Router DOM v7, Tailwind CSS v4.
+- **Cliente HTTP:** `fetch` nativo centralizado en `src/services/api.js` con envío automático de `Authorization: Bearer <token>`.
+- **Testing y Calidad:** Vitest + React Testing Library + `jsdom` (`57` pruebas unitarias) y ESLint.
 
 ---
 
-## Stack Tecnológico y Ejecución Local
+## Cómo ejecutar el proyecto
 
-### Tecnologías Principales
-- **Frontend:** React 19 + Vite 8
-- **Enrutamiento:** React Router DOM v7 (con carga diferida `React.lazy`, `<Suspense>` en `Layout` y precarga predictiva)
-- **Estilos:** Tailwind CSS v4
-- **Persistencia:** `localStorage` estructurado con datos iniciales de respaldo en `src/data/`
-- **Testing Unitario:** Vitest + React Testing Library + `jsdom` (46 pruebas unitarias distribuidas en 9 suites con 100% de aprobación)
+### 1. Levantar Backend y Frontend juntos
+Necesitas **2 terminales** abiertas:
+1. **Terminal 1 (Backend — puerto `3001`):**
+   ```bash
+   cd cc-analytics-backend
+   npm install
+   npm run dev
+   ```
+2. **Terminal 2 (Frontend — puerto `5173`):**
+   ```bash
+   cd cc-analytics-react
+   npm install
+   npm run dev
+   ```
+Luego abre `http://localhost:5173` en tu navegador.
 
-### Comandos de Ejecución
-
+### 2. Verificación (Tests, Linter y Build)
 ```bash
-# 1. Instalar dependencias
-npm install
-
-# 2. Iniciar servidor de desarrollo
-npm run dev
-
-# 3. Ejecutar suite completa de pruebas unitarias (46 tests)
 npm test
-
-# 4. Verificar estándar de código (ESLint) y compilar para producción
 npm run lint
 npm run build
 ```
@@ -87,10 +62,6 @@ npm run build
 ---
 
 ## Equipo de Desarrollo
-
-Proyecto desarrollado de forma colaborativa por:
-
-- **Alexander Simpertigue** — Arquitectura Frontend, Lógica Táctica y Testing Unitario
-- **Joseph** — Documentación Técnica, Especificaciones y Control Clínico
-- **Cristóbal** — Diseño de Interfaces, Accesibilidad y Control de Calidad
-
+- **Alexander Simpertigue** (`Alesimm`) — Arquitectura Frontend/Backend, Lógica Táctica, JWT/RBAC y Testing
+- **Joseph** (`josephR`) — Documentación Técnica, Especificaciones, Control Clínico y Calendario
+- **Cristóbal** (`Cristobal`) — Diseño de Interfaces, Accesibilidad, Control de Calidad y Soporte Técnico

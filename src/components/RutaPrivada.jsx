@@ -16,9 +16,9 @@ const RutaPrivada = ({ rolesPermitidos = null }) => {
 
     let activo = true;
     obtenerPerfil()
-      .then(({ usuario }) => {
+      .then(({ token, usuario }) => {
         if (!activo) return;
-        guardarUsuario(usuario);
+        guardarUsuario(usuario, token);
         setRolUsuario(usuario?.rol || null);
         setEstado("valida");
       })

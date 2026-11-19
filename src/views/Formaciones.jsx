@@ -112,7 +112,17 @@ const Formaciones = () => {
 
   // mensajes de feedback y error ubicados junto a la zona de accion del usuario
   const [mensajeFeedback, setMensajeFeedback] = useState("");
+  const [esErrorFeedback, setEsErrorFeedback] = useState(false);
   const [errorSuplentes, setErrorSuplentes] = useState("");
+
+  const mostrarFeedback = (texto, esError = false) => {
+    setMensajeFeedback(texto);
+    setEsErrorFeedback(esError);
+    setTimeout(() => {
+      setMensajeFeedback("");
+      setEsErrorFeedback(false);
+    }, 3500);
+  };
 
   // modales para crear y editar esquemas
   const [modalNuevoEsquema, setModalNuevoEsquema] = useState(false);
@@ -351,8 +361,6 @@ const Formaciones = () => {
       ritmoPosesion,
       fecha: new Date().toLocaleDateString("es-CL"),
     };
-    guardarConfiguracionTactica(config);
-
     if (obtenerToken()) {
       try {
         await api.put(`/api/v1/formaciones/${formacionActivaId}`, {
@@ -363,13 +371,14 @@ const Formaciones = () => {
           titulares,
           suplentes,
         });
-      } catch {
-        // si falla el servidor mantiene el guardado local
+      } catch (error) {
+        mostrarFeedback(error.message, true);
+        return;
       }
     }
 
-    setMensajeFeedback("Configuración táctica y parámetros del partido guardados correctamente.");
-    setTimeout(() => setMensajeFeedback(""), 3500);
+    guardarConfiguracionTactica(config);
+    mostrarFeedback("Configuración táctica y parámetros del partido guardados correctamente.");
   };
 
   // restablecer posiciones
@@ -475,7 +484,9 @@ const Formaciones = () => {
         if (res.formacion) {
           setEsquemas((prev) => prev.map((f) => (f.id === res.formacion.id ? res.formacion : f)));
         }
-      } catch {
+      } catch (error) {
+        setModalEditarEsquema(false);
+        mostrarFeedback(error.message, true);
         return;
       }
     } else {
@@ -484,8 +495,7 @@ const Formaciones = () => {
     }
 
     setModalEditarEsquema(false);
-    setMensajeFeedback(`Esquema táctico "${modificado.nombre}" actualizado.`);
-    setTimeout(() => setMensajeFeedback(""), 3000);
+    mostrarFeedback(`Esquema táctico "${modificado.nombre}" actualizado.`);
   };
 
   // eliminar esquema (crud: delete)
@@ -497,7 +507,9 @@ const Formaciones = () => {
         await api.delete(`/api/v1/formaciones/${id}`);
         restantes = esquemas.filter((f) => f.id !== id);
         setEsquemas(restantes);
-      } catch {
+      } catch (error) {
+        setConfirmarEliminarId(null);
+        mostrarFeedback(error.message, true);
         return;
       }
     } else {
@@ -512,8 +524,7 @@ const Formaciones = () => {
       setTitulares(restantes[0].titulares);
       setSuplentes(restantes[0].suplentes);
     }
-    setMensajeFeedback("Esquema táctico personalizado eliminado de la pizarra.");
-    setTimeout(() => setMensajeFeedback(""), 3000);
+    mostrarFeedback("Esquema táctico personalizado eliminado de la pizarra.");
   };
 
   // si hay sesion jwt activa, sincroniza las formaciones desde /api/v1/formaciones
@@ -523,8 +534,14 @@ const Formaciones = () => {
     api
       .get("/api/v1/formaciones")
       .then((res) => {
-        if (!activo || !Array.isArray(res.formaciones) || res.formaciones.length === 0) return;
+        if (!activo || !Array.isArray(res.formaciones)) return;
         setEsquemas(res.formaciones);
+        if (res.formaciones.length === 0) {
+          setFormacionActivaId("");
+          setTitulares([]);
+          setSuplentes([]);
+          return;
+        }
         const primero = res.formaciones[0];
         setFormacionActivaId(primero.id);
         setTitulares(primero.titulares || []);
@@ -621,9 +638,19 @@ const Formaciones = () => {
 
       {/* mensaje de feedback superior */}
       {mensajeFeedback && (
-        <div className="border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 p-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-between animate-fade-in">
+        <div
+          className={`border p-3.5 text-xs font-bold uppercase tracking-wider flex items-center justify-between animate-fade-in ${
+            esErrorFeedback
+              ? "border-rose-500/40 bg-rose-500/10 text-rose-300"
+              : "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+          }`}
+        >
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                esErrorFeedback ? "bg-rose-400" : "bg-emerald-400"
+              }`}
+            ></span>
             <span>{mensajeFeedback}</span>
           </div>
           <button
@@ -649,9 +676,9 @@ const Formaciones = () => {
 
           <div className="flex items-center gap-3">
             <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-              Activo: <strong className="text-white">{esquemaActual.nombre}</strong>
+              Activo: <strong className="text-white">{esquemaActual?.nombre || "Sin esquema"}</strong>
             </span>
-            {puedeEditarTactica && (
+            {puedeEditarTactica && esquemaActual && (
               <button
                 type="button"
                 onClick={handleAbrirEditar}
@@ -660,7 +687,7 @@ const Formaciones = () => {
                 Editar Nombre
               </button>
             )}
-            {esAdmin && !esquemaActual.esOficial && (
+            {esAdmin && esquemaActual && !esquemaActual.esOficial && (
               <button
                 type="button"
                 onClick={() => setConfirmarEliminarId(esquemaActual.id)}
@@ -673,10 +700,10 @@ const Formaciones = () => {
         </div>
 
         {/* confirmacion inline de eliminacion */}
-        {confirmarEliminarId === esquemaActual.id && (
+        {confirmarEliminarId && confirmarEliminarId === esquemaActual?.id && (
           <div className="border border-rose-500/50 bg-rose-950/30 p-3 flex items-center justify-between text-xs animate-fade-in">
             <span className="text-rose-200">
-              ¿Eliminar el esquema <strong>{esquemaActual.nombre}</strong> de forma permanente?
+              ¿Eliminar el esquema <strong>{esquemaActual?.nombre}</strong> de forma permanente?
             </span>
             <div className="flex items-center gap-2">
               <button

@@ -122,6 +122,12 @@ const RegistroMedicoForm = ({
       esValido = false;
     }
 
+    // 5. validacion de profesional responsable
+    if (!formData.medicoTratante.trim() || formData.medicoTratante.trim().length < 3) {
+      nuevosErrores.medicoTratante = "El nombre del profesional responsable es obligatorio.";
+      esValido = false;
+    }
+
     setErrors(nuevosErrores);
 
     if (esValido) {
@@ -356,8 +362,14 @@ const RegistroMedicoForm = ({
               value={formData.medicoTratante}
               onChange={(e) => handleChange("medicoTratante", e.target.value)}
               placeholder="Ej. Dr. Roberto Yáñez"
-              className={claseInput(false)}
+              className={claseInput(errors.medicoTratante)}
             />
+            {errors.medicoTratante && (
+              <p className="text-red-500 text-[11px] font-semibold flex items-center gap-1.5 parpadeo-error antialiased">
+                <span className="inline-block w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_5px_rgba(239,68,68,0.8)]"></span>
+                {errors.medicoTratante}
+              </p>
+            )}
           </div>
 
           {/* Campo Observaciones */}

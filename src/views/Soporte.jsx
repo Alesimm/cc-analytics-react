@@ -110,13 +110,13 @@ const Soporte = () => {
       esValido = false;
     }
 
-    // 3. asunto: minimo 4 letras
+    // 3. asunto: minimo 5 caracteres (alineado con el backend)
     const asuntoLimpio = formData.asunto.trim();
     if (!asuntoLimpio) {
       nuevosErrores.asunto = "El asunto de la solicitud es obligatorio.";
       esValido = false;
-    } else if (asuntoLimpio.length < 4) {
-      nuevosErrores.asunto = "El asunto debe contener al menos 4 caracteres.";
+    } else if (asuntoLimpio.length < 5) {
+      nuevosErrores.asunto = "El asunto debe contener al menos 5 caracteres.";
       esValido = false;
     }
 
@@ -307,9 +307,9 @@ const Soporte = () => {
           </p>
         </div>
 
-        {/* boton de restablecer demo (solo admin) */}
+        {/* boton de restablecer demo (solo admin en modo local) */}
         <div className="flex items-center gap-3">
-          {esAdmin && (
+          {esAdmin && !obtenerToken() && (
             <button
               type="button"
               onClick={handleRestablecer}

@@ -533,11 +533,6 @@ export const eliminarDirectrizStorage = (id) => {
   }
 };
 
-// compatibilidad retroactiva con nombres anteriores
-export const obtenerObservacionesStorage = obtenerDirectricesStorage;
-export const guardarObservacionStorage = guardarDirectrizStorage;
-export const eliminarObservacionStorage = eliminarDirectrizStorage;
-
 // partidos recientes realistas con partidos destacados y tambien partidos dificiles/suplentes
 const PARTIDOS_POR_JUGADOR = {
   // arturo vidal (#23, titular indiscutido pero con desgaste y partido dificil)
