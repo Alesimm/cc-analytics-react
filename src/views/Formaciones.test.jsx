@@ -138,4 +138,18 @@ describe("Módulo de Pizarra Táctica y Formaciones (Pantalla 5)", () => {
       screen.getByText(/nuevo esquema táctico "4-1-4-1 asfixiante" creado exitosamente/i)
     ).toBeInTheDocument();
   });
+
+  // prueba 7: restriccion rbac para analista de lectura
+  it("oculta botones de edicion y creacion cuando el rol es ANALISTA_LECTURA", () => {
+    localStorage.setItem(
+      "cc_usuario_sesion",
+      JSON.stringify({ id: "usr-consulta", correo: "consulta@colocolo.cl", rol: "ANALISTA_LECTURA" })
+    );
+
+    render(<Formaciones />);
+
+    expect(screen.queryByRole("button", { name: /\+ nuevo esquema/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /guardar configuración/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/modo consulta/i)).toBeInTheDocument();
+  });
 });

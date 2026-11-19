@@ -8,6 +8,8 @@ import {
   obtenerConfiguracionTactica,
   guardarConfiguracionTactica,
 } from "../data/formacionesData";
+import { obtenerToken, puedeGestionarTactica, puedeEliminarRegistros } from "../data/authData";
+import { api } from "../services/api";
 
 // etiquetas dinamicas para los porcentajes de parametros tacticos
 const obtenerEtiquetaBloque = (porcentaje) => {
@@ -45,9 +47,11 @@ const obtenerColorLinea = () => {
 };
 
 const Formaciones = () => {
-  // listado de esquemas cargados (oficiales + personalizados)
+  // listado de esquemas cargados (oficiales + personalizados) y permisos por rol
   const [esquemas, setEsquemas] = useState(() => obtenerEsquemas());
   const [formacionActivaId, setFormacionActivaId] = useState("4-3-3");
+  const puedeEditarTactica = puedeGestionarTactica();
+  const esAdmin = puedeEliminarRegistros();
 
   // titulares y suplentes del esquema activo
   const [titulares, setTitulares] = useState(() => {
@@ -334,8 +338,9 @@ const Formaciones = () => {
     setSuplenteArrastrado(null);
   };
 
-  // guardar configuracion de la pizarra en memoria
-  const handleGuardarConfiguracion = () => {
+  // guardar configuracion de la pizarra en memoria y sincronizar con backend
+  const handleGuardarConfiguracion = async () => {
+    if (!puedeEditarTactica) return;
     const config = {
       formacionId: formacionActivaId,
       titulares,
@@ -347,6 +352,22 @@ const Formaciones = () => {
       fecha: new Date().toLocaleDateString("es-CL"),
     };
     guardarConfiguracionTactica(config);
+
+    if (obtenerToken()) {
+      try {
+        await api.put(`/api/v1/formaciones/${formacionActivaId}`, {
+          alturaBloque,
+          anchuraEquipo,
+          intensidadPresion,
+          ritmoPosesion,
+          titulares,
+          suplentes,
+        });
+      } catch {
+        // si falla el servidor mantiene el guardado local
+      }
+    }
+
     setMensajeFeedback("Configuración táctica y parámetros del partido guardados correctamente.");
     setTimeout(() => setMensajeFeedback(""), 3500);
   };
@@ -367,8 +388,9 @@ const Formaciones = () => {
   };
 
   // crear nuevo esquema (crud: create)
-  const handleCrearNuevoEsquema = (e) => {
+  const handleCrearNuevoEsquema = async (e) => {
     e.preventDefault();
+    if (!puedeEditarTactica) return;
     if (!formNuevo.nombre.trim()) {
       setErrorFormNuevo("Debes ingresar un nombre para el nuevo esquema táctico.");
       return;
@@ -397,10 +419,23 @@ const Formaciones = () => {
       suplentes: JSON.parse(JSON.stringify(suplentes)),
     };
 
-    guardarNuevoEsquema(nuevo);
-    const actualizados = obtenerEsquemas();
-    setEsquemas(actualizados);
-    setFormacionActivaId(nuevoEsquemaId);
+    if (obtenerToken()) {
+      try {
+        const res = await api.post("/api/v1/formaciones", nuevo);
+        if (res.formacion) {
+          setEsquemas((prev) => [...prev, res.formacion]);
+          setFormacionActivaId(res.formacion.id);
+        }
+      } catch (error) {
+        setErrorFormNuevo(error.message);
+        return;
+      }
+    } else {
+      guardarNuevoEsquema(nuevo);
+      setEsquemas(obtenerEsquemas());
+      setFormacionActivaId(nuevoEsquemaId);
+    }
+
     setModalNuevoEsquema(false);
     setFormNuevo({ nombre: "", descripcion: "", esquemaBaseId: "4-3-3" });
     setErrorFormNuevo("");
@@ -410,6 +445,7 @@ const Formaciones = () => {
 
   // editar esquema (crud: update)
   const handleAbrirEditar = () => {
+    if (!puedeEditarTactica) return;
     setFormEditar({
       nombre: esquemaActual.nombre,
       descripcion: esquemaActual.descripcion,
@@ -417,9 +453,9 @@ const Formaciones = () => {
     setModalEditarEsquema(true);
   };
 
-  const handleGuardarEdicion = (e) => {
+  const handleGuardarEdicion = async (e) => {
     e.preventDefault();
-    if (!formEditar.nombre.trim()) return;
+    if (!puedeEditarTactica || !formEditar.nombre.trim()) return;
 
     const modificado = {
       ...esquemaActual,
@@ -433,25 +469,78 @@ const Formaciones = () => {
       suplentes,
     };
 
-    actualizarEsquema(modificado);
-    setEsquemas(obtenerEsquemas());
+    if (obtenerToken()) {
+      try {
+        const res = await api.put(`/api/v1/formaciones/${esquemaActual.id}`, modificado);
+        if (res.formacion) {
+          setEsquemas((prev) => prev.map((f) => (f.id === res.formacion.id ? res.formacion : f)));
+        }
+      } catch {
+        return;
+      }
+    } else {
+      actualizarEsquema(modificado);
+      setEsquemas(obtenerEsquemas());
+    }
+
     setModalEditarEsquema(false);
     setMensajeFeedback(`Esquema táctico "${modificado.nombre}" actualizado.`);
     setTimeout(() => setMensajeFeedback(""), 3000);
   };
 
   // eliminar esquema (crud: delete)
-  const handleConfirmarEliminar = (id) => {
-    eliminarEsquema(id);
-    const restantes = obtenerEsquemas();
-    setEsquemas(restantes);
+  const handleConfirmarEliminar = async (id) => {
+    if (!esAdmin) return;
+    let restantes;
+    if (obtenerToken()) {
+      try {
+        await api.delete(`/api/v1/formaciones/${id}`);
+        restantes = esquemas.filter((f) => f.id !== id);
+        setEsquemas(restantes);
+      } catch {
+        return;
+      }
+    } else {
+      eliminarEsquema(id);
+      restantes = obtenerEsquemas();
+      setEsquemas(restantes);
+    }
+
     setConfirmarEliminarId(null);
-    setFormacionActivaId(restantes[0].id);
-    setTitulares(restantes[0].titulares);
-    setSuplentes(restantes[0].suplentes);
+    if (restantes.length > 0) {
+      setFormacionActivaId(restantes[0].id);
+      setTitulares(restantes[0].titulares);
+      setSuplentes(restantes[0].suplentes);
+    }
     setMensajeFeedback("Esquema táctico personalizado eliminado de la pizarra.");
     setTimeout(() => setMensajeFeedback(""), 3000);
   };
+
+  // si hay sesion jwt activa, sincroniza las formaciones desde /api/v1/formaciones
+  useEffect(() => {
+    if (!obtenerToken()) return;
+    let activo = true;
+    api
+      .get("/api/v1/formaciones")
+      .then((res) => {
+        if (!activo || !Array.isArray(res.formaciones) || res.formaciones.length === 0) return;
+        setEsquemas(res.formaciones);
+        const primero = res.formaciones[0];
+        setFormacionActivaId(primero.id);
+        setTitulares(primero.titulares || []);
+        setSuplentes(primero.suplentes || []);
+        setAlturaBloque(primero.alturaBloque ?? 75);
+        setAnchuraEquipo(primero.anchuraEquipo ?? 70);
+        setIntensidadPresion(primero.intensidadPresion ?? 80);
+        setRitmoPosesion(primero.ritmoPosesion ?? 60);
+      })
+      .catch(() => {
+        // si el backend no responde mantiene los esquemas locales
+      });
+    return () => {
+      activo = false;
+    };
+  }, []);
 
   // bloquear scroll y tecla escape para modales de esquemas
   useEffect(() => {
@@ -495,30 +584,38 @@ const Formaciones = () => {
           </p>
         </div>
 
-        {/* botones de accion */}
+        {/* botones de accion segun rol */}
         <div className="flex items-center gap-2.5 flex-wrap">
-          <button
-            type="button"
-            onClick={() => setModalNuevoEsquema(true)}
-            className="text-[10px] uppercase font-extrabold tracking-wider text-black bg-white hover:bg-neutral-200 px-3.5 py-2.5 transition-colors cursor-pointer"
-          >
-            + Nuevo Esquema
-          </button>
-          <button
-            type="button"
-            onClick={handleGuardarConfiguracion}
-            className="text-[10px] uppercase font-bold tracking-wider text-white border border-white/15 bg-white/[0.03] hover:bg-white hover:text-black px-3.5 py-2.5 transition-colors cursor-pointer"
-          >
-            Guardar Configuración
-          </button>
-          <button
-            type="button"
-            onClick={handleRestablecerEsquema}
-            className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3.5 py-2.5 bg-white/[0.02] transition-colors cursor-pointer"
-            title="Restablecer posiciones al esquema oficial"
-          >
-            Restablecer Posiciones
-          </button>
+          {puedeEditarTactica ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setModalNuevoEsquema(true)}
+                className="text-[10px] uppercase font-extrabold tracking-wider text-black bg-white hover:bg-neutral-200 px-3.5 py-2.5 transition-colors cursor-pointer"
+              >
+                + Nuevo Esquema
+              </button>
+              <button
+                type="button"
+                onClick={handleGuardarConfiguracion}
+                className="text-[10px] uppercase font-bold tracking-wider text-white border border-white/15 bg-white/[0.03] hover:bg-white hover:text-black px-3.5 py-2.5 transition-colors cursor-pointer"
+              >
+                Guardar Configuración
+              </button>
+              <button
+                type="button"
+                onClick={handleRestablecerEsquema}
+                className="text-[10px] uppercase font-bold tracking-wider text-neutral-400 hover:text-white border border-white/10 hover:border-white/30 px-3.5 py-2.5 bg-white/[0.02] transition-colors cursor-pointer"
+                title="Restablecer posiciones al esquema oficial"
+              >
+                Restablecer Posiciones
+              </button>
+            </>
+          ) : (
+            <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400 border border-white/15 px-3 py-2 bg-white/2">
+              Modo Consulta
+            </span>
+          )}
         </div>
       </header>
 
@@ -554,14 +651,16 @@ const Formaciones = () => {
             <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
               Activo: <strong className="text-white">{esquemaActual.nombre}</strong>
             </span>
-            <button
-              type="button"
-              onClick={handleAbrirEditar}
-              className="text-[10px] uppercase font-bold text-neutral-400 hover:text-white underline tracking-wider cursor-pointer"
-            >
-              Editar Nombre
-            </button>
-            {!esquemaActual.esOficial && (
+            {puedeEditarTactica && (
+              <button
+                type="button"
+                onClick={handleAbrirEditar}
+                className="text-[10px] uppercase font-bold text-neutral-400 hover:text-white underline tracking-wider cursor-pointer"
+              >
+                Editar Nombre
+              </button>
+            )}
+            {esAdmin && !esquemaActual.esOficial && (
               <button
                 type="button"
                 onClick={() => setConfirmarEliminarId(esquemaActual.id)}
